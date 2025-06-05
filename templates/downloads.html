@@ -1,591 +1,81 @@
 {% extends "base.html" %}
 
-{% block title %}Downloads - FovDark{% endblock %}
+{% block title %}Meus Downloads - FovDark{% endblock %}
 
 {% block content %}
-<div class="downloads-page">
-    <!-- Downloads Header -->
-    <div class="downloads-header">
-        <div class="container">
-            <div class="header-content">
-                <div class="downloads-welcome">
-                    <div class="downloads-icon">
-                        <i class="fas fa-download"></i>
-                    </div>
-                    <div class="welcome-text">
-                        <h1>Área de Downloads</h1>
-                        <p>Baixe seus produtos adquiridos com segurança</p>
-                    </div>
-                </div>
-                
-                <div class="header-actions">
-                    <a href="/products" class="btn btn-primary">
-                        <i class="fas fa-shopping-cart"></i>
-                        Comprar Mais
-                    </a>
-                    <a href="/painel" class="btn btn-outline">
-                        <i class="fas fa-tachometer-alt"></i>
-                        Meu Painel
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
+<!-- Header da Página -->
+<section style="background: var(--primary-color); color: white; padding: 4rem 0; text-align: center;">
     <div class="container">
-        <!-- Downloads Stats -->
-        <div class="downloads-stats">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-key"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number">{{ available_products|length }}</div>
-                        <div class="stat-label">Produtos Disponíveis</div>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number">
-                            {% set active_licenses = available_products|selectattr('license.status', 'equalto', 'active')|list %}
-                            {{ active_licenses|length }}
-                        </div>
-                        <div class="stat-label">Licenças Ativas</div>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number">
-                            {% if available_products %}
-                                {% set min_days = available_products|map(attribute='license.days_remaining')|min %}
-                                {{ min_days if min_days > 0 else 0 }}
-                            {% else %}
-                                0
-                            {% endif %}
-                        </div>
-                        <div class="stat-label">Dias até Próxima Expiração</div>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-shield-check"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-number">100%</div>
-                        <div class="stat-label">Proteção HWID</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h1 style="color: white; margin-bottom: 1rem;">Meus Downloads</h1>
+        <p style="font-size: 1.25rem; opacity: 0.9;">Acesse todos os seus produtos e licenças ativas</p>
+    </div>
+</section>
 
-        <!-- Downloads Content -->
-        {% if available_products %}
-            <div class="downloads-content">
-                <div class="section-header">
-                    <h2>Seus Produtos</h2>
-                    <div class="filter-options">
-                        <select id="categoryFilter">
-                            <option value="">Todas as categorias</option>
-                            {% set categories = available_products|map(attribute='product.category')|unique|list %}
-                            {% for category in categories %}
-                                <option value="{{ category.id }}">{{ category.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <select id="statusFilter">
-                            <option value="">Todos os status</option>
-                            <option value="active">Ativo</option>
-                            <option value="expiring">Expirando (< 7 dias)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="downloads-grid">
-                    {% for item in available_products %}
-                        <div class="download-card" 
-                             data-category="{{ item.product.category.id }}"
-                             data-status="{% if item.license.days_remaining <= 7 %}expiring{% else %}active{% endif %}">
-                            
-                            <!-- Product Image -->
-                            <div class="download-image">
-                                {% if item.product.image_url %}
-                                    <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}">
-                                {% else %}
-                                    <div class="no-image">
-                                        <i class="{{ item.product.category.icon or 'fas fa-cube' }}"></i>
-                                    </div>
-                                {% endif %}
+<!-- Lista de Downloads -->
+<section style="padding: 4rem 0; background: var(--gray-50);">
+    <div class="container">
+        {% if licenses %}
+            <div class="grid grid-2">
+                {% for license in licenses %}
+                <div class="card">
+                    <div class="card-body">
+                        <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                            <div style="flex: 1;">
+                                <h3 style="margin-bottom: 0.5rem;">{{ license.product.name }}</h3>
+                                <p style="color: var(--gray-600); margin-bottom: 1rem;">{{ license.product.description[:100] }}...</p>
                                 
-                                <!-- Status Badge -->
-                                <div class="status-overlay">
-                                    {% if item.license.days_remaining <= 3 %}
-                                        <span class="status-badge critical">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                            Expira em {{ item.license.days_remaining }} dias
-                                        </span>
-                                    {% elif item.license.days_remaining <= 7 %}
-                                        <span class="status-badge warning">
-                                            <i class="fas fa-clock"></i>
-                                            Expira em {{ item.license.days_remaining }} dias
-                                        </span>
-                                    {% else %}
-                                        <span class="status-badge active">
-                                            <i class="fas fa-check-circle"></i>
-                                            {{ item.license.days_remaining }} dias restantes
-                                        </span>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; font-size: 0.875rem;">
+                                    <div>
+                                        <strong>Licença:</strong><br>
+                                        <code style="background: var(--gray-100); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">{{ license.license_key }}</code>
+                                    </div>
+                                    <div>
+                                        <strong>Válida até:</strong><br>
+                                        {{ license.expires_at.strftime('%d/%m/%Y') if license.expires_at else 'Sem expiração' }}
+                                    </div>
+                                </div>
+                                
+                                <div style="display: flex; gap: 0.5rem;">
+                                    {% if license.product.download_url %}
+                                        <a href="/api/download/{{ license.product.id }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-download"></i>
+                                            Download
+                                        </a>
                                     {% endif %}
-                                </div>
-                            </div>
-
-                            <!-- Product Info -->
-                            <div class="download-content">
-                                <div class="product-category">
-                                    <i class="{{ item.product.category.icon or 'fas fa-folder' }}"></i>
-                                    {{ item.product.category.name }}
-                                </div>
-
-                                <h3 class="product-title">{{ item.product.name }}</h3>
-
-                                <p class="product-description">
-                                    {{ item.product.description[:100] }}{% if item.product.description|length > 100 %}...{% endif %}
-                                </p>
-
-                                <!-- License Details -->
-                                <div class="license-details">
-                                    <div class="detail-item">
-                                        <i class="fas fa-key"></i>
-                                        <span>Licença: {{ item.license.license_key[:8] }}...</span>
-                                        <button class="copy-btn" data-copy="{{ item.license.license_key }}" title="Copiar chave completa">
-                                            <i class="fas fa-copy"></i>
-                                        </button>
-                                    </div>
-                                    <div class="detail-item">
-                                        <i class="fas fa-calendar"></i>
-                                        <span>Expira: {{ item.license.expires_at.strftime('%d/%m/%Y %H:%M') }}</span>
-                                    </div>
-                                </div>
-
-                                <!-- Product Tags -->
-                                {% if item.product.tags %}
-                                    <div class="product-tags">
-                                        {% for tag in item.product.tags_list[:3] %}
-                                            <span class="tag">{{ tag }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-
-                            <!-- Download Actions -->
-                            <div class="download-actions">
-                                {% if item.product.download_url %}
-                                    <button class="btn btn-primary btn-block download-btn" 
-                                            data-product-id="{{ item.product.id }}"
-                                            data-product-name="{{ item.product.name }}"
-                                            data-license-id="{{ item.license.id }}">
-                                        <i class="fas fa-download"></i>
-                                        Download
-                                    </button>
-                                {% else %}
-                                    <button class="btn btn-secondary btn-block" disabled>
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        Download Indisponível
-                                    </button>
-                                {% endif %}
-
-                                <div class="action-buttons">
-                                    <button class="btn btn-outline btn-sm verify-license-btn" 
-                                            data-license-key="{{ item.license.license_key }}"
-                                            title="Verificar licença">
-                                        <i class="fas fa-shield-check"></i>
-                                        Verificar
-                                    </button>
-                                    
-                                    <a href="/products/{{ item.product.id }}" 
-                                       class="btn btn-outline btn-sm" 
-                                       title="Ver detalhes do produto">
+                                    <a href="/products/{{ license.product.id }}" class="btn btn-outline btn-sm">
                                         <i class="fas fa-info-circle"></i>
                                         Detalhes
                                     </a>
-                                    
-                                    {% if item.license.days_remaining <= 7 %}
-                                        <a href="/products/{{ item.product.id }}" 
-                                           class="btn btn-warning btn-sm" 
-                                           title="Renovar licença">
-                                            <i class="fas fa-refresh"></i>
-                                            Renovar
-                                        </a>
-                                    {% endif %}
                                 </div>
                             </div>
+                            
+                            <div style="text-align: center;">
+                                {% if license.is_active %}
+                                    <span style="display: inline-block; background: var(--success-color); color: white; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600;">
+                                        <i class="fas fa-check-circle"></i> Ativa
+                                    </span>
+                                {% else %}
+                                    <span style="display: inline-block; background: var(--danger-color); color: white; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600;">
+                                        <i class="fas fa-times-circle"></i> Expirada
+                                    </span>
+                                {% endif %}
+                            </div>
                         </div>
-                    {% endfor %}
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-
-            <!-- Download Instructions -->
-            <div class="download-instructions">
-                <div class="instructions-header">
-                    <h2>
-                        <i class="fas fa-info-circle"></i>
-                        Como baixar seus produtos
-                    </h2>
-                </div>
-                
-                <div class="instructions-grid">
-                    <div class="instruction-card">
-                        <div class="instruction-number">1</div>
-                        <div class="instruction-content">
-                            <h3>Verifique sua licença</h3>
-                            <p>Certifique-se de que sua licença está ativa e não expirou. Use o botão "Verificar" para confirmar o status.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="instruction-card">
-                        <div class="instruction-number">2</div>
-                        <div class="instruction-content">
-                            <h3>Clique em Download</h3>
-                            <p>Use o botão de download para iniciar o processo. O download será registrado em seu histórico.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="instruction-card">
-                        <div class="instruction-number">3</div>
-                        <div class="instruction-content">
-                            <h3>Siga as instruções</h3>
-                            <p>Após o download, siga as instruções de instalação. Use sua chave de licença quando solicitado.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="instruction-card">
-                        <div class="instruction-number">4</div>
-                        <div class="instruction-content">
-                            <h3>Suporte disponível</h3>
-                            <p>Em caso de problemas, nossa equipe de suporte está disponível 24/7 para ajudar.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         {% else %}
-            <!-- Empty State -->
-            <div class="empty-state">
-                <div class="empty-icon">
-                    <i class="fas fa-download"></i>
-                </div>
-                <h2>Nenhum produto disponível para download</h2>
-                <p>Você ainda não possui produtos com licenças ativas. Explore nossa loja e adquira seus primeiros produtos!</p>
-                
-                <div class="empty-actions">
-                    <a href="/products" class="btn btn-primary btn-lg">
-                        <i class="fas fa-shopping-cart"></i>
-                        Explorar Produtos
-                    </a>
-                    <a href="/painel" class="btn btn-outline btn-lg">
-                        <i class="fas fa-tachometer-alt"></i>
-                        Ver Painel
-                    </a>
-                </div>
-
-                <!-- Featured Categories -->
-                <div class="featured-categories">
-                    <h3>Categorias Populares</h3>
-                    <div class="categories-grid">
-                        <a href="/category/isos" class="category-item">
-                            <i class="fas fa-compact-disc"></i>
-                            <span>ISOs Customizadas</span>
-                        </a>
-                        <a href="/category/programas" class="category-item">
-                            <i class="fas fa-desktop"></i>
-                            <span>Programas</span>
-                        </a>
-                        <a href="/category/otimizadores" class="category-item">
-                            <i class="fas fa-rocket"></i>
-                            <span>Otimizadores</span>
-                        </a>
-                        <a href="/category/cheats" class="category-item">
-                            <i class="fas fa-gamepad"></i>
-                            <span>Cheats & Trainers</span>
-                        </a>
-                    </div>
-                </div>
+            <div class="text-center" style="padding: 4rem 0;">
+                <i class="fas fa-download" style="font-size: 4rem; color: var(--gray-400); margin-bottom: 1rem;"></i>
+                <h3>Nenhum download disponível</h3>
+                <p style="color: var(--gray-600); margin-bottom: 2rem;">Você ainda não possui nenhuma licença ativa.</p>
+                <a href="/products" class="btn btn-primary">
+                    <i class="fas fa-shopping-cart"></i>
+                    Explorar Produtos
+                </a>
             </div>
         {% endif %}
     </div>
-</div>
-
-<!-- License Verification Modal -->
-<div id="verifyModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Verificação de Licença</h3>
-            <button class="modal-close">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div id="verifyResult" class="verify-result">
-                <div class="loading">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    Verificando licença...
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-        </div>
-    </div>
-</div>
-
-<!-- Download Progress Modal -->
-<div id="downloadModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Iniciando Download</h3>
-        </div>
-        <div class="modal-body">
-            <div class="download-progress">
-                <div class="progress-icon">
-                    <i class="fas fa-download"></i>
-                </div>
-                <h4 id="downloadProductName"></h4>
-                <p>Seu download será iniciado em breve. Mantenha esta janela aberta.</p>
-                <div class="download-info">
-                    <div class="info-item">
-                        <i class="fas fa-shield-check"></i>
-                        <span>Download protegido por licença</span>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-clock"></i>
-                        <span>Registrado em seu histórico</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-primary" data-dismiss="modal">Entendi</button>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Filter functionality
-    const categoryFilter = document.getElementById('categoryFilter');
-    const statusFilter = document.getElementById('statusFilter');
-    const downloadCards = document.querySelectorAll('.download-card');
-
-    function filterCards() {
-        const selectedCategory = categoryFilter.value;
-        const selectedStatus = statusFilter.value;
-
-        downloadCards.forEach(card => {
-            const cardCategory = card.dataset.category;
-            const cardStatus = card.dataset.status;
-            
-            let showCard = true;
-            
-            if (selectedCategory && cardCategory !== selectedCategory) {
-                showCard = false;
-            }
-            
-            if (selectedStatus && cardStatus !== selectedStatus) {
-                showCard = false;
-            }
-            
-            card.style.display = showCard ? 'block' : 'none';
-        });
-    }
-
-    if (categoryFilter) {
-        categoryFilter.addEventListener('change', filterCards);
-    }
-    
-    if (statusFilter) {
-        statusFilter.addEventListener('change', filterCards);
-    }
-
-    // Copy license key functionality
-    document.querySelectorAll('.copy-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const licenseKey = this.dataset.copy;
-            
-            navigator.clipboard.writeText(licenseKey).then(() => {
-                showToast('Chave de licença copiada!', 'success');
-                
-                // Visual feedback
-                const icon = this.querySelector('i');
-                const originalClass = icon.className;
-                icon.className = 'fas fa-check';
-                
-                setTimeout(() => {
-                    icon.className = originalClass;
-                }, 2000);
-            }).catch(() => {
-                showToast('Erro ao copiar chave', 'error');
-            });
-        });
-    });
-
-    // Download functionality
-    document.querySelectorAll('.download-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const productId = this.dataset.productId;
-            const productName = this.dataset.productName;
-            const licenseId = this.dataset.licenseId;
-            
-            downloadProduct(productId, productName, licenseId);
-        });
-    });
-
-    function downloadProduct(productId, productName, licenseId) {
-        // Show download modal
-        const downloadModal = document.getElementById('downloadModal');
-        const downloadProductNameEl = document.getElementById('downloadProductName');
-        
-        if (downloadProductNameEl) {
-            downloadProductNameEl.textContent = productName;
-        }
-        
-        if (downloadModal) {
-            downloadModal.style.display = 'block';
-        }
-
-        // Make download request
-        fetch(`/api/download/${productId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast(`Download de ${productName} iniciado!`, 'success');
-                
-                // Open download URL
-                if (data.download_url) {
-                    setTimeout(() => {
-                        window.open(data.download_url, '_blank');
-                    }, 1000);
-                }
-            } else {
-                showToast(data.message || 'Erro ao iniciar download', 'error');
-                if (downloadModal) {
-                    downloadModal.style.display = 'none';
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Download error:', error);
-            showToast('Erro interno do servidor', 'error');
-            if (downloadModal) {
-                downloadModal.style.display = 'none';
-            }
-        });
-    }
-
-    // License verification
-    document.querySelectorAll('.verify-license-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const licenseKey = this.dataset.licenseKey;
-            verifyLicense(licenseKey);
-        });
-    });
-
-    function verifyLicense(licenseKey) {
-        const modal = document.getElementById('verifyModal');
-        const resultDiv = document.getElementById('verifyResult');
-        
-        if (modal) {
-            modal.style.display = 'block';
-        }
-        
-        if (resultDiv) {
-            resultDiv.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Verificando...</div>';
-        }
-        
-        fetch(`/api/verify-license/${licenseKey}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.valid) {
-                resultDiv.innerHTML = `
-                    <div class="verify-success">
-                        <i class="fas fa-check-circle"></i>
-                        <h4>Licença Válida</h4>
-                        <div class="license-details">
-                            <p><strong>Produto:</strong> ${data.license.product_name}</p>
-                            <p><strong>Status:</strong> ${data.license.status}</p>
-                            <p><strong>Expira em:</strong> ${new Date(data.license.expires_at).toLocaleString('pt-BR')}</p>
-                        </div>
-                    </div>
-                `;
-            } else {
-                resultDiv.innerHTML = `
-                    <div class="verify-error">
-                        <i class="fas fa-times-circle"></i>
-                        <h4>Licença Inválida</h4>
-                        <p>${data.message}</p>
-                    </div>
-                `;
-            }
-        })
-        .catch(error => {
-            console.error('Verify error:', error);
-            resultDiv.innerHTML = `
-                <div class="verify-error">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h4>Erro na Verificação</h4>
-                    <p>Erro interno do servidor</p>
-                </div>
-            `;
-        });
-    }
-
-    // Expiration warnings
-    document.querySelectorAll('.status-badge.critical, .status-badge.warning').forEach(badge => {
-        const card = badge.closest('.download-card');
-        if (card) {
-            // Add visual emphasis to expiring licenses
-            card.classList.add('expiring');
-        }
-    });
-
-    // Auto-refresh for expiring licenses
-    const expiringLicenses = document.querySelectorAll('.status-badge.critical').length;
-    if (expiringLicenses > 0) {
-        // Show warning toast
-        showToast(`Você possui ${expiringLicenses} licença(s) expirando em breve!`, 'warning');
-        
-        // Auto-refresh every 5 minutes
-        setTimeout(() => {
-            window.location.reload();
-        }, 300000);
-    }
-
-    // Keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        // Ctrl/Cmd + R to refresh
-        if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
-            e.preventDefault();
-            window.location.reload();
-        }
-        
-        // Escape to close modals
-        if (e.key === 'Escape') {
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.style.display = 'none';
-            });
-        }
-    });
-});
-</script>
+</section>
 {% endblock %}
