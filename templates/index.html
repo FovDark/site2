@@ -2,544 +2,276 @@
 
 {% block title %}FovDark - Licenças Digitais Premium{% endblock %}
 
-{% block description %}
-Descubra a melhor plataforma de licenças digitais com ISOs customizadas, programas otimizados, cheats, trainers e mods exclusivos. Qualidade garantida e suporte 24/7.
-{% endblock %}
-
 {% block content %}
 <!-- Hero Section -->
 <section class="hero">
-    <div class="hero-background">
-        <div class="hero-overlay"></div>
-    </div>
-    <div class="hero-content">
-        <div class="container">
-            <div class="hero-text">
-                <h1 class="hero-title">
-                    <span class="gradient-text">FovDark</span>
-                    <br>
-                    Licenças Digitais Premium
-                </h1>
-                <p class="hero-subtitle">
-                    A plataforma mais completa para ISOs customizadas, programas otimizados, 
-                    cheats profissionais e mods exclusivos. Qualidade garantida e suporte 24/7.
-                </p>
-                <div class="hero-buttons">
-                    <a href="#products" class="btn btn-primary btn-lg">
-                        <i class="fas fa-rocket"></i>
-                        Explorar Produtos
+    <div class="container">
+        <div class="hero-content">
+            <h1>Licenças Digitais Premium</h1>
+            <p>Descubra a maior plataforma de ISOs customizadas, programas otimizados e soluções digitais para elevar sua experiência tecnológica ao próximo nível.</p>
+            <div class="hero-buttons">
+                <a href="/products" class="btn btn-primary btn-lg">
+                    <i class="fas fa-cube"></i>
+                    Explorar Produtos
+                </a>
+                {% if not current_user %}
+                    <a href="/register" class="btn btn-outline btn-lg">
+                        <i class="fas fa-user-plus"></i>
+                        Criar Conta Grátis
                     </a>
-                    {% if not current_user %}
-                        <a href="/register" class="btn btn-outline btn-lg">
-                            <i class="fas fa-user-plus"></i>
-                            Criar Conta
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <div class="stat-number">500+</div>
-                    <div class="stat-label">Produtos</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">10K+</div>
-                    <div class="stat-label">Usuários</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">Suporte</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">99%</div>
-                    <div class="stat-label">Uptime</div>
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>
 </section>
 
 <!-- Features Section -->
-<section class="features">
+<section class="features-section" style="padding: 4rem 0; background: white;">
     <div class="container">
-        <div class="section-header">
-            <h2>Por que escolher o FovDark?</h2>
-            <p>Oferecemos a melhor experiência em licenças digitais com qualidade premium</p>
+        <div class="text-center mb-5">
+            <h2>Por que escolher FovDark?</h2>
+            <p>Oferecemos as melhores soluções digitais com qualidade garantida</p>
         </div>
         
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-shield-alt"></i>
+        <div class="grid grid-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;">
+                        <i class="fas fa-shield-check"></i>
+                    </div>
+                    <h3>Segurança Garantida</h3>
+                    <p>Todas as licenças são protegidas por HWID e verificação em tempo real para máxima segurança.</p>
                 </div>
-                <h3>Segurança Total</h3>
-                <p>Sistema de licenças com proteção HWID e verificação automática para máxima segurança.</p>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-download"></i>
+            <div class="card text-center">
+                <div class="card-body">
+                    <div style="font-size: 3rem; color: var(--success-color); margin-bottom: 1rem;">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3>Download Imediato</h3>
+                    <p>Acesso instantâneo aos seus produtos após a confirmação do pagamento, sem complicações.</p>
                 </div>
-                <h3>Downloads Rápidos</h3>
-                <p>Servidores de alta velocidade para downloads instantâneos e sem interrupção.</p>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-clock"></i>
+            <div class="card text-center">
+                <div class="card-body">
+                    <div style="font-size: 3rem; color: var(--warning-color); margin-bottom: 1rem;">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>Suporte 24/7</h3>
+                    <p>Nossa equipe especializada está sempre disponível para ajudar você quando precisar.</p>
                 </div>
-                <h3>Disponível 24/7</h3>
-                <p>Acesso aos seus produtos a qualquer hora, qualquer dia da semana.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-headset"></i>
-                </div>
-                <h3>Suporte Dedicado</h3>
-                <p>Equipe especializada pronta para ajudar com qualquer dúvida ou problema.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-sync"></i>
-                </div>
-                <h3>Atualizações Automáticas</h3>
-                <p>Receba sempre a versão mais recente dos seus produtos automaticamente.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-credit-card"></i>
-                </div>
-                <h3>Pagamento Seguro</h3>
-                <p>Múltiplas formas de pagamento com total segurança e praticidade.</p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Categories Section -->
-<section class="categories" id="categories">
+{% if categories %}
+<section class="categories-section" style="padding: 4rem 0; background: var(--gray-100);">
     <div class="container">
-        <div class="section-header">
-            <h2>Nossas Categorias</h2>
-            <p>Explore nossa ampla variedade de produtos digitais</p>
+        <div class="text-center mb-5">
+            <h2>Categorias Principais</h2>
+            <p>Encontre exatamente o que precisa em nossas categorias especializadas</p>
         </div>
         
-        <div class="categories-grid">
+        <div class="grid grid-4">
             {% for category in categories %}
-                <div class="category-card">
-                    <div class="category-icon">
+            <a href="/category/{{ category.id }}" class="card category-card" style="text-decoration: none; color: inherit;">
+                <div class="card-body text-center">
+                    <div style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;">
                         <i class="{{ category.icon or 'fas fa-folder' }}"></i>
                     </div>
                     <h3>{{ category.name }}</h3>
-                    <p>{{ category.description or 'Categoria de produtos premium' }}</p>
-                    <a href="/category/{{ category.id }}" class="btn btn-outline">
+                    <p>{{ category.description or 'Explore nossa seleção premium.' }}</p>
+                    <div class="btn btn-outline btn-sm mt-3">
                         Ver Produtos
                         <i class="fas fa-arrow-right"></i>
-                    </a>
-                    <div class="category-count">
-                        <span>{{ category.products|length }} produtos</span>
                     </div>
                 </div>
+            </a>
             {% endfor %}
         </div>
     </div>
 </section>
+{% endif %}
 
-<!-- Featured Products Section -->
-<section class="featured-products" id="products">
+<!-- Featured Products -->
+{% if featured_products %}
+<section class="featured-products" style="padding: 4rem 0; background: white;">
     <div class="container">
-        <div class="section-header">
+        <div class="text-center mb-5">
             <h2>Produtos em Destaque</h2>
-            <p>Os produtos mais populares e bem avaliados pelos nossos usuários</p>
+            <p>Os produtos mais populares e recomendados pela nossa comunidade</p>
         </div>
         
-        {% if products %}
-            <div class="products-grid">
-                {% for product in products %}
-                    <div class="product-card">
-                        {% if product.image_url %}
-                            <div class="product-image">
-                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
-                                <div class="product-overlay">
-                                    <a href="/products/{{ product.id }}" class="btn btn-primary">
-                                        <i class="fas fa-eye"></i>
-                                        Ver Detalhes
-                                    </a>
-                                </div>
-                            </div>
-                        {% else %}
-                            <div class="product-image product-no-image">
-                                <i class="{{ product.category.icon or 'fas fa-cube' }}"></i>
-                            </div>
-                        {% endif %}
-                        
-                        <div class="product-content">
-                            <div class="product-category">
-                                <i class="{{ product.category.icon or 'fas fa-folder' }}"></i>
-                                {{ product.category.name }}
-                            </div>
-                            
-                            <h3 class="product-title">
-                                <a href="/products/{{ product.id }}">{{ product.name }}</a>
-                            </h3>
-                            
-                            <p class="product-description">
-                                {{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}
-                            </p>
-                            
-                            {% if product.tags %}
-                                <div class="product-tags">
-                                    {% for tag in product.tags_list[:3] %}
-                                        <span class="tag">{{ tag }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            
-                            <div class="product-footer">
-                                <div class="product-price">
-                                    <span class="price">R$ {{ "%.2f"|format(product.price) }}</span>
-                                    <span class="duration">{{ product.duration_days }} dias</span>
-                                </div>
-                                
-                                <div class="product-actions">
-                                    {% if current_user %}
-                                        <button class="btn btn-primary purchase-btn" 
-                                                data-product-id="{{ product.id }}"
-                                                data-product-name="{{ product.name }}"
-                                                data-product-price="{{ product.price }}">
-                                            <i class="fas fa-shopping-cart"></i>
-                                            Comprar
-                                        </button>
-                                    {% else %}
-                                        <a href="/login" class="btn btn-primary">
-                                            <i class="fas fa-sign-in-alt"></i>
-                                            Fazer Login
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
+        <div class="grid grid-3">
+            {% for product in featured_products %}
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.image_url %}
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                    {% else %}
+                        <i class="{{ product.category.icon or 'fas fa-cube' }}"></i>
+                    {% endif %}
+                    <div class="product-overlay">
+                        <a href="/products/{{ product.id }}" class="btn btn-primary">
+                            <i class="fas fa-eye"></i>
+                            Ver Detalhes
+                        </a>
                     </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="empty-state">
-                <div class="empty-icon">
-                    <i class="fas fa-cube"></i>
+                    {% if product.is_featured %}
+                        <div style="position: absolute; top: 1rem; right: 1rem; background: var(--warning-color); color: white; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600;">
+                            <i class="fas fa-star"></i> Destaque
+                        </div>
+                    {% endif %}
                 </div>
-                <h3>Nenhum produto em destaque</h3>
-                <p>Em breve teremos produtos incríveis para você!</p>
+                
+                <div class="product-content">
+                    <div class="product-category">
+                        <i class="{{ product.category.icon or 'fas fa-folder' }}"></i>
+                        {{ product.category.name }}
+                    </div>
+                    
+                    <h3 class="product-title">
+                        <a href="/products/{{ product.id }}">{{ product.name }}</a>
+                    </h3>
+                    
+                    <p class="product-description">
+                        {{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}
+                    </p>
+                    
+                    <div class="product-price">
+                        <span class="price">R$ {{ "%.2f"|format(product.price) }}</span>
+                        <span class="duration">{{ product.duration_days }} dias</span>
+                    </div>
+                    
+                    <div class="product-actions" style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                        <a href="/products/{{ product.id }}" class="btn btn-primary btn-sm" style="flex: 1;">
+                            <i class="fas fa-shopping-cart"></i>
+                            Comprar
+                        </a>
+                        <a href="/products/{{ product.id }}" class="btn btn-outline btn-sm">
+                            <i class="fas fa-info-circle"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
-        {% endif %}
+            {% endfor %}
+        </div>
         
-        <div class="section-footer">
+        <div class="text-center mt-4">
             <a href="/products" class="btn btn-outline btn-lg">
-                <i class="fas fa-th"></i>
+                <i class="fas fa-cube"></i>
                 Ver Todos os Produtos
             </a>
         </div>
     </div>
 </section>
+{% endif %}
 
-<!-- How It Works Section -->
-<section class="how-it-works">
+<!-- Stats Section -->
+<section class="stats-section" style="padding: 4rem 0; background: var(--primary-color); color: white;">
     <div class="container">
-        <div class="section-header">
-            <h2>Como Funciona</h2>
-            <p>Processo simples e rápido para obter suas licenças</p>
-        </div>
-        
-        <div class="steps-grid">
-            <div class="step-card">
-                <div class="step-number">1</div>
-                <div class="step-icon">
-                    <i class="fas fa-user-plus"></i>
-                </div>
-                <h3>Criar Conta</h3>
-                <p>Registre-se gratuitamente em nossa plataforma segura</p>
+        <div class="grid grid-4">
+            <div class="text-center">
+                <div style="font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem;">10K+</div>
+                <p style="opacity: 0.9;">Clientes Satisfeitos</p>
             </div>
-            
-            <div class="step-card">
-                <div class="step-number">2</div>
-                <div class="step-icon">
-                    <i class="fas fa-search"></i>
-                </div>
-                <h3>Escolher Produto</h3>
-                <p>Navegue por nossa coleção e encontre o que precisa</p>
+            <div class="text-center">
+                <div style="font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem;">500+</div>
+                <p style="opacity: 0.9;">Produtos Disponíveis</p>
             </div>
-            
-            <div class="step-card">
-                <div class="step-number">3</div>
-                <div class="step-icon">
-                    <i class="fas fa-credit-card"></i>
-                </div>
-                <h3>Efetuar Pagamento</h3>
-                <p>Pague de forma segura com PIX, cartão ou boleto</p>
+            <div class="text-center">
+                <div style="font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem;">24/7</div>
+                <p style="opacity: 0.9;">Suporte Técnico</p>
             </div>
-            
-            <div class="step-card">
-                <div class="step-number">4</div>
-                <div class="step-icon">
-                    <i class="fas fa-download"></i>
-                </div>
-                <h3>Baixar & Usar</h3>
-                <p>Acesse seus produtos imediatamente após o pagamento</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Testimonials Section -->
-<section class="testimonials">
-    <div class="container">
-        <div class="section-header">
-            <h2>O que nossos clientes dizem</h2>
-            <p>Feedback real de usuários satisfeitos</p>
-        </div>
-        
-        <div class="testimonials-grid">
-            <div class="testimonial-card">
-                <div class="testimonial-content">
-                    <div class="stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p>"Excelente plataforma! ISOs sempre atualizadas e funcionando perfeitamente. Suporte muito rápido e eficiente."</p>
-                </div>
-                <div class="testimonial-author">
-                    <div class="author-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="author-info">
-                        <h4>João Silva</h4>
-                        <span>Cliente desde 2023</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="testimonial-card">
-                <div class="testimonial-content">
-                    <div class="stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p>"Os otimizadores são incríveis! Meu PC ficou muito mais rápido. Recomendo para todos que querem performance."</p>
-                </div>
-                <div class="testimonial-author">
-                    <div class="author-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="author-info">
-                        <h4>Maria Santos</h4>
-                        <span>Cliente desde 2022</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="testimonial-card">
-                <div class="testimonial-content">
-                    <div class="stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p>"Melhor site de cheats que já usei. Trainers sempre funcionando e nunca tive problemas com banimentos."</p>
-                </div>
-                <div class="testimonial-author">
-                    <div class="author-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="author-info">
-                        <h4>Pedro Costa</h4>
-                        <span>Cliente desde 2024</span>
-                    </div>
-                </div>
+            <div class="text-center">
+                <div style="font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem;">99.9%</div>
+                <p style="opacity: 0.9;">Uptime Garantido</p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- CTA Section -->
-<section class="cta">
-    <div class="container">
-        <div class="cta-content">
-            <h2>Pronto para começar?</h2>
-            <p>Junte-se a milhares de usuários satisfeitos e tenha acesso aos melhores produtos digitais</p>
-            
-            {% if current_user %}
-                <div class="cta-buttons">
-                    <a href="/products" class="btn btn-primary btn-lg">
-                        <i class="fas fa-shopping-cart"></i>
-                        Explorar Produtos
-                    </a>
-                    <a href="/painel" class="btn btn-outline btn-lg">
-                        <i class="fas fa-tachometer-alt"></i>
-                        Meu Painel
-                    </a>
-                </div>
-            {% else %}
-                <div class="cta-buttons">
-                    <a href="/register" class="btn btn-primary btn-lg">
-                        <i class="fas fa-user-plus"></i>
-                        Criar Conta Gratuita
-                    </a>
-                    <a href="/login" class="btn btn-outline btn-lg">
-                        <i class="fas fa-sign-in-alt"></i>
-                        Já Tenho Conta
-                    </a>
-                </div>
-            {% endif %}
-            
-            <div class="cta-features">
-                <div class="cta-feature">
-                    <i class="fas fa-check"></i>
-                    <span>Cadastro Gratuito</span>
-                </div>
-                <div class="cta-feature">
-                    <i class="fas fa-check"></i>
-                    <span>Download Imediato</span>
-                </div>
-                <div class="cta-feature">
-                    <i class="fas fa-check"></i>
-                    <span>Suporte 24/7</span>
-                </div>
+<section class="cta-section" style="padding: 4rem 0; background: var(--gray-900); color: white;">
+    <div class="container text-center">
+        <h2 style="color: white; margin-bottom: 1rem;">Pronto para começar?</h2>
+        <p style="font-size: 1.25rem; opacity: 0.9; margin-bottom: 2rem;">
+            Junte-se a milhares de usuários que já confiam na FovDark para suas necessidades digitais.
+        </p>
+        
+        {% if current_user %}
+            <a href="/products" class="btn btn-primary btn-lg">
+                <i class="fas fa-cube"></i>
+                Explorar Produtos
+            </a>
+        {% else %}
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/register" class="btn btn-primary btn-lg">
+                    <i class="fas fa-user-plus"></i>
+                    Criar Conta Grátis
+                </a>
+                <a href="/login" class="btn btn-outline btn-lg" style="color: white; border-color: white;">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Fazer Login
+                </a>
             </div>
-        </div>
+        {% endif %}
     </div>
 </section>
-
-<!-- Purchase Modal -->
-{% if current_user %}
-<div id="purchase-modal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Confirmar Compra</h3>
-            <button class="modal-close">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="purchase-details">
-                <h4 id="purchase-product-name"></h4>
-                <div class="purchase-info">
-                    <div class="info-item">
-                        <span class="label">Preço:</span>
-                        <span class="value" id="purchase-price"></span>
-                    </div>
-                    <div class="info-item">
-                        <span class="label">Duração:</span>
-                        <span class="value">30 dias</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="label">Categoria:</span>
-                        <span class="value" id="purchase-category"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-            <button class="btn btn-primary" id="confirm-purchase">
-                <i class="fas fa-credit-card"></i>
-                Prosseguir para Pagamento
-            </button>
-        </div>
-    </div>
-</div>
-{% endif %}
 {% endblock %}
 
-{% block extra_scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
+{% block extra_css %}
+<style>
+.category-card {
+    transition: all 0.3s ease;
+}
 
-    // Purchase modal functionality
-    {% if current_user %}
-    const purchaseModal = document.getElementById('purchase-modal');
-    const purchaseButtons = document.querySelectorAll('.purchase-btn');
-    
-    purchaseButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const productId = this.dataset.productId;
-            const productName = this.dataset.productName;
-            const productPrice = this.dataset.productPrice;
-            
-            document.getElementById('purchase-product-name').textContent = productName;
-            document.getElementById('purchase-price').textContent = `R$ ${parseFloat(productPrice).toFixed(2)}`;
-            
-            document.getElementById('confirm-purchase').dataset.productId = productId;
-            
-            purchaseModal.style.display = 'block';
-        });
-    });
-    
-    document.getElementById('confirm-purchase').addEventListener('click', function() {
-        const productId = this.dataset.productId;
-        purchaseProduct(productId);
-    });
-    
-    function purchaseProduct(productId) {
-        showLoading();
-        
-        fetch(`/api/purchase/${productId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            hideLoading();
-            
-            if (data.success) {
-                // Redirecionar para página de pagamento
-                if (data.payment_url) {
-                    window.location.href = data.payment_url;
-                } else {
-                    showToast('Compra processada com sucesso!', 'success');
-                    purchaseModal.style.display = 'none';
-                }
-            } else {
-                showToast(data.message || 'Erro ao processar compra', 'error');
-            }
-        })
-        .catch(error => {
-            hideLoading();
-            console.error('Error:', error);
-            showToast('Erro interno do servidor', 'error');
-        });
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+    text-decoration: none !important;
+}
+
+.category-card:hover .btn {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.hero {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+}
+
+.features-section .card,
+.stats-section,
+.cta-section {
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2rem;
     }
-    {% endif %}
     
-    // Auto-hide alerts after 5 seconds
-    setTimeout(() => {
-        document.querySelectorAll('.alert').forEach(alert => {
-            alert.style.opacity = '0';
-            setTimeout(() => alert.remove(), 300);
-        });
-    }, 5000);
-});
-</script>
+    .hero p {
+        font-size: 1rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .stats-section .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+}
+</style>
 {% endblock %}

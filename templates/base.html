@@ -3,179 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{% block description %}FovDark - Sistema de Licenças Digitais para ISOs, Programas, Otimizadores, Cheats e Mods{% endblock %}">
-    <meta name="keywords" content="{% block keywords %}fovdark, licenças digitais, isos, programas, otimizadores, cheats, trainers, mods{% endblock %}">
-    <meta name="author" content="FovDark">
+    <title>{% block title %}FovDark - Licenças Digitais{% endblock %}</title>
+    <meta name="description" content="{% block description %}Plataforma completa para venda de licenças digitais, ISOs customizadas, programas e otimizadores.{% endblock %}">
     
-    <title>{% block title %}FovDark - Sistema de Licenças Digitais{% endblock %}</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
-    
-    <!-- CSS -->
-    <link rel="stylesheet" href="/static/style.css">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Fontes -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    {% block extra_head %}{% endblock %}
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+    <!-- CSS adicional por página -->
+    {% block extra_css %}{% endblock %}
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
 </head>
 <body class="{% block body_class %}{% endblock %}">
-    <!-- Loading Spinner -->
-    <div id="loading-spinner" class="loading-spinner">
-        <div class="spinner"></div>
-        <p>Carregando...</p>
-    </div>
-
     <!-- Header -->
     <header class="header">
-        <nav class="navbar">
-            <div class="nav-container">
+        <div class="container">
+            <div class="header-content">
                 <!-- Logo -->
-                <a href="/" class="nav-logo">
-                    <i class="fas fa-shield-alt"></i>
+                <a href="/" class="logo">
+                    <i class="fas fa-shield-halved"></i>
                     <span>FovDark</span>
                 </a>
-
-                <!-- Navigation Links -->
-                <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a href="/" class="nav-link">
-                            <i class="fas fa-home"></i>
-                            Início
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle">
-                            <i class="fas fa-cube"></i>
-                            Produtos
-                            <i class="fas fa-chevron-down"></i>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/category/isos"><i class="fas fa-compact-disc"></i> ISOs Customizadas</a></li>
-                            <li><a href="/category/programas"><i class="fas fa-desktop"></i> Programas</a></li>
-                            <li><a href="/category/otimizadores"><i class="fas fa-rocket"></i> Otimizadores</a></li>
-                            <li><a href="/category/cheats"><i class="fas fa-gamepad"></i> Cheats & Trainers</a></li>
-                            <li><a href="/category/mods"><i class="fas fa-puzzle-piece"></i> Mods</a></li>
-                        </ul>
-                    </li>
-                    {% if current_user %}
-                        <li class="nav-item">
-                            <a href="/downloads" class="nav-link">
-                                <i class="fas fa-download"></i>
-                                Downloads
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/painel" class="nav-link">
-                                <i class="fas fa-user"></i>
-                                Meu Painel
-                            </a>
-                        </li>
-                        {% if current_user.is_admin %}
-                            <li class="nav-item">
-                                <a href="/admin" class="nav-link admin-link">
-                                    <i class="fas fa-cog"></i>
-                                    Admin
-                                </a>
-                            </li>
+                
+                <!-- Navegação Principal -->
+                <nav class="nav">
+                    <ul class="nav-links">
+                        <li><a href="/">Início</a></li>
+                        <li><a href="/products">Produtos</a></li>
+                        <li><a href="/categories">Categorias</a></li>
+                        {% if current_user %}
+                            <li><a href="/downloads">Downloads</a></li>
+                            <li><a href="/painel">Meu Painel</a></li>
+                            {% if current_user.is_admin %}
+                                <li><a href="/admin">Admin</a></li>
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                </ul>
-
-                <!-- User Actions -->
-                <div class="nav-actions">
-                    {% if current_user %}
-                        <div class="user-menu dropdown">
-                            <button class="user-button dropdown-toggle">
-                                <i class="fas fa-user-circle"></i>
-                                <span>{{ current_user.username }}</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-right">
-                                <li><a href="/painel"><i class="fas fa-tachometer-alt"></i> Painel</a></li>
-                                <li><a href="/profile"><i class="fas fa-user-edit"></i> Perfil</a></li>
-                                <li><a href="/licenses"><i class="fas fa-key"></i> Minhas Licenças</a></li>
-                                <li class="dropdown-divider"></li>
-                                <li><a href="/logout" class="text-danger"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
-                            </ul>
-                        </div>
-                    {% else %}
-                        <a href="/login" class="btn btn-outline">
-                            <i class="fas fa-sign-in-alt"></i>
-                            Entrar
-                        </a>
-                        <a href="/register" class="btn btn-primary">
-                            <i class="fas fa-user-plus"></i>
-                            Cadastrar
-                        </a>
-                    {% endif %}
-                </div>
-
-                <!-- Mobile Menu Toggle -->
-                <div class="mobile-menu-toggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
+                        <li><a href="/contact">Contato</a></li>
+                    </ul>
+                    
+                    <!-- Ações do usuário -->
+                    <div class="user-actions">
+                        {% if current_user %}
+                            <div class="user-menu">
+                                <button class="btn btn-outline btn-sm user-menu-toggle">
+                                    <i class="fas fa-user"></i>
+                                    {{ current_user.username }}
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="user-menu-dropdown">
+                                    <a href="/painel"><i class="fas fa-tachometer-alt"></i> Meu Painel</a>
+                                    <a href="/downloads"><i class="fas fa-download"></i> Downloads</a>
+                                    <a href="/profile"><i class="fas fa-user-edit"></i> Perfil</a>
+                                    <hr>
+                                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <a href="/login" class="btn btn-outline btn-sm">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Entrar
+                            </a>
+                            <a href="/register" class="btn btn-primary btn-sm">
+                                <i class="fas fa-user-plus"></i>
+                                Criar Conta
+                            </a>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Menu Mobile -->
+                    <button class="mobile-menu-toggle" id="mobileToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </nav>
             </div>
-        </nav>
+        </div>
     </header>
-
-    <!-- Main Content -->
+    
+    <!-- Conteúdo Principal -->
     <main class="main-content">
-        <!-- Alerts/Notifications -->
-        <div id="alert-container" class="alert-container"></div>
-
-        {% if error %}
-            <div class="alert alert-error" role="alert">
-                <i class="fas fa-exclamation-triangle"></i>
-                {{ error }}
-            </div>
-        {% endif %}
-
-        {% if success %}
-            <div class="alert alert-success" role="alert">
-                <i class="fas fa-check-circle"></i>
-                {{ success }}
-            </div>
-        {% endif %}
-
-        {% if warning %}
-            <div class="alert alert-warning" role="alert">
-                <i class="fas fa-exclamation-circle"></i>
-                {{ warning }}
-            </div>
-        {% endif %}
-
-        <!-- Page Content -->
         {% block content %}{% endblock %}
     </main>
-
+    
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-container">
+        <div class="container">
             <div class="footer-content">
+                <!-- Sobre -->
                 <div class="footer-section">
-                    <h3>
-                        <i class="fas fa-shield-alt"></i>
-                        FovDark
-                    </h3>
-                    <p>Sistema completo de licenças digitais para ISOs customizadas, programas, otimizadores, cheats e mods.</p>
+                    <h3><i class="fas fa-shield-halved"></i> FovDark</h3>
+                    <p>Plataforma líder em licenças digitais, oferecendo ISOs customizadas, programas otimizados e soluções completas para suas necessidades tecnológicas.</p>
                     <div class="social-links">
-                        <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
-                        <a href="#" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
-                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
                     </div>
                 </div>
-
+                
+                <!-- Links Rápidos -->
                 <div class="footer-section">
-                    <h4>Produtos</h4>
+                    <h3>Links Rápidos</h3>
+                    <ul>
+                        <li><a href="/products">Todos os Produtos</a></li>
+                        <li><a href="/categories">Categorias</a></li>
+                        <li><a href="/downloads">Área de Downloads</a></li>
+                        <li><a href="/support">Suporte</a></li>
+                        <li><a href="/faq">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Categorias -->
+                <div class="footer-section">
+                    <h3>Categorias</h3>
                     <ul>
                         <li><a href="/category/isos">ISOs Customizadas</a></li>
                         <li><a href="/category/programas">Programas</a></li>
@@ -184,57 +130,165 @@
                         <li><a href="/category/mods">Mods</a></li>
                     </ul>
                 </div>
-
+                
+                <!-- Suporte -->
                 <div class="footer-section">
-                    <h4>Suporte</h4>
+                    <h3>Suporte</h3>
                     <ul>
-                        <li><a href="/help">Central de Ajuda</a></li>
                         <li><a href="/contact">Contato</a></li>
-                        <li><a href="/faq">FAQ</a></li>
-                        <li><a href="/tutorials">Tutoriais</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-section">
-                    <h4>Legal</h4>
-                    <ul>
                         <li><a href="/terms">Termos de Uso</a></li>
                         <li><a href="/privacy">Política de Privacidade</a></li>
                         <li><a href="/refund">Política de Reembolso</a></li>
-                        <li><a href="/licenses-terms">Termos de Licença</a></li>
+                        <li><a href="/status">Status do Sistema</a></li>
                     </ul>
+                    <div class="contact-info">
+                        <p><i class="fas fa-envelope"></i> suporte@fovdark.com</p>
+                        <p><i class="fas fa-clock"></i> Suporte 24/7</p>
+                    </div>
                 </div>
             </div>
-
+            
+            <!-- Footer Bottom -->
             <div class="footer-bottom">
-                <div class="footer-bottom-content">
-                    <p>&copy; 2024 FovDark. Todos os direitos reservados.</p>
-                    <div class="payment-methods">
-                        <span>Pagamentos via:</span>
-                        <i class="fab fa-cc-visa"></i>
-                        <i class="fab fa-cc-mastercard"></i>
-                        <i class="fab fa-pix"></i>
-                        <i class="fas fa-barcode"></i>
-                    </div>
+                <p>&copy; 2024 FovDark. Todos os direitos reservados.</p>
+                <div class="payment-methods">
+                    <span>Aceitamos:</span>
+                    <i class="fab fa-pix"></i>
+                    <i class="fab fa-cc-visa"></i>
+                    <i class="fab fa-cc-mastercard"></i>
+                    <i class="fas fa-barcode"></i>
                 </div>
             </div>
         </div>
     </footer>
-
-    <!-- Back to Top Button -->
-    <button id="back-to-top" class="back-to-top" aria-label="Voltar ao topo">
-        <i class="fas fa-arrow-up"></i>
-    </button>
-
-    <!-- JavaScript -->
-    <script src="/static/script.js"></script>
-    {% if current_user and current_user.is_admin %}
-        <script src="/static/admin.js"></script>
-    {% endif %}
     
-    {% block extra_scripts %}{% endblock %}
-
-    <!-- Toast Container -->
-    <div id="toast-container" class="toast-container"></div>
+    <!-- Scripts -->
+    <script src="/static/js/script.js"></script>
+    {% block extra_js %}{% endblock %}
+    
+    <!-- CSS adicional para o footer -->
+    <style>
+        .user-menu {
+            position: relative;
+        }
+        
+        .user-menu-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            min-width: 200px;
+            padding: 0.5rem 0;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .user-menu-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: var(--gray-700);
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+        
+        .user-menu-dropdown a:hover {
+            background: var(--gray-100);
+        }
+        
+        .user-menu-dropdown hr {
+            margin: 0.5rem 0;
+            border: none;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .user-menu:hover .user-menu-dropdown {
+            display: block;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--gray-700);
+            color: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .contact-info {
+            margin-top: 1rem;
+        }
+        
+        .contact-info p {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .payment-methods {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .payment-methods i {
+            font-size: 1.5rem;
+            color: var(--gray-400);
+        }
+        
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-600);
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .user-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
 </body>
 </html>
