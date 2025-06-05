@@ -4,7 +4,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from models import Base, Category, User
-from auth import hash_password
 import logging
 
 logger = logging.getLogger(__name__)
@@ -92,6 +91,9 @@ async def create_initial_data():
         # Verificar se já existe usuário admin
         existing_admin = db.query(User).filter(User.is_admin == True).first()
         if not existing_admin:
+            # Importar hash_password aqui para evitar importação circular
+            from auth import hash_password
+            
             # Criar usuário admin padrão
             admin_user = User(
                 username="admin",

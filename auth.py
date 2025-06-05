@@ -6,7 +6,6 @@ from fastapi import HTTPException, status, Depends, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from models import User
-from database import get_db
 import logging
 
 logger = logging.getLogger(__name__)
@@ -67,7 +66,7 @@ def authenticate_user(db: Session, username: str, password: str):
     
     return user
 
-def get_current_user(request: Request, db: Session = Depends(get_db)):
+def get_current_user(request: Request, db: Session):
     """Obter usuário atual a partir do token"""
     # Tentar obter token do cookie primeiro
     token = None
@@ -109,7 +108,7 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
     
     return user
 
-def get_current_admin_user(current_user: User = Depends(get_current_user)):
+def get_current_admin_user(current_user: User):
     """Obter usuário admin atual"""
     if not current_user.is_admin:
         raise HTTPException(
