@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - FovDark{% endblock %}
+
+{% block description %}{{ product.description[:160] }}{% endblock %}
+
+{% block content %}
+<section class="product-detail">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a href="/">Início</a>
+            <span class="separator"><i class="fas fa-chevron-right"></i></span>
+            <a href="/products">Produtos</a>
+            <span class="separator"><i class="fas fa-chevron-right"></i></span>
+            <a href="/products?category={{ product.category.name }}">{{ product.category.name }}</a>
+            <span class="separator"><i class="fas fa-chevron-right"></i></span>
+            <span class="current">{{ product.name }}</span>
+        </nav>
+
+        <div class="product-container">
+            <!-- Product Image -->
+            <div class="product-image-section">
+                <div class="product-main-image">
+                    {% if product.image_url %}
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}" id="main-image">
+                    {% else %}
+                        <div class="product-placeholder-large">
+                            {% if product.category.name == "ISOs" %}
+                                <i class="fas fa-compact-disc"></i>
+                            {% elif product.category.name == "Programas" %}
+                                <i class="fas fa-desktop"></i>
+                            {% elif product.category.name == "Otimizadores" %}
+                                <i class="fas fa-tachometer-alt"></i>
+                            {% elif product.category.name == "Cheats" %}
+                                <i class="fas fa-gamepad"></i>
+                            {% elif product.category.name == "Trainers" %}
+                                <i class="fas fa-code"></i>
+                            {% elif product.category.name == "Mods" %}
+                                <i class="fas fa-puzzle-piece"></i>
+                            {% else %}
+                                <i class="fas fa-box"></i>
+                            {% endif %}
+                            <span>{{ product.name }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                {% if product.featured %}
+                <div class="product-badges">
+                    <span class="badge featured">
+                        <i class="fas fa-star"></i>
+                        Produto em Destaque
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Product Info -->
+            <div class="product-info-section">
+                <div class="product-header">
+                    <div class="product-category">
+                        <a href="/products?category={{ product.category.name }}" class="category-link">
+                            {{ product.category.name }}
+                        </a>
+                    </div>
+                    
+                    <h1 class="product-title">{{ product.name }}</h1>
+                    
+                    {% if product.version %}
+                    <div class="product-version">
+                        <i class="fas fa-tag"></i>
+                        Versão {{ product.version }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="product-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-download"></i>
+                        <span>{{ product.download_count }} downloads</span>
+                    </div>
+                    {% if product.file_size %}
+                    <div class="stat-item">
+                        <i class="fas fa-hdd"></i>
+                        <span>{{ "%.1f"|format(product.file_size / 1024 / 1024) }} MB</span>
+                    </div>
+                    {% endif %}
+                    <div class="stat-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>Criado em {{ product.created_at.strftime('%d/%m/%Y') }}</span>
+                    </div>
+                </div>
+
+                <div class="product-description">
+                    <h3>Descrição</h3>
+                    <p>{{ product.description }}</p>
+                </div>
+
+                {% if product.requirements %}
+                <div class="product-requirements">
+                    <h3>Requisitos do Sistema</h3>
+                    <div class="requirements-content">
+                        {{ product.requirements|safe }}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if product.tags %}
+                <div class="product-tags">
+                    <h3>Tags</h3>
+                    <div class="tags-list">
+                        {% set tags = product.tags.split(',') if product.tags else [] %}
+                        {% for tag in tags %}
+                        <span class="tag">{{ tag.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Purchase Section -->
+            <div class="purchase-section">
+                <div class="purchase-card">
+                    <div class="price-section">
+                        <div class="price">R$ {{ "%.2f"|format(product.price) }}</div>
+                        <div class="price-label">Licença Digital</div>
+                    </div>
+
+                    {% if user %}
+                    <form id="purchase-form" onsubmit="submitPurchase(event)">
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        
+                        <div class="form-group">
+                            <label for="hwid" class="form-label">
+                                <i class="fas fa-desktop"></i>
+                                Hardware ID (HWID)
+                            </label>
+                            <div class="hwid-input-group">
+                                <input type="text" id="hwid" name="hwid" class="form-input" readonly>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="regenerateHwid()">
+                                    <i class="fas fa-sync"></i>
+                                </button>
+                            </div>
+                            <small class="form-hint">
+                                <i class="fas fa-info-circle"></i>
+                                Este ID vincula a licença ao seu dispositivo
+                            </small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-large btn-full">
+                            <i class="fas fa-credit-card"></i>
+                            Comprar Agora
+                        </button>
+                    </form>
+                    {% else %}
+                    <div class="login-prompt">
+                        <p>Faça login para comprar este produto</p>
+                        <a href="/login" class="btn btn-primary btn-full">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Fazer Login
+                        </a>
+                        <a href="/register" class="btn btn-outline btn-full">
+                            <i class="fas fa-user-plus"></i>
+                            Criar Conta
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <div class="purchase-features">
+                        <div class="feature-item">
+                            <i class="fas fa-shield-check"></i>
+                            <span>Licença Verificada</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-download"></i>
+                            <span>Download Imediato</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-sync"></i>
+                            <span>Atualizações Grátis</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-headset"></i>
+                            <span>Suporte 24/7</span>
+                        </div>
+                    </div>
+
+                    <div class="security-info">
+                        <h4><i class="fas fa-lock"></i> Compra 100% Segura</h4>
+                        <p>Seus dados estão protegidos com criptografia SSL e processamento seguro de pagamentos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Products -->
+        <div class="related-products">
+            <h2>Produtos Relacionados</h2>
+            <div class="related-grid" id="related-products">
+                <!-- Related products will be loaded via JavaScript -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Purchase Success Modal -->
+<div id="purchase-success-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header success">
+            <i class="fas fa-check-circle"></i>
+            <h3>Compra Processada!</h3>
+        </div>
+        <div class="modal-body">
+            <p>Sua compra está sendo processada. Você será redirecionado para o pagamento.</p>
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                Redirecionando...
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error/Success Messages -->
+{% if error %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        showToast('{{ error }}', 'error');
+    });
+</script>
+{% endif %}
+
+<script>
+// Generate HWID
+function getHWID() {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.textBaseline = 'top';
+    ctx.font = '14px Arial';
+    ctx.fillText('HWID Generation', 2, 2);
+    
+    const fingerprint = [
+        navigator.userAgent,
+        navigator.language,
+        screen.width + 'x' + screen.height,
+        new Date().getTimezoneOffset(),
+        canvas.toDataURL()
+    ].join('|');
+    
+    let hash = 0;
+    for (let i = 0; i < fingerprint.length; i++) {
+        const char = fingerprint.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    
+    return Math.abs(hash).toString(16).toUpperCase();
+}
+
+function regenerateHwid() {
+    const newHwid = getHWID() + '-' + Date.now().toString(36);
+    document.getElementById('hwid').value = newHwid;
+    showToast('Novo HWID gerado!', 'success');
+}
+
+// Submit purchase
+async function submitPurchase(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    // Disable submit button
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+    
+    try {
+        const response = await fetch('/api/purchase', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Show success modal
+            document.getElementById('purchase-success-modal').style.display = 'flex';
+            
+            // Redirect to payment after a short delay
+            setTimeout(() => {
+                window.location.href = result.payment_url;
+            }, 2000);
+        } else {
+            showToast(result.error || 'Erro ao processar compra', 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-credit-card"></i> Comprar Agora';
+        }
+    } catch (error) {
+        showToast('Erro de conexão', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-credit-card"></i> Comprar Agora';
+    }
+}
+
+// Load related products
+async function loadRelatedProducts() {
+    try {
+        const category = '{{ product.category.name }}';
+        const currentProductId = {{ product.id }};
+        
+        const response = await fetch(`/api/products/related?category=${category}&exclude=${currentProductId}&limit=4`);
+        const data = await response.json();
+        
+        if (data.products && data.products.length > 0) {
+            const container = document.getElementById('related-products');
+            container.innerHTML = data.products.map(product => `
+                <div class="related-product">
+                    <a href="/product/${product.id}">
+                        <div class="related-image">
+                            ${product.image_url ? 
+                                `<img src="${product.image_url}" alt="${product.name}">` :
+                                `<div class="placeholder"><i class="fas fa-box"></i></div>`
+                            }
+                        </div>
+                        <div class="related-info">
+                            <h4>${product.name}</h4>
+                            <span class="related-price">R$ ${product.price.toFixed(2)}</span>
+                        </div>
+                    </a>
+                </div>
+            `).join('');
+        } else {
+            document.querySelector('.related-products').style.display = 'none';
+        }
+    } catch (error) {
+        document.querySelector('.related-products').style.display = 'none';
+    }
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    // Set initial HWID
+    {% if user %}
+    document.getElementById('hwid').value = getHWID();
+    {% endif %}
+    
+    // Load related products
+    loadRelatedProducts();
+    
+    // Check for payment success/cancel from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const payment = urlParams.get('payment');
+    
+    if (payment === 'success') {
+        showToast('Pagamento confirmado! Verifique seu email para os detalhes da licença.', 'success');
+    } else if (payment === 'cancelled') {
+        showToast('Pagamento cancelado. Tente novamente quando desejar.', 'info');
+    }
+});
+</script>
+{% endblock %}

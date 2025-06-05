@@ -1,0 +1,523 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - FovDark{% endblock %}
+
+{% block description %}{{ product.description[:160] }}{% endblock %}
+
+{% block content %}
+<div class="product-page">
+    <!-- Product Header -->
+    <div class="product-header">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/">Início</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="/category/{{ product.category.id }}">{{ product.category.name }}</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>{{ product.name }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="product-content">
+            <!-- Product Main Info -->
+            <div class="product-main">
+                <div class="product-gallery">
+                    {% if product.image_url %}
+                        <div class="main-image">
+                            <img src="{{ product.image_url }}" alt="{{ product.name }}" id="mainImage">
+                        </div>
+                    {% else %}
+                        <div class="main-image no-image">
+                            <i class="{{ product.category.icon or 'fas fa-cube' }}"></i>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="product-info">
+                    <div class="product-category">
+                        <i class="{{ product.category.icon or 'fas fa-folder' }}"></i>
+                        {{ product.category.name }}
+                    </div>
+
+                    <h1 class="product-title">{{ product.name }}</h1>
+
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-download"></i>
+                            <span>{{ product.download_count or 0 }} downloads</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>Adicionado em {{ product.created_at.strftime('%d/%m/%Y') }}</span>
+                        </div>
+                        {% if product.is_featured %}
+                            <div class="meta-item featured">
+                                <i class="fas fa-star"></i>
+                                <span>Produto em Destaque</span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if product.tags %}
+                        <div class="product-tags">
+                            {% for tag in product.tags_list %}
+                                <span class="tag">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="product-description">
+                        <h3>Descrição</h3>
+                        <p>{{ product.description or 'Sem descrição disponível.' }}</p>
+                    </div>
+
+                    {% if product.requirements %}
+                        <div class="product-requirements">
+                            <h3>Requisitos do Sistema</h3>
+                            <div class="requirements-content">
+                                {{ product.requirements|nl2br }}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Product Sidebar -->
+            <div class="product-sidebar">
+                <div class="purchase-card">
+                    <div class="price-section">
+                        <div class="main-price">
+                            <span class="currency">R$</span>
+                            <span class="amount">{{ "%.2f"|format(product.price) }}</span>
+                        </div>
+                        <div class="price-details">
+                            <div class="detail-item">
+                                <i class="fas fa-clock"></i>
+                                <span>Licença válida por {{ product.duration_days }} dias</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-shield-check"></i>
+                                <span>Proteção HWID incluída</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-download"></i>
+                                <span>Download imediato após pagamento</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="purchase-actions">
+                        {% if current_user %}
+                            <!-- Check if user already has active license -->
+                            {% set user_license = None %}
+                            {% for license in current_user.licenses %}
+                                {% if license.product_id == product.id and license.status == 'active' and not license.is_expired %}
+                                    {% set user_license = license %}
+                                    {% break %}
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if user_license %}
+                                <div class="already-owned">
+                                    <div class="owned-badge">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Você já possui este produto</span>
+                                    </div>
+                                    <div class="license-info">
+                                        <p>Expira em: {{ user_license.expires_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                                        <p>{{ user_license.days_remaining }} dias restantes</p>
+                                    </div>
+                                    <div class="owned-actions">
+                                        {% if product.download_url %}
+                                            <button class="btn btn-primary btn-lg btn-block download-btn" 
+                                                    data-product-id="{{ product.id }}"
+                                                    data-product-name="{{ product.name }}">
+                                                <i class="fas fa-download"></i>
+                                                Download
+                                            </button>
+                                        {% endif %}
+                                        <a href="/painel" class="btn btn-outline btn-lg btn-block">
+                                            <i class="fas fa-tachometer-alt"></i>
+                                            Ver no Painel
+                                        </a>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <button class="btn btn-primary btn-lg btn-block purchase-btn" 
+                                        data-product-id="{{ product.id }}"
+                                        data-product-name="{{ product.name }}"
+                                        data-product-price="{{ product.price }}">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Comprar Agora
+                                </button>
+                                <div class="purchase-guarantee">
+                                    <div class="guarantee-item">
+                                        <i class="fas fa-undo"></i>
+                                        <span>Garantia de 7 dias</span>
+                                    </div>
+                                    <div class="guarantee-item">
+                                        <i class="fas fa-lock"></i>
+                                        <span>Pagamento 100% seguro</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="login-required">
+                                <p>Faça login para comprar este produto</p>
+                                <a href="/login?redirect={{ request.url }}" class="btn btn-primary btn-lg btn-block">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    Fazer Login
+                                </a>
+                                <a href="/register" class="btn btn-outline btn-lg btn-block">
+                                    <i class="fas fa-user-plus"></i>
+                                    Criar Conta
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="payment-methods">
+                        <h4>Formas de Pagamento</h4>
+                        <div class="payment-icons">
+                            <div class="payment-item">
+                                <i class="fab fa-pix"></i>
+                                <span>PIX</span>
+                            </div>
+                            <div class="payment-item">
+                                <i class="fab fa-cc-visa"></i>
+                                <span>Cartão</span>
+                            </div>
+                            <div class="payment-item">
+                                <i class="fas fa-barcode"></i>
+                                <span>Boleto</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Features -->
+                <div class="features-card">
+                    <h3>Recursos Inclusos</h3>
+                    <ul class="features-list">
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Download imediato</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Suporte técnico</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Atualizações automáticas</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Licença HWID protegida</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Acesso 24/7</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Support Card -->
+                <div class="support-card">
+                    <h3>Precisa de Ajuda?</h3>
+                    <p>Nossa equipe está pronta para ajudar com qualquer dúvida.</p>
+                    <div class="support-options">
+                        <a href="/contact" class="support-option">
+                            <i class="fas fa-envelope"></i>
+                            <span>Email</span>
+                        </a>
+                        <a href="#" class="support-option">
+                            <i class="fab fa-discord"></i>
+                            <span>Discord</span>
+                        </a>
+                        <a href="#" class="support-option">
+                            <i class="fab fa-telegram"></i>
+                            <span>Telegram</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Products -->
+        {% if related_products %}
+            <section class="related-products">
+                <div class="section-header">
+                    <h2>Produtos Relacionados</h2>
+                    <p>Outros produtos da categoria {{ product.category.name }}</p>
+                </div>
+                
+                <div class="products-grid">
+                    {% for related_product in related_products %}
+                        <div class="product-card">
+                            {% if related_product.image_url %}
+                                <div class="product-image">
+                                    <img src="{{ related_product.image_url }}" alt="{{ related_product.name }}">
+                                    <div class="product-overlay">
+                                        <a href="/products/{{ related_product.id }}" class="btn btn-primary">
+                                            <i class="fas fa-eye"></i>
+                                            Ver Detalhes
+                                        </a>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="product-image product-no-image">
+                                    <i class="{{ related_product.category.icon or 'fas fa-cube' }}"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="product-content">
+                                <div class="product-category">
+                                    <i class="{{ related_product.category.icon or 'fas fa-folder' }}"></i>
+                                    {{ related_product.category.name }}
+                                </div>
+                                
+                                <h3 class="product-title">
+                                    <a href="/products/{{ related_product.id }}">{{ related_product.name }}</a>
+                                </h3>
+                                
+                                <p class="product-description">
+                                    {{ related_product.description[:100] }}{% if related_product.description|length > 100 %}...{% endif %}
+                                </p>
+                                
+                                <div class="product-footer">
+                                    <div class="product-price">
+                                        <span class="price">R$ {{ "%.2f"|format(related_product.price) }}</span>
+                                        <span class="duration">{{ related_product.duration_days }} dias</span>
+                                    </div>
+                                    
+                                    <div class="product-actions">
+                                        <a href="/products/{{ related_product.id }}" class="btn btn-outline btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                            Ver
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Purchase Modal -->
+{% if current_user %}
+<div id="purchase-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirmar Compra</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="purchase-summary">
+                <div class="product-summary">
+                    {% if product.image_url %}
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-thumb">
+                    {% else %}
+                        <div class="product-thumb no-image">
+                            <i class="{{ product.category.icon or 'fas fa-cube' }}"></i>
+                        </div>
+                    {% endif %}
+                    <div class="summary-info">
+                        <h4>{{ product.name }}</h4>
+                        <p>{{ product.category.name }}</p>
+                    </div>
+                </div>
+                
+                <div class="purchase-details">
+                    <div class="detail-row">
+                        <span class="label">Preço:</span>
+                        <span class="value">R$ {{ "%.2f"|format(product.price) }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Duração:</span>
+                        <span class="value">{{ product.duration_days }} dias</span>
+                    </div>
+                    <div class="detail-row total">
+                        <span class="label">Total:</span>
+                        <span class="value">R$ {{ "%.2f"|format(product.price) }}</span>
+                    </div>
+                </div>
+                
+                <div class="purchase-terms">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="agreePurchaseTerms" required>
+                        <span class="checkmark"></span>
+                        Concordo com os <a href="/terms" target="_blank">termos de compra</a>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button class="btn btn-primary" id="confirm-purchase" disabled>
+                <i class="fas fa-credit-card"></i>
+                Prosseguir para Pagamento
+            </button>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const purchaseModal = document.getElementById('purchase-modal');
+    const purchaseBtn = document.querySelector('.purchase-btn');
+    const downloadBtn = document.querySelector('.download-btn');
+    const confirmPurchaseBtn = document.getElementById('confirm-purchase');
+    const agreePurchaseTerms = document.getElementById('agreePurchaseTerms');
+
+    // Purchase button functionality
+    if (purchaseBtn) {
+        purchaseBtn.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            const productName = this.dataset.productName;
+            const productPrice = this.dataset.productPrice;
+            
+            if (purchaseModal) {
+                purchaseModal.style.display = 'block';
+            }
+        });
+    }
+
+    // Terms checkbox
+    if (agreePurchaseTerms) {
+        agreePurchaseTerms.addEventListener('change', function() {
+            confirmPurchaseBtn.disabled = !this.checked;
+        });
+    }
+
+    // Confirm purchase
+    if (confirmPurchaseBtn) {
+        confirmPurchaseBtn.addEventListener('click', function() {
+            const productId = purchaseBtn.dataset.productId;
+            purchaseProduct(productId);
+        });
+    }
+
+    // Download functionality
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            const productName = this.dataset.productName;
+            
+            downloadProduct(productId, productName);
+        });
+    }
+
+    function purchaseProduct(productId) {
+        showLoading();
+        
+        fetch(`/api/purchase/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            hideLoading();
+            
+            if (data.success) {
+                if (data.payment_url) {
+                    // Redirecionar para página de pagamento
+                    window.location.href = data.payment_url;
+                } else {
+                    showToast('Compra processada com sucesso!', 'success');
+                    purchaseModal.style.display = 'none';
+                    // Refresh page to show new license status
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                }
+            } else {
+                showToast(data.message || 'Erro ao processar compra', 'error');
+            }
+        })
+        .catch(error => {
+            hideLoading();
+            console.error('Purchase error:', error);
+            showToast('Erro interno do servidor', 'error');
+        });
+    }
+
+    function downloadProduct(productId, productName) {
+        showLoading();
+        
+        fetch(`/api/download/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            hideLoading();
+            
+            if (data.success) {
+                showToast(`Download de ${productName} iniciado!`, 'success');
+                
+                // Open download URL in new tab
+                if (data.download_url) {
+                    window.open(data.download_url, '_blank');
+                }
+            } else {
+                showToast(data.message || 'Erro ao iniciar download', 'error');
+            }
+        })
+        .catch(error => {
+            hideLoading();
+            console.error('Download error:', error);
+            showToast('Erro interno do servidor', 'error');
+        });
+    }
+
+    // Image zoom functionality
+    const mainImage = document.getElementById('mainImage');
+    if (mainImage) {
+        mainImage.addEventListener('click', function() {
+            this.classList.toggle('zoomed');
+        });
+    }
+
+    // Scroll-based price card animation
+    const purchaseCard = document.querySelector('.purchase-card');
+    if (purchaseCard) {
+        let ticking = false;
+        
+        function updatePurchaseCard() {
+            const scrollY = window.pageYOffset;
+            const threshold = 200;
+            
+            if (scrollY > threshold) {
+                purchaseCard.classList.add('sticky');
+            } else {
+                purchaseCard.classList.remove('sticky');
+            }
+            
+            ticking = false;
+        }
+        
+        function requestUpdatePurchaseCard() {
+            if (!ticking) {
+                requestAnimationFrame(updatePurchaseCard);
+                ticking = true;
+            }
+        }
+        
+        window.addEventListener('scroll', requestUpdatePurchaseCard);
+    }
+});
+</script>
+{% endblock %}

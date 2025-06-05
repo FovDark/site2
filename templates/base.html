@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block description %}FovDark - Sistema de Licenças Digitais para ISOs, Programas, Otimizadores, Cheats e Mods{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}fovdark, licenças digitais, isos, programas, otimizadores, cheats, trainers, mods{% endblock %}">
+    <meta name="author" content="FovDark">
+    
+    <title>{% block title %}FovDark - Sistema de Licenças Digitais{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Carregando...</p>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <!-- Logo -->
+                <a href="/" class="nav-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>FovDark</span>
+                </a>
+
+                <!-- Navigation Links -->
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link">
+                            <i class="fas fa-home"></i>
+                            Início
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">
+                            <i class="fas fa-cube"></i>
+                            Produtos
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/category/isos"><i class="fas fa-compact-disc"></i> ISOs Customizadas</a></li>
+                            <li><a href="/category/programas"><i class="fas fa-desktop"></i> Programas</a></li>
+                            <li><a href="/category/otimizadores"><i class="fas fa-rocket"></i> Otimizadores</a></li>
+                            <li><a href="/category/cheats"><i class="fas fa-gamepad"></i> Cheats & Trainers</a></li>
+                            <li><a href="/category/mods"><i class="fas fa-puzzle-piece"></i> Mods</a></li>
+                        </ul>
+                    </li>
+                    {% if current_user %}
+                        <li class="nav-item">
+                            <a href="/downloads" class="nav-link">
+                                <i class="fas fa-download"></i>
+                                Downloads
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/painel" class="nav-link">
+                                <i class="fas fa-user"></i>
+                                Meu Painel
+                            </a>
+                        </li>
+                        {% if current_user.is_admin %}
+                            <li class="nav-item">
+                                <a href="/admin" class="nav-link admin-link">
+                                    <i class="fas fa-cog"></i>
+                                    Admin
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+
+                <!-- User Actions -->
+                <div class="nav-actions">
+                    {% if current_user %}
+                        <div class="user-menu dropdown">
+                            <button class="user-button dropdown-toggle">
+                                <i class="fas fa-user-circle"></i>
+                                <span>{{ current_user.username }}</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                <li><a href="/painel"><i class="fas fa-tachometer-alt"></i> Painel</a></li>
+                                <li><a href="/profile"><i class="fas fa-user-edit"></i> Perfil</a></li>
+                                <li><a href="/licenses"><i class="fas fa-key"></i> Minhas Licenças</a></li>
+                                <li class="dropdown-divider"></li>
+                                <li><a href="/logout" class="text-danger"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="/login" class="btn btn-outline">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Entrar
+                        </a>
+                        <a href="/register" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i>
+                            Cadastrar
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Menu Toggle -->
+                <div class="mobile-menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Alerts/Notifications -->
+        <div id="alert-container" class="alert-container"></div>
+
+        {% if error %}
+            <div class="alert alert-error" role="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error }}
+            </div>
+        {% endif %}
+
+        {% if success %}
+            <div class="alert alert-success" role="alert">
+                <i class="fas fa-check-circle"></i>
+                {{ success }}
+            </div>
+        {% endif %}
+
+        {% if warning %}
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ warning }}
+            </div>
+        {% endif %}
+
+        <!-- Page Content -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>
+                        <i class="fas fa-shield-alt"></i>
+                        FovDark
+                    </h3>
+                    <p>Sistema completo de licenças digitais para ISOs customizadas, programas, otimizadores, cheats e mods.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
+                        <a href="#" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Produtos</h4>
+                    <ul>
+                        <li><a href="/category/isos">ISOs Customizadas</a></li>
+                        <li><a href="/category/programas">Programas</a></li>
+                        <li><a href="/category/otimizadores">Otimizadores</a></li>
+                        <li><a href="/category/cheats">Cheats & Trainers</a></li>
+                        <li><a href="/category/mods">Mods</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Suporte</h4>
+                    <ul>
+                        <li><a href="/help">Central de Ajuda</a></li>
+                        <li><a href="/contact">Contato</a></li>
+                        <li><a href="/faq">FAQ</a></li>
+                        <li><a href="/tutorials">Tutoriais</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="/terms">Termos de Uso</a></li>
+                        <li><a href="/privacy">Política de Privacidade</a></li>
+                        <li><a href="/refund">Política de Reembolso</a></li>
+                        <li><a href="/licenses-terms">Termos de Licença</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p>&copy; 2024 FovDark. Todos os direitos reservados.</p>
+                    <div class="payment-methods">
+                        <span>Pagamentos via:</span>
+                        <i class="fab fa-cc-visa"></i>
+                        <i class="fab fa-cc-mastercard"></i>
+                        <i class="fab fa-pix"></i>
+                        <i class="fas fa-barcode"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="back-to-top" aria-label="Voltar ao topo">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- JavaScript -->
+    <script src="/static/script.js"></script>
+    {% if current_user and current_user.is_admin %}
+        <script src="/static/admin.js"></script>
+    {% endif %}
+    
+    {% block extra_scripts %}{% endblock %}
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+</body>
+</html>

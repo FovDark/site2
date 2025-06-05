@@ -1,0 +1,618 @@
+{% extends "base.html" %}
+
+{% block title %}Painel Administrativo - FovDark{% endblock %}
+
+{% block body_class %}admin-page{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="admin-welcome">
+                    <div class="admin-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="welcome-text">
+                        <h1>Painel Administrativo</h1>
+                        <p>Gerencie usuários, produtos e monitore o sistema</p>
+                    </div>
+                </div>
+                
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="addProductBtn">
+                        <i class="fas fa-plus"></i>
+                        Novo Produto
+                    </button>
+                    <button class="btn btn-outline" id="refreshStatsBtn">
+                        <i class="fas fa-refresh"></i>
+                        Atualizar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Admin Stats -->
+        <div class="admin-stats">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon users">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ stats.users.total or 0 }}</div>
+                        <div class="stat-label">Total de Usuários</div>
+                        <div class="stat-change">
+                            <span class="change-positive">+{{ stats.users.new_this_week or 0 }}</span>
+                            esta semana
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon products">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ stats.products.total or 0 }}</div>
+                        <div class="stat-label">Produtos</div>
+                        <div class="stat-change">
+                            <span class="change-neutral">{{ stats.products.active or 0 }}</span>
+                            ativos
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon licenses">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ stats.licenses.active or 0 }}</div>
+                        <div class="stat-label">Licenças Ativas</div>
+                        <div class="stat-change">
+                            <span class="change-warning">{{ stats.licenses.expired or 0 }}</span>
+                            expiradas
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon revenue">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">R$ {{ "%.2f"|format(stats.revenue.total or 0) }}</div>
+                        <div class="stat-label">Receita Total</div>
+                        <div class="stat-change">
+                            <span class="change-positive">R$ {{ "%.2f"|format(stats.revenue.monthly or 0) }}</span>
+                            este mês
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon transactions">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ stats.transactions.approved or 0 }}</div>
+                        <div class="stat-label">Transações Aprovadas</div>
+                        <div class="stat-change">
+                            <span class="change-warning">{{ stats.transactions.pending or 0 }}</span>
+                            pendentes
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon downloads">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ stats.downloads.total or 0 }}</div>
+                        <div class="stat-label">Total Downloads</div>
+                        <div class="stat-change">
+                            <span class="change-positive">{{ stats.downloads.today or 0 }}</span>
+                            hoje
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Tabs -->
+        <div class="admin-tabs">
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="products">
+                    <i class="fas fa-cube"></i>
+                    Produtos
+                </button>
+                <button class="tab-btn" data-tab="users">
+                    <i class="fas fa-users"></i>
+                    Usuários
+                </button>
+                <button class="tab-btn" data-tab="transactions">
+                    <i class="fas fa-credit-card"></i>
+                    Transações
+                </button>
+                <button class="tab-btn" data-tab="categories">
+                    <i class="fas fa-folder"></i>
+                    Categorias
+                </button>
+                <button class="tab-btn" data-tab="logs">
+                    <i class="fas fa-list"></i>
+                    Logs
+                </button>
+            </div>
+
+            <!-- Products Tab -->
+            <div class="tab-content active" id="products-tab">
+                <div class="section-header">
+                    <h2>Gerenciar Produtos</h2>
+                    <div class="search-box">
+                        <input type="text" placeholder="Buscar produtos..." id="productSearch">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                
+                <div class="products-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Categoria</th>
+                                <th>Preço</th>
+                                <th>Status</th>
+                                <th>Downloads</th>
+                                <th>Criado em</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                                <tr data-product-id="{{ product.id }}">
+                                    <td>
+                                        <div class="product-info">
+                                            {% if product.image_url %}
+                                                <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-thumb">
+                                            {% else %}
+                                                <div class="product-thumb no-image">
+                                                    <i class="fas fa-cube"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h4>{{ product.name }}</h4>
+                                                <p>{{ product.description[:50] }}{% if product.description|length > 50 %}...{% endif %}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="category-badge">
+                                            <i class="{{ product.category.icon or 'fas fa-folder' }}"></i>
+                                            {{ product.category.name }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="price">R$ {{ "%.2f"|format(product.price) }}</span>
+                                        <small>{{ product.duration_days }} dias</small>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge {% if product.is_active %}active{% else %}inactive{% endif %}">
+                                            {% if product.is_active %}
+                                                <i class="fas fa-check-circle"></i>
+                                                Ativo
+                                            {% else %}
+                                                <i class="fas fa-pause-circle"></i>
+                                                Inativo
+                                            {% endif %}
+                                        </span>
+                                        {% if product.is_featured %}
+                                            <span class="featured-badge">
+                                                <i class="fas fa-star"></i>
+                                                Destaque
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ product.download_count or 0 }}</td>
+                                    <td>{{ product.created_at.strftime('%d/%m/%Y') }}</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-outline edit-product-btn" 
+                                                    data-product-id="{{ product.id }}">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger delete-product-btn" 
+                                                    data-product-id="{{ product.id }}"
+                                                    data-product-name="{{ product.name }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div class="tab-content" id="users-tab">
+                <div class="section-header">
+                    <h2>Gerenciar Usuários</h2>
+                    <div class="search-box">
+                        <input type="text" placeholder="Buscar usuários..." id="userSearch">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                
+                <div class="users-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Licenças</th>
+                                <th>Último Login</th>
+                                <th>Cadastro</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                                <tr data-user-id="{{ user.id }}">
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <h4>{{ user.username }}</h4>
+                                                {% if user.is_admin %}
+                                                    <span class="admin-badge">
+                                                        <i class="fas fa-crown"></i>
+                                                        Admin
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ user.email }}</td>
+                                    <td>
+                                        <span class="status-badge {% if user.is_active %}active{% else %}inactive{% endif %}">
+                                            {% if user.is_active %}
+                                                <i class="fas fa-check-circle"></i>
+                                                Ativo
+                                            {% else %}
+                                                <i class="fas fa-ban"></i>
+                                                Inativo
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ user.licenses|length }}</td>
+                                    <td>
+                                        {% if user.last_login %}
+                                            {{ user.last_login.strftime('%d/%m/%Y %H:%M') }}
+                                        {% else %}
+                                            <span class="text-muted">Nunca</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.created_at.strftime('%d/%m/%Y') }}</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-outline view-user-btn" 
+                                                    data-user-id="{{ user.id }}">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            {% if not user.is_admin or user.id != current_user.id %}
+                                                <button class="btn btn-sm {% if user.is_active %}btn-warning{% else %}btn-success{% endif %} toggle-user-btn" 
+                                                        data-user-id="{{ user.id }}"
+                                                        data-current-status="{{ user.is_active }}">
+                                                    {% if user.is_active %}
+                                                        <i class="fas fa-ban"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-check"></i>
+                                                    {% endif %}
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Transactions Tab -->
+            <div class="tab-content" id="transactions-tab">
+                <div class="section-header">
+                    <h2>Transações</h2>
+                    <div class="filter-options">
+                        <select id="transactionFilter">
+                            <option value="">Todos os status</option>
+                            <option value="pending">Pendente</option>
+                            <option value="approved">Aprovado</option>
+                            <option value="rejected">Rejeitado</option>
+                            <option value="expired">Expirado</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="transactions-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuário</th>
+                                <th>Produto</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th>Método</th>
+                                <th>Data</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                                <tr data-transaction-id="{{ transaction.id }}" data-status="{{ transaction.status }}">
+                                    <td>#{{ transaction.id }}</td>
+                                    <td>{{ transaction.user.username }}</td>
+                                    <td>{{ transaction.product.name }}</td>
+                                    <td>R$ {{ "%.2f"|format(transaction.amount) }}</td>
+                                    <td>
+                                        <span class="status-badge {{ transaction.status }}">
+                                            {% if transaction.status == 'approved' %}
+                                                <i class="fas fa-check-circle"></i>
+                                                Aprovado
+                                            {% elif transaction.status == 'pending' %}
+                                                <i class="fas fa-clock"></i>
+                                                Pendente
+                                            {% elif transaction.status == 'rejected' %}
+                                                <i class="fas fa-times-circle"></i>
+                                                Rejeitado
+                                            {% else %}
+                                                {{ transaction.status.title() }}
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ transaction.payment_method or 'N/A' }}</td>
+                                    <td>{{ transaction.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-outline view-transaction-btn" 
+                                                    data-transaction-id="{{ transaction.id }}">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Categories Tab -->
+            <div class="tab-content" id="categories-tab">
+                <div class="section-header">
+                    <h2>Categorias</h2>
+                    <button class="btn btn-primary" id="addCategoryBtn">
+                        <i class="fas fa-plus"></i>
+                        Nova Categoria
+                    </button>
+                </div>
+                
+                <div class="categories-grid">
+                    {% for category in categories %}
+                        <div class="category-card" data-category-id="{{ category.id }}">
+                            <div class="category-icon">
+                                <i class="{{ category.icon or 'fas fa-folder' }}"></i>
+                            </div>
+                            <div class="category-info">
+                                <h3>{{ category.name }}</h3>
+                                <p>{{ category.description or 'Sem descrição' }}</p>
+                                <div class="category-stats">
+                                    <span>{{ category.products|length }} produtos</span>
+                                </div>
+                            </div>
+                            <div class="category-actions">
+                                <button class="btn btn-sm btn-outline edit-category-btn" 
+                                        data-category-id="{{ category.id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger delete-category-btn" 
+                                        data-category-id="{{ category.id }}"
+                                        data-category-name="{{ category.name }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Logs Tab -->
+            <div class="tab-content" id="logs-tab">
+                <div class="section-header">
+                    <h2>Logs do Sistema</h2>
+                    <button class="btn btn-outline" id="refreshLogsBtn">
+                        <i class="fas fa-refresh"></i>
+                        Atualizar
+                    </button>
+                </div>
+                
+                <div class="logs-container">
+                    <div class="logs-list" id="logsList">
+                        <!-- Logs will be loaded here -->
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Carregando logs...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Product Modal -->
+<div id="productModal" class="modal">
+    <div class="modal-content large">
+        <div class="modal-header">
+            <h3 id="productModalTitle">Novo Produto</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <form id="productForm" enctype="multipart/form-data">
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="productName">Nome do Produto</label>
+                        <input type="text" id="productName" name="name" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productCategory">Categoria</label>
+                        <select id="productCategory" name="category_id" class="form-control" required>
+                            <option value="">Selecione uma categoria</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productPrice">Preço (R$)</label>
+                        <input type="number" id="productPrice" name="price" class="form-control" step="0.01" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productDuration">Duração (dias)</label>
+                        <input type="number" id="productDuration" name="duration_days" class="form-control" min="1" value="30" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productDescription">Descrição</label>
+                    <textarea id="productDescription" name="description" class="form-control" rows="4"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productDownloadUrl">URL de Download</label>
+                    <input type="url" id="productDownloadUrl" name="download_url" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="productRequirements">Requisitos do Sistema</label>
+                    <textarea id="productRequirements" name="requirements" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productTags">Tags (separadas por vírgula)</label>
+                    <input type="text" id="productTags" name="tags" class="form-control" placeholder="exemplo, tag1, tag2">
+                </div>
+                
+                <div class="form-group">
+                    <label for="productImage">Imagem do Produto</label>
+                    <input type="file" id="productImage" name="image" class="form-control" accept="image/*">
+                </div>
+                
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="productFeatured" name="is_featured">
+                        <span class="checkmark"></span>
+                        Produto em destaque
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Salvar Produto
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Category Modal -->
+<div id="categoryModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="categoryModalTitle">Nova Categoria</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <form id="categoryForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="categoryName">Nome da Categoria</label>
+                    <input type="text" id="categoryName" name="name" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoryDescription">Descrição</label>
+                    <textarea id="categoryDescription" name="description" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoryIcon">Ícone (Font Awesome)</label>
+                    <input type="text" id="categoryIcon" name="icon" class="form-control" placeholder="fas fa-folder">
+                    <small class="form-help">Exemplo: fas fa-folder, fas fa-cube, etc.</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Salvar Categoria
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- User Details Modal -->
+<div id="userModal" class="modal">
+    <div class="modal-content large">
+        <div class="modal-header">
+            <h3 id="userModalTitle">Detalhes do Usuário</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="userDetails">
+                <!-- User details will be loaded here -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Transaction Details Modal -->
+<div id="transactionModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Detalhes da Transação</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="transactionDetails">
+                <!-- Transaction details will be loaded here -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/admin.js"></script>
+{% endblock %}
