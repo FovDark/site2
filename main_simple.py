@@ -236,7 +236,7 @@ async def admin_panel(request: Request, db: Session = Depends(get_db)):
     # Buscar estatísticas
     total_users = db.query(User).count()
     total_products = db.query(Product).count()
-    active_licenses = db.query(License).filter(License.is_active == True).count()
+    active_licenses = db.query(License).filter(License.status == "active").count()
     
     # Buscar produtos para exibição
     products = db.query(Product).all()
@@ -317,7 +317,7 @@ async def downloads_page(request: Request, db: Session = Depends(get_db)):
         # Buscar licenças ativas do usuário
         licenses = db.query(License).filter(
             License.user_id == current_user.id,
-            License.is_active == True
+            License.status == "active"
         ).join(Product).all()
         
         return templates.TemplateResponse("downloads.html", {
@@ -351,7 +351,7 @@ async def product_detail(request: Request, product_id: int, db: Session = Depend
             user_license = db.query(License).filter(
                 License.user_id == current_user.id,
                 License.product_id == product_id,
-                License.is_active == True
+                License.status == "active"
             ).first()
         
         return templates.TemplateResponse("product_detail.html", {
@@ -389,7 +389,7 @@ async def api_purchase_product(request: Request, product_id: int, db: Session = 
         existing_license = db.query(License).filter(
             License.user_id == current_user.id,
             License.product_id == product_id,
-            License.is_active == True
+            License.status == "active"
         ).first()
         
         if existing_license:
@@ -433,7 +433,7 @@ async def api_download_product(request: Request, product_id: int, db: Session = 
         license_obj = db.query(License).filter(
             License.user_id == current_user.id,
             License.product_id == product_id,
-            License.is_active == True
+            License.status == "active"
         ).first()
         
         if not license_obj:
@@ -587,7 +587,7 @@ async def api_get_users(request: Request, db: Session = Depends(get_db)):
         for user in users:
             license_count = db.query(License).filter(
                 License.user_id == user.id,
-                License.is_active == True
+                License.status == "active"
             ).count()
             
             users_data.append({
@@ -632,7 +632,7 @@ async def api_get_licenses(request: Request, db: Session = Depends(get_db)):
                 "license_key": license_obj.license_key,
                 "user_username": license_obj.user.username,
                 "product_name": license_obj.product.name,
-                "is_active": license_obj.is_active,
+                "is_active": license_obj.status == "active",
                 "expires_at": license_obj.expires_at.strftime("%d/%m/%Y") if license_obj.expires_at else None,
                 "created_at": license_obj.created_at.strftime("%d/%m/%Y") if license_obj.created_at else None
             })
