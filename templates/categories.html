@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+
+{% block title %}Categorias - FovDark Gaming{% endblock %}
+
+{% block content %}
+<!-- Categories Hero -->
+<section class="categories-hero">
+    <div class="container">
+        <div class="hero-content text-center">
+            <h1>Categorias de Produtos</h1>
+            <p>Explore nossas categorias organizadas para encontrar exatamente o que precisa</p>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Grid -->
+<section class="categories-section">
+    <div class="container">
+        <div class="categories-grid">
+            <!-- Software Category -->
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-desktop"></i>
+                </div>
+                <div class="category-content">
+                    <h3>Softwares</h3>
+                    <p>Programas essenciais e utilitários para otimizar seu sistema e produtividade</p>
+                    <div class="category-stats">
+                        <span><i class="fas fa-download"></i> 150+ downloads</span>
+                        <span><i class="fas fa-star"></i> 4.8/5</span>
+                    </div>
+                    <a href="/category/software" class="btn btn-primary">Explorar</a>
+                </div>
+            </div>
+
+            <!-- ISOs Category -->
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-compact-disc"></i>
+                </div>
+                <div class="category-content">
+                    <h3>ISOs Customizadas</h3>
+                    <p>Sistemas operacionais otimizados e personalizados para gaming e trabalho</p>
+                    <div class="category-stats">
+                        <span><i class="fas fa-download"></i> 80+ downloads</span>
+                        <span><i class="fas fa-star"></i> 4.9/5</span>
+                    </div>
+                    <a href="/category/iso" class="btn btn-primary">Explorar</a>
+                </div>
+            </div>
+
+            <!-- Optimizers Category -->
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="category-content">
+                    <h3>Otimizadores</h3>
+                    <p>Ferramentas avançadas para maximizar performance e FPS em jogos</p>
+                    <div class="category-stats">
+                        <span><i class="fas fa-download"></i> 200+ downloads</span>
+                        <span><i class="fas fa-star"></i> 4.7/5</span>
+                    </div>
+                    <a href="/category/optimizer" class="btn btn-primary">Explorar</a>
+                </div>
+            </div>
+
+            <!-- Mods & Trainers Category -->
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <div class="category-content">
+                    <h3>Mods & Trainers</h3>
+                    <p>Modificações e trainers para seus jogos favoritos</p>
+                    <div class="category-stats">
+                        <span><i class="fas fa-download"></i> 120+ downloads</span>
+                        <span><i class="fas fa-star"></i> 4.6/5</span>
+                    </div>
+                    <a href="/category/mods" class="btn btn-primary">Explorar</a>
+                </div>
+            </div>
+
+            <!-- Cheats & Scripts Category -->
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="category-content">
+                    <h3>Cheats & Scripts</h3>
+                    <p>Scripts e cheats para vantagem competitiva em jogos</p>
+                    <div class="category-stats">
+                        <span><i class="fas fa-download"></i> 90+ downloads</span>
+                        <span><i class="fas fa-star"></i> 4.5/5</span>
+                    </div>
+                    <a href="/category/cheats" class="btn btn-primary">Explorar</a>
+                </div>
+            </div>
+
+            <!-- System Tools Category -->
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <div class="category-content">
+                    <h3>Ferramentas do Sistema</h3>
+                    <p>Utilitários para manutenção e otimização do sistema operacional</p>
+                    <div class="category-stats">
+                        <span><i class="fas fa-download"></i> 100+ downloads</span>
+                        <span><i class="fas fa-star"></i> 4.8/5</span>
+                    </div>
+                    <a href="/category/system-tools" class="btn btn-primary">Explorar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popular in Categories -->
+<section class="popular-categories">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2>Mais Populares por Categoria</h2>
+            <p>Os downloads mais procurados em cada categoria</p>
+        </div>
+        
+        <div class="category-showcase">
+            <div class="showcase-item">
+                <div class="showcase-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="showcase-content">
+                    <h4>FovDark Optimizer Pro</h4>
+                    <p class="category-name">Otimizadores</p>
+                    <div class="showcase-stats">
+                        <span class="downloads">2.1k downloads</span>
+                        <span class="rating">★★★★★</span>
+                    </div>
+                </div>
+                <a href="/product/optimizer-pro" class="showcase-btn">Ver</a>
+            </div>
+            
+            <div class="showcase-item">
+                <div class="showcase-icon">
+                    <i class="fas fa-compact-disc"></i>
+                </div>
+                <div class="showcase-content">
+                    <h4>Windows 11 Gaming Edition</h4>
+                    <p class="category-name">ISOs Customizadas</p>
+                    <div class="showcase-stats">
+                        <span class="downloads">1.8k downloads</span>
+                        <span class="rating">★★★★★</span>
+                    </div>
+                </div>
+                <a href="/product/windows-11-gaming" class="showcase-btn">Ver</a>
+            </div>
+            
+            <div class="showcase-item">
+                <div class="showcase-icon">
+                    <i class="fas fa-crosshairs"></i>
+                </div>
+                <div class="showcase-content">
+                    <h4>Aim Assistant Advanced</h4>
+                    <p class="category-name">Cheats & Scripts</p>
+                    <div class="showcase-stats">
+                        <span class="downloads">1.5k downloads</span>
+                        <span class="rating">★★★★☆</span>
+                    </div>
+                </div>
+                <a href="/product/aim-assistant" class="showcase-btn">Ver</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.categories-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 6rem 0 4rem;
+    text-align: center;
+}
+
+.categories-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.categories-section {
+    padding: 4rem 0;
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.category-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
+    text-align: center;
+}
+
+.category-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.category-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.category-icon i {
+    font-size: 2rem;
+    color: white;
+}
+
+.category-content h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1f2937;
+}
+
+.category-content p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.category-stats {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.category-stats span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.popular-categories {
+    background: #f9fafb;
+    padding: 4rem 0;
+}
+
+.section-header {
+    margin-bottom: 3rem;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1f2937;
+}
+
+.category-showcase {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.showcase-item {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.showcase-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.showcase-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.showcase-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.showcase-content {
+    flex: 1;
+}
+
+.showcase-content h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #1f2937;
+}
+
+.category-name {
+    font-size: 0.875rem;
+    color: #667eea;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.showcase-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.875rem;
+}
+
+.downloads {
+    color: #6b7280;
+}
+
+.rating {
+    color: #fbbf24;
+}
+
+.showcase-btn {
+    background: #667eea;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.showcase-btn:hover {
+    background: #5a67d8;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .category-showcase {
+        grid-template-columns: 1fr;
+    }
+    
+    .showcase-item {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}

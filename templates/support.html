@@ -1,0 +1,458 @@
+{% extends "base.html" %}
+
+{% block title %}Suporte - FovDark Gaming{% endblock %}
+
+{% block content %}
+<!-- Support Hero -->
+<section class="support-hero">
+    <div class="container">
+        <div class="hero-content text-center">
+            <h1>Central de Suporte</h1>
+            <p>Encontre respostas para suas dúvidas ou entre em contato com nossa equipe especializada</p>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Help -->
+<section class="quick-help">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2>Como podemos ajudar?</h2>
+            <p>Selecione o tipo de ajuda que você precisa</p>
+        </div>
+        
+        <div class="help-grid">
+            <div class="help-card">
+                <div class="help-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h3>Problemas de Download</h3>
+                <p>Dificuldades para baixar arquivos ou acessar downloads</p>
+                <a href="#downloads-faq" class="help-link">Ver Soluções</a>
+            </div>
+            
+            <div class="help-card">
+                <div class="help-icon">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <h3>Questões de Pagamento</h3>
+                <p>Problemas com cobrança, reembolsos ou métodos de pagamento</p>
+                <a href="#payment-faq" class="help-link">Ver Soluções</a>
+            </div>
+            
+            <div class="help-card">
+                <div class="help-icon">
+                    <i class="fas fa-key"></i>
+                </div>
+                <h3>Licenças e Ativação</h3>
+                <p>Problemas com ativação de licenças ou códigos de produto</p>
+                <a href="#license-faq" class="help-link">Ver Soluções</a>
+            </div>
+            
+            <div class="help-card">
+                <div class="help-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3>Conta de Usuário</h3>
+                <p>Questões relacionadas à sua conta, login e perfil</p>
+                <a href="#account-faq" class="help-link">Ver Soluções</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Sections -->
+<section class="faq-sections">
+    <div class="container">
+        <!-- Downloads FAQ -->
+        <div class="faq-section" id="downloads-faq">
+            <h3><i class="fas fa-download"></i> Problemas de Download</h3>
+            <div class="faq-items">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Não consigo baixar o arquivo após a compra</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Verifique se você está logado em sua conta e se o pagamento foi processado. Acesse sua área de downloads no painel do usuário. Se o problema persistir, entre em contato conosco.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>O download está muito lento</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Verifique sua conexão com a internet e tente novamente em outro horário. Nossos servidores podem ter tráfego intenso em horários de pico.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment FAQ -->
+        <div class="faq-section" id="payment-faq">
+            <h3><i class="fas fa-credit-card"></i> Questões de Pagamento</h3>
+            <div class="faq-items">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Meu pagamento foi recusado</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Verifique os dados do cartão, limite disponível e tente novamente. Se o problema persistir, entre em contato com seu banco ou use outro método de pagamento.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Como solicitar reembolso?</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Reembolsos podem ser solicitados em até 7 dias após a compra. Entre em contato com nosso suporte através do Discord ou email informando o motivo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- License FAQ -->
+        <div class="faq-section" id="license-faq">
+            <h3><i class="fas fa-key"></i> Licenças e Ativação</h3>
+            <div class="faq-items">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Como ativar minha licença?</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Após a compra, você receberá uma chave de licença. Execute o software e insira a chave quando solicitado. Se precisar de ajuda, consulte o manual incluído no download.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Minha licença expirou</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Licenças premium têm validade específica. Para renovar, acesse seu painel e compre uma extensão ou nova licença do produto.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Account FAQ -->
+        <div class="faq-section" id="account-faq">
+            <h3><i class="fas fa-user"></i> Conta de Usuário</h3>
+            <div class="faq-items">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Esqueci minha senha</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Use a opção "Esqueci minha senha" na página de login. Você receberá um email com instruções para redefinir sua senha.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Como alterar meus dados?</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Acesse seu perfil no painel do usuário para alterar email, senha e outras informações pessoais.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Support -->
+<section class="contact-support">
+    <div class="container">
+        <div class="support-cta text-center">
+            <h2>Não encontrou a resposta?</h2>
+            <p>Nossa equipe de suporte está sempre pronta para ajudar você</p>
+            
+            <div class="support-options">
+                <a href="/contact" class="btn btn-primary btn-lg">
+                    <i class="fas fa-envelope"></i>
+                    Entrar em Contato
+                </a>
+                
+                <a href="#" class="btn btn-outline btn-lg">
+                    <i class="fab fa-discord"></i>
+                    Discord
+                </a>
+                
+                <a href="#" class="btn btn-outline btn-lg">
+                    <i class="fab fa-telegram"></i>
+                    Telegram
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.support-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 6rem 0 4rem;
+    text-align: center;
+}
+
+.support-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.quick-help {
+    padding: 4rem 0;
+}
+
+.section-header {
+    margin-bottom: 3rem;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1f2937;
+}
+
+.help-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.help-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.help-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.help-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.help-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.help-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #1f2937;
+}
+
+.help-card p {
+    color: #6b7280;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.help-link {
+    color: #667eea;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.help-link:hover {
+    color: #5a67d8;
+}
+
+.faq-sections {
+    background: #f9fafb;
+    padding: 4rem 0;
+}
+
+.faq-section {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.faq-section h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.faq-section h3 i {
+    color: #667eea;
+}
+
+.faq-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.faq-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.faq-question {
+    background: #f9fafb;
+    padding: 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.faq-question:hover {
+    background: #f3f4f6;
+}
+
+.faq-question h4 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1f2937;
+    margin: 0;
+}
+
+.faq-question i {
+    color: #6b7280;
+    transition: transform 0.3s ease;
+}
+
+.faq-answer {
+    padding: 1rem;
+    background: white;
+    display: none;
+}
+
+.faq-answer p {
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.faq-item.active .faq-answer {
+    display: block;
+}
+
+.faq-item.active .faq-question i {
+    transform: rotate(180deg);
+}
+
+.contact-support {
+    padding: 4rem 0;
+    background: white;
+}
+
+.support-cta h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1f2937;
+}
+
+.support-cta p {
+    color: #6b7280;
+    margin-bottom: 2rem;
+    font-size: 1.125rem;
+}
+
+.support-options {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .help-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .support-options {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .support-hero h1 {
+        font-size: 2rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const faqQuestions = document.querySelectorAll('.faq-question');
+    
+    faqQuestions.forEach(question => {
+        question.addEventListener('click', function() {
+            const faqItem = this.parentElement;
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close all other FAQ items
+            document.querySelectorAll('.faq-item.active').forEach(item => {
+                if (item !== faqItem) {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Toggle current item
+            if (isActive) {
+                faqItem.classList.remove('active');
+            } else {
+                faqItem.classList.add('active');
+            }
+        });
+    });
+    
+    // Auto-scroll to section if hash in URL
+    if (window.location.hash) {
+        const target = document.querySelector(window.location.hash);
+        if (target) {
+            setTimeout(() => {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+    }
+});
+</script>
+{% endblock %}
