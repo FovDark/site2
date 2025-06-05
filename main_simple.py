@@ -233,23 +233,26 @@ async def admin_panel(request: Request, db: Session = Depends(get_db)):
     if not current_user or not current_user.is_admin:
         return RedirectResponse(url="/login", status_code=302)
     
-    # Buscar estatísticas básicas
-    stats = {
-        "users": {"total": db.query(User).count()},
-        "products": {"total": db.query(Product).count()},
-        "categories": {"total": db.query(Category).count()}
-    }
+    # Buscar estatísticas
+    total_users = db.query(User).count()
+    total_products = db.query(Product).count()
+    active_licenses = db.query(License).filter(License.is_active == True).count()
     
-    # Buscar dados para exibir
-    users = db.query(User).limit(10).all()
-    products = db.query(Product).limit(10).all()
+    # Buscar produtos para exibição
+    products = db.query(Product).all()
     categories = db.query(Category).all()
     
-    return templates.TemplateResponse("admin.html", {
+    stats = {
+        'total_users': total_users,
+        'total_products': total_products,
+        'total_sales': 0.0,
+        'active_licenses': active_licenses
+    }
+    
+    return templates.TemplateResponse("admin_new.html", {
         "request": request,
         "current_user": current_user,
         "stats": stats,
-        "users": users,
         "products": products,
         "categories": categories
     })
@@ -552,6 +555,131 @@ async def status_page(request: Request, db: Session = Depends(get_db)):
         "request": request,
         "current_user": current_user
     })
+
+@app.post("/api/admin/product")
+async def api_create_product(
+    request: Request,
+    name: str = Form(...),
+    description: str = Form(...),
+    image_url: str = Form(None),
+    category_id: int = Form(None),
+    pricing_type: str = Form(...),
+    download_url: str = Form(None),
+    price: float = Form(None),
+    duration_days: int = Form(30),
+    paid_download_url: str = Form(None),
+    tags: str = Form(None),
+    requirements: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    """API para criar produto (admin apenas)"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        if not current_user or not current_user.is_admin:
+            return JSONResponse(
+                status_code=403,
+                content={"success": False, "message": "Acesso negado"}
+            )
+        
+        # Validações
+        if pricing_type == "free" and not download_url:
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "Link de download é obrigatório para produtos gratuitos"}
+            )
+        
+        if pricing_type == "paid" and (not price or price <= 0):
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "Preço é obrigatório para produtos pagos"}
+            )
+        
+        # Criar produto
+        product_data = {
+            "name": name,
+            "description": description,
+            "image_url": image_url,
+            "category_id": category_id,
+            "price": 0.0 if pricing_type == "free" else price,
+            "duration_days": duration_days if pricing_type == "paid" else None,
+            "download_url": download_url if pricing_type == "free" else paid_download_url,
+            "tags": tags,
+            "requirements": requirements,
+            "is_active": True,
+            "is_featured": False
+        }
+        
+        new_product = Product(**product_data)
+        db.add(new_product)
+        db.commit()
+        db.refresh(new_product)
+        
+        return JSONResponse(content={
+            "success": True, 
+            "message": "Produto criado com sucesso",
+            "product_id": new_product.id
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao criar produto: {e}")
+        db.rollback()
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "Erro interno do servidor"}
+        )
+
+@app.delete("/api/admin/product/{product_id}")
+async def api_delete_product(
+    request: Request,
+    product_id: int,
+    db: Session = Depends(get_db)
+):
+    """API para deletar produto (admin apenas)"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        if not current_user or not current_user.is_admin:
+            return JSONResponse(
+                status_code=403,
+                content={"success": False, "message": "Acesso negado"}
+            )
+        
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product:
+            return JSONResponse(
+                status_code=404,
+                content={"success": False, "message": "Produto não encontrado"}
+            )
+        
+        # Verificar se há licenças ativas
+        active_licenses = db.query(License).filter(
+            License.product_id == product_id,
+            License.is_active == True
+        ).count()
+        
+        if active_licenses > 0:
+            # Desativar ao invés de deletar se há licenças ativas
+            product.is_active = False
+            db.commit()
+            return JSONResponse(content={
+                "success": True, 
+                "message": "Produto desativado (há licenças ativas)"
+            })
+        else:
+            # Deletar produto
+            db.delete(product)
+            db.commit()
+            return JSONResponse(content={
+                "success": True, 
+                "message": "Produto excluído com sucesso"
+            })
+        
+    except Exception as e:
+        logger.error(f"Erro ao deletar produto: {e}")
+        db.rollback()
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "Erro interno do servidor"}
+        )
 
 @app.get("/health")
 async def health_check():

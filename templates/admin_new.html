@@ -1,0 +1,882 @@
+{% extends "base.html" %}
+
+{% block title %}Painel Administrativo - FovDark Gaming{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="container">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-shield-alt"></i> Painel Administrativo</h1>
+            <p>Gerencie produtos, usuários e configurações da plataforma</p>
+        </div>
+        
+        <div class="admin-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ stats.total_users or 0 }}</h3>
+                    <p>Usuários Totais</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ stats.total_products or 0 }}</h3>
+                    <p>Produtos</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>R$ {{ "%.2f"|format(stats.total_sales or 0) }}</h3>
+                    <p>Vendas Totais</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-key"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ stats.active_licenses or 0 }}</h3>
+                    <p>Licenças Ativas</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-actions">
+            <div class="action-section">
+                <h3>Ações Rápidas</h3>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="showAddProductModal()">
+                        <i class="fas fa-plus"></i>
+                        <span>Adicionar Produto</span>
+                    </button>
+                    
+                    <button class="action-btn" onclick="showProductsList()">
+                        <i class="fas fa-box"></i>
+                        <span>Gerenciar Produtos</span>
+                    </button>
+                    
+                    <button class="action-btn" onclick="manageUsers()">
+                        <i class="fas fa-users"></i>
+                        <span>Gerenciar Usuários</span>
+                    </button>
+                    
+                    <button class="action-btn" onclick="viewSales()">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Relatórios</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Products Management Section -->
+        <div class="products-management" id="productsSection" style="display: none;">
+            <div class="section-header">
+                <h2><i class="fas fa-box"></i> Gerenciamento de Produtos</h2>
+                <button class="btn btn-primary" onclick="showAddProductModal()">
+                    <i class="fas fa-plus"></i> Novo Produto
+                </button>
+            </div>
+            
+            <div class="products-grid" id="adminProductsGrid">
+                {% if products %}
+                    {% for product in products %}
+                    <div class="admin-product-card" data-product-id="{{ product.id }}">
+                        <div class="product-image">
+                            {% if product.image_url %}
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <div class="placeholder">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="product-info">
+                            <h4>{{ product.name }}</h4>
+                            <p>{{ product.description[:100] }}...</p>
+                            <div class="product-meta">
+                                <span class="price">
+                                    {% if product.price == 0 %}
+                                        <span class="free">GRÁTIS</span>
+                                    {% else %}
+                                        <span class="paid">R$ {{ "%.2f"|format(product.price) }}</span>
+                                    {% endif %}
+                                </span>
+                                <span class="status {{ 'active' if product.is_active else 'inactive' }}">
+                                    {{ 'Ativo' if product.is_active else 'Inativo' }}
+                                </span>
+                            </div>
+                            <div class="product-actions">
+                                <button class="btn btn-sm btn-outline" onclick="editProduct({{ product.id }})">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteProduct({{ product.id }})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <h3>Nenhum produto cadastrado</h3>
+                        <p>Clique em "Novo Produto" para começar</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal" id="addProductModal">
+    <div class="modal-backdrop" onclick="closeAddProductModal()"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-plus"></i> Adicionar Novo Produto</h3>
+            <button class="modal-close" onclick="closeAddProductModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <form class="product-form" id="addProductForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="productName">Nome do Produto *</label>
+                    <input type="text" id="productName" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productCategory">Categoria</label>
+                    <select id="productCategory" name="category_id">
+                        <option value="">Selecione uma categoria</option>
+                        <option value="1">Software</option>
+                        <option value="2">ISOs</option>
+                        <option value="3">Otimizadores</option>
+                        <option value="4">Mods & Trainers</option>
+                        <option value="5">Cheats & Scripts</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="productDescription">Descrição *</label>
+                <textarea id="productDescription" name="description" rows="4" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="productImage">URL da Imagem</label>
+                <input type="url" id="productImage" name="image_url" placeholder="https://exemplo.com/imagem.jpg">
+                <small>Deixe vazio para usar imagem padrão</small>
+            </div>
+            
+            <div class="pricing-section">
+                <h4><i class="fas fa-money-bill"></i> Configuração de Preço</h4>
+                
+                <div class="pricing-toggle">
+                    <label class="toggle-option">
+                        <input type="radio" name="pricing_type" value="free" checked>
+                        <span class="toggle-label free">
+                            <i class="fas fa-gift"></i>
+                            Gratuito
+                        </span>
+                    </label>
+                    
+                    <label class="toggle-option">
+                        <input type="radio" name="pricing_type" value="paid">
+                        <span class="toggle-label paid">
+                            <i class="fas fa-dollar-sign"></i>
+                            Pago
+                        </span>
+                    </label>
+                </div>
+                
+                <div class="pricing-options">
+                    <!-- Free Options -->
+                    <div class="pricing-panel free-panel active">
+                        <div class="form-group">
+                            <label for="downloadUrl">Link de Download *</label>
+                            <input type="url" id="downloadUrl" name="download_url" placeholder="https://exemplo.com/arquivo.zip">
+                        </div>
+                    </div>
+                    
+                    <!-- Paid Options -->
+                    <div class="pricing-panel paid-panel">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="productPrice">Preço (R$) *</label>
+                                <input type="number" id="productPrice" name="price" step="0.01" min="0.01">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="licenseDays">Validade (dias)</label>
+                                <input type="number" id="licenseDays" name="duration_days" value="30" min="1">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="paidDownloadUrl">Link de Download (após pagamento)</label>
+                            <input type="url" id="paidDownloadUrl" name="paid_download_url" placeholder="https://exemplo.com/arquivo-premium.zip">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="productTags">Tags (separadas por vírgula)</label>
+                <input type="text" id="productTags" name="tags" placeholder="otimização, gaming, performance">
+            </div>
+            
+            <div class="form-group">
+                <label for="productRequirements">Requisitos do Sistema</label>
+                <textarea id="productRequirements" name="requirements" rows="3" placeholder="Windows 10/11, 4GB RAM, etc..."></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-outline" onclick="closeAddProductModal()">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Criar Produto
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.admin-dashboard {
+    min-height: 100vh;
+    background: #f8fafc;
+    padding: 2rem 0;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.dashboard-header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-header p {
+    font-size: 1.125rem;
+    color: #6b7280;
+}
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.stat-info h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.stat-info p {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.admin-actions {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    margin-bottom: 3rem;
+}
+
+.admin-actions h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem;
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+}
+
+.action-btn:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    transform: translateY(-2px);
+}
+
+.action-btn i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.action-btn span {
+    font-weight: 500;
+}
+
+.products-management {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.section-header h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.admin-product-card {
+    background: #f9fafb;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.admin-product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+    height: 150px;
+    overflow: hidden;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholder {
+    color: #9ca3af;
+    font-size: 2rem;
+}
+
+.product-info {
+    padding: 1.5rem;
+}
+
+.product-info h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.product-info p {
+    color: #6b7280;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.price .free {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.price .paid {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status.active {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status.inactive {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.product-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6b7280;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: #d1d5db;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 2rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #ef4444;
+}
+
+.product-form {
+    padding: 2rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #374151;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #667eea;
+}
+
+.form-group small {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.pricing-section {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.pricing-section h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.pricing-toggle {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.toggle-option {
+    cursor: pointer;
+}
+
+.toggle-option input {
+    display: none;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.toggle-option input:checked + .toggle-label.free {
+    background: #10b981;
+    color: white;
+    border-color: #10b981;
+}
+
+.toggle-option input:checked + .toggle-label.paid {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.pricing-panel {
+    display: none;
+}
+
+.pricing-panel.active {
+    display: block;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 768px) {
+    .admin-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        margin: 1rem;
+    }
+    
+    .pricing-toggle {
+        flex-direction: column;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Global variables
+let isModalOpen = false;
+
+// Show/Hide functions
+function showAddProductModal() {
+    document.getElementById('addProductModal').classList.add('active');
+    isModalOpen = true;
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAddProductModal() {
+    document.getElementById('addProductModal').classList.remove('active');
+    isModalOpen = false;
+    document.body.style.overflow = '';
+    document.getElementById('addProductForm').reset();
+    
+    // Reset pricing panels
+    document.querySelector('.free-panel').classList.add('active');
+    document.querySelector('.paid-panel').classList.remove('active');
+    document.querySelector('input[value="free"]').checked = true;
+}
+
+function showProductsList() {
+    const section = document.getElementById('productsSection');
+    if (section.style.display === 'none') {
+        section.style.display = 'block';
+        section.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        section.style.display = 'none';
+    }
+}
+
+function manageUsers() {
+    alert('Funcionalidade de gerenciamento de usuários em desenvolvimento');
+}
+
+function viewSales() {
+    alert('Relatórios de vendas em desenvolvimento');
+}
+
+function editProduct(productId) {
+    alert(`Editando produto ${productId} - Funcionalidade em desenvolvimento`);
+}
+
+function deleteProduct(productId) {
+    if (confirm('Tem certeza que deseja excluir este produto?')) {
+        // Send delete request
+        fetch(`/api/admin/product/${productId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Produto excluído com sucesso!');
+                location.reload();
+            } else {
+                alert('Erro ao excluir produto: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erro ao excluir produto');
+        });
+    }
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Pricing toggle functionality
+    const pricingRadios = document.querySelectorAll('input[name="pricing_type"]');
+    const freePricingPanel = document.querySelector('.free-panel');
+    const paidPricingPanel = document.querySelector('.paid-panel');
+    
+    pricingRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'free') {
+                freePricingPanel.classList.add('active');
+                paidPricingPanel.classList.remove('active');
+            } else {
+                freePricingPanel.classList.remove('active');
+                paidPricingPanel.classList.add('active');
+            }
+        });
+    });
+    
+    // Form submission
+    document.getElementById('addProductForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const pricingType = document.querySelector('input[name="pricing_type"]:checked').value;
+        
+        // Add pricing type to form data
+        formData.append('pricing_type', pricingType);
+        
+        // Show loading
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Criando...';
+        submitBtn.disabled = true;
+        
+        // Send form data
+        fetch('/api/admin/product', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Produto criado com sucesso!');
+                closeAddProductModal();
+                location.reload();
+            } else {
+                alert('Erro ao criar produto: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erro ao criar produto');
+        })
+        .finally(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
+    });
+    
+    // Close modal on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isModalOpen) {
+            closeAddProductModal();
+        }
+    });
+});
+</script>
+{% endblock %}
