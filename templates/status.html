@@ -1,0 +1,731 @@
+{% extends "base.html" %}
+
+{% block title %}Status do Sistema - FovDark Gaming{% endblock %}
+
+{% block content %}
+<!-- Status Hero -->
+<section class="status-hero">
+    <div class="container">
+        <div class="hero-content text-center">
+            <h1>Status do Sistema</h1>
+            <p>Monitore o status dos nossos serviços em tempo real</p>
+            
+            <div class="overall-status">
+                <div class="status-indicator operational">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Todos os Sistemas Operacionais</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Current Status -->
+<section class="current-status">
+    <div class="container">
+        <div class="section-header">
+            <h2>Status Atual dos Serviços</h2>
+            <p>Última atualização: <span id="lastUpdate">Agora</span></p>
+        </div>
+        
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-info">
+                        <h3>Plataforma Web</h3>
+                        <p>Site principal e interface de usuário</p>
+                    </div>
+                    <div class="status-badge operational">
+                        <i class="fas fa-check-circle"></i>
+                        Operacional
+                    </div>
+                </div>
+                <div class="service-metrics">
+                    <div class="metric">
+                        <span class="metric-label">Uptime:</span>
+                        <span class="metric-value">99.9%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Resposta:</span>
+                        <span class="metric-value">145ms</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-info">
+                        <h3>Sistema de Downloads</h3>
+                        <p>Servidor de arquivos e distribuição</p>
+                    </div>
+                    <div class="status-badge operational">
+                        <i class="fas fa-check-circle"></i>
+                        Operacional
+                    </div>
+                </div>
+                <div class="service-metrics">
+                    <div class="metric">
+                        <span class="metric-label">Uptime:</span>
+                        <span class="metric-value">99.8%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Velocidade:</span>
+                        <span class="metric-value">50MB/s</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-info">
+                        <h3>Sistema de Pagamentos</h3>
+                        <p>Processamento de compras e licenças</p>
+                    </div>
+                    <div class="status-badge operational">
+                        <i class="fas fa-check-circle"></i>
+                        Operacional
+                    </div>
+                </div>
+                <div class="service-metrics">
+                    <div class="metric">
+                        <span class="metric-label">Uptime:</span>
+                        <span class="metric-value">100%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Transações:</span>
+                        <span class="metric-value">1.2s</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-info">
+                        <h3>API de Licenças</h3>
+                        <p>Validação e ativação de produtos</p>
+                    </div>
+                    <div class="status-badge operational">
+                        <i class="fas fa-check-circle"></i>
+                        Operacional
+                    </div>
+                </div>
+                <div class="service-metrics">
+                    <div class="metric">
+                        <span class="metric-label">Uptime:</span>
+                        <span class="metric-value">99.9%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Resposta:</span>
+                        <span class="metric-value">89ms</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-info">
+                        <h3>Suporte Discord</h3>
+                        <p>Atendimento via Discord</p>
+                    </div>
+                    <div class="status-badge operational">
+                        <i class="fas fa-check-circle"></i>
+                        Operacional
+                    </div>
+                </div>
+                <div class="service-metrics">
+                    <div class="metric">
+                        <span class="metric-label">Online:</span>
+                        <span class="metric-value">24/7</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Resposta:</span>
+                        <span class="metric-value">< 1h</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-info">
+                        <h3>Banco de Dados</h3>
+                        <p>Armazenamento de dados e backup</p>
+                    </div>
+                    <div class="status-badge operational">
+                        <i class="fas fa-check-circle"></i>
+                        Operacional
+                    </div>
+                </div>
+                <div class="service-metrics">
+                    <div class="metric">
+                        <span class="metric-label">Uptime:</span>
+                        <span class="metric-value">99.9%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Backup:</span>
+                        <span class="metric-value">Diário</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Performance Metrics -->
+<section class="performance-metrics">
+    <div class="container">
+        <div class="section-header">
+            <h2>Métricas de Performance</h2>
+            <p>Estatísticas dos últimos 30 dias</p>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="metric-content">
+                    <h3>99.9%</h3>
+                    <p>Uptime Médio</p>
+                    <span class="metric-trend positive">+0.1%</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-tachometer-alt"></i>
+                </div>
+                <div class="metric-content">
+                    <h3>142ms</h3>
+                    <p>Tempo de Resposta</p>
+                    <span class="metric-trend positive">-8ms</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="metric-content">
+                    <h3>2.1TB</h3>
+                    <p>Dados Transferidos</p>
+                    <span class="metric-trend positive">+15%</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="metric-content">
+                    <h3>1,247</h3>
+                    <p>Usuários Ativos</p>
+                    <span class="metric-trend positive">+23%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Incident History -->
+<section class="incident-history">
+    <div class="container">
+        <div class="section-header">
+            <h2>Histórico de Incidentes</h2>
+            <p>Últimos 90 dias</p>
+        </div>
+        
+        <div class="incidents-list">
+            <div class="incident-item resolved">
+                <div class="incident-status">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="incident-content">
+                    <div class="incident-header">
+                        <h4>Manutenção Programada - Servidor de Downloads</h4>
+                        <span class="incident-date">15 Nov 2024, 02:00 - 04:00</span>
+                    </div>
+                    <p>Manutenção de rotina realizada com sucesso. Todos os serviços foram restaurados.</p>
+                    <span class="incident-duration">Duração: 2 horas</span>
+                </div>
+            </div>
+            
+            <div class="incident-item resolved">
+                <div class="incident-status">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="incident-content">
+                    <div class="incident-header">
+                        <h4>Lentidão no Sistema de Pagamentos</h4>
+                        <span class="incident-date">08 Nov 2024, 14:30 - 15:15</span>
+                    </div>
+                    <p>Identificada e corrigida lentidão temporária no processamento de pagamentos.</p>
+                    <span class="incident-duration">Duração: 45 minutos</span>
+                </div>
+            </div>
+            
+            <div class="incident-item resolved">
+                <div class="incident-status">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="incident-content">
+                    <div class="incident-header">
+                        <h4>Atualização de Segurança</h4>
+                        <span class="incident-date">01 Nov 2024, 01:00 - 03:00</span>
+                    </div>
+                    <p>Aplicação de patches de segurança em todos os sistemas. Nenhum impacto no usuário.</p>
+                    <span class="incident-duration">Duração: 2 horas</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="no-incidents">
+            <i class="fas fa-shield-check"></i>
+            <h3>Excelente Estabilidade</h3>
+            <p>Nossos sistemas mantêm alta disponibilidade com monitoramento 24/7</p>
+        </div>
+    </div>
+</section>
+
+<!-- Subscribe to Updates -->
+<section class="status-subscribe">
+    <div class="container">
+        <div class="subscribe-content text-center">
+            <h2>Receber Atualizações de Status</h2>
+            <p>Seja notificado sobre manutenções e incidentes</p>
+            
+            <div class="subscribe-options">
+                <a href="#" class="subscribe-btn discord">
+                    <i class="fab fa-discord"></i>
+                    <span>Discord</span>
+                    <small>Notificações em tempo real</small>
+                </a>
+                
+                <a href="#" class="subscribe-btn telegram">
+                    <i class="fab fa-telegram"></i>
+                    <span>Telegram</span>
+                    <small>Atualizações importantes</small>
+                </a>
+                
+                <a href="#" class="subscribe-btn email">
+                    <i class="fas fa-envelope"></i>
+                    <span>Email</span>
+                    <small>Relatórios semanais</small>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.status-hero {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 6rem 0 4rem;
+    text-align: center;
+}
+
+.status-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.overall-status {
+    margin-top: 2rem;
+}
+
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.status-indicator.operational {
+    background: rgba(16, 185, 129, 0.3);
+}
+
+.current-status {
+    padding: 4rem 0;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1f2937;
+}
+
+.section-header p {
+    color: #6b7280;
+    font-size: 1.125rem;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.service-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.service-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.service-info h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+}
+
+.service-info p {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.status-badge.operational {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.service-metrics {
+    display: flex;
+    gap: 2rem;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.metric-label {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.metric-value {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.performance-metrics {
+    background: #f9fafb;
+    padding: 4rem 0;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+}
+
+.metric-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.metric-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.metric-content h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+}
+
+.metric-content p {
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.metric-trend {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.metric-trend.positive {
+    color: #10b981;
+}
+
+.incident-history {
+    padding: 4rem 0;
+}
+
+.incidents-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.incident-item {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.incident-status {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.incident-item.resolved .incident-status {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.incident-content {
+    flex: 1;
+}
+
+.incident-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.incident-header h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.incident-date {
+    color: #6b7280;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.incident-content p {
+    color: #4b5563;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.incident-duration {
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.no-incidents {
+    background: #f0fdf4;
+    border: 2px dashed #10b981;
+    border-radius: 16px;
+    padding: 3rem;
+    text-align: center;
+    color: #065f46;
+}
+
+.no-incidents i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.no-incidents h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.status-subscribe {
+    background: white;
+    padding: 4rem 0;
+}
+
+.subscribe-content h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1f2937;
+}
+
+.subscribe-content p {
+    color: #6b7280;
+    margin-bottom: 2rem;
+    font-size: 1.125rem;
+}
+
+.subscribe-options {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.subscribe-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.subscribe-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.subscribe-btn.discord:hover {
+    background: #5865f2;
+    color: white;
+    border-color: #5865f2;
+}
+
+.subscribe-btn.telegram:hover {
+    background: #0088cc;
+    color: white;
+    border-color: #0088cc;
+}
+
+.subscribe-btn.email:hover {
+    background: #10b981;
+    color: white;
+    border-color: #10b981;
+}
+
+.subscribe-btn i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.subscribe-btn span {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.subscribe-btn small {
+    font-size: 0.875rem;
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .status-hero h1 {
+        font-size: 2rem;
+    }
+    
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .service-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .service-metrics {
+        justify-content: space-between;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .incident-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .subscribe-options {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update timestamp
+    function updateTimestamp() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        document.getElementById('lastUpdate').textContent = timeString;
+    }
+    
+    updateTimestamp();
+    setInterval(updateTimestamp, 60000); // Update every minute
+    
+    // Auto-refresh page every 5 minutes
+    setTimeout(() => {
+        window.location.reload();
+    }, 300000);
+});
+</script>
+{% endblock %}

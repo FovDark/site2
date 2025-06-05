@@ -1,0 +1,550 @@
+{% extends "base.html" %}
+
+{% block title %}FAQ - Perguntas Frequentes - FovDark Gaming{% endblock %}
+
+{% block content %}
+<!-- FAQ Hero -->
+<section class="faq-hero">
+    <div class="container">
+        <div class="hero-content text-center">
+            <h1>Perguntas Frequentes</h1>
+            <p>Encontre respostas rápidas para as dúvidas mais comuns sobre nossa plataforma</p>
+            
+            <div class="search-faq">
+                <input type="text" placeholder="Buscar nas perguntas..." id="faqSearch">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Categories -->
+<section class="faq-categories">
+    <div class="container">
+        <div class="category-tabs">
+            <button class="category-tab active" data-category="all">Todas</button>
+            <button class="category-tab" data-category="account">Conta</button>
+            <button class="category-tab" data-category="downloads">Downloads</button>
+            <button class="category-tab" data-category="payment">Pagamentos</button>
+            <button class="category-tab" data-category="license">Licenças</button>
+            <button class="category-tab" data-category="technical">Técnico</button>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Content -->
+<section class="faq-content">
+    <div class="container">
+        <div class="faq-grid">
+            <!-- Account FAQs -->
+            <div class="faq-item" data-category="account">
+                <div class="faq-question">
+                    <h3>Como criar uma conta na FovDark?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Para criar uma conta:</p>
+                    <ol>
+                        <li>Clique em "Criar Conta" no topo da página</li>
+                        <li>Preencha username, email e senha</li>
+                        <li>Confirme sua senha</li>
+                        <li>Clique em "Registrar"</li>
+                    </ol>
+                    <p>Após o registro, você poderá acessar downloads gratuitos e comprar produtos premium.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="account">
+                <div class="faq-question">
+                    <h3>Esqueci minha senha, como recuperar?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Para recuperar sua senha:</p>
+                    <ol>
+                        <li>Vá para a página de login</li>
+                        <li>Clique em "Esqueci minha senha"</li>
+                        <li>Digite seu email cadastrado</li>
+                        <li>Verifique sua caixa de entrada para instruções</li>
+                    </ol>
+                    <p>Se não receber o email, verifique a pasta de spam ou entre em contato conosco.</p>
+                </div>
+            </div>
+
+            <!-- Downloads FAQs -->
+            <div class="faq-item" data-category="downloads">
+                <div class="faq-question">
+                    <h3>Como fazer download dos produtos?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Para produtos gratuitos:</p>
+                    <ul>
+                        <li>Faça login em sua conta</li>
+                        <li>Clique em "Baixar" no produto desejado</li>
+                        <li>O download iniciará automaticamente</li>
+                    </ul>
+                    <p>Para produtos premium:</p>
+                    <ul>
+                        <li>Compre o produto primeiro</li>
+                        <li>Acesse "Meus Downloads" no painel</li>
+                        <li>Clique no produto para baixar</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="downloads">
+                <div class="faq-question">
+                    <h3>O download está lento, o que fazer?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Se o download estiver lento:</p>
+                    <ul>
+                        <li>Verifique sua conexão com a internet</li>
+                        <li>Pause outros downloads em andamento</li>
+                        <li>Tente em outro horário (evite horários de pico)</li>
+                        <li>Use um gerenciador de downloads</li>
+                    </ul>
+                    <p>Nossos servidores têm alta capacidade, mas a velocidade pode variar conforme sua conexão.</p>
+                </div>
+            </div>
+
+            <!-- Payment FAQs -->
+            <div class="faq-item" data-category="payment">
+                <div class="faq-question">
+                    <h3>Quais formas de pagamento vocês aceitam?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Aceitamos os seguintes métodos de pagamento:</p>
+                    <ul>
+                        <li><strong>PIX:</strong> Pagamento instantâneo</li>
+                        <li><strong>Cartão de Crédito:</strong> Visa, Mastercard</li>
+                        <li><strong>Boleto Bancário:</strong> Vencimento em 3 dias</li>
+                        <li><strong>Cartões de Débito:</strong> Principais bandeiras</li>
+                    </ul>
+                    <p>Todos os pagamentos são processados de forma segura através do Infinite Pay.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="payment">
+                <div class="faq-question">
+                    <h3>Como solicitar reembolso?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Nossa política de reembolso:</p>
+                    <ul>
+                        <li><strong>Prazo:</strong> Até 7 dias após a compra</li>
+                        <li><strong>Condições:</strong> Produtos digitais não utilizados</li>
+                        <li><strong>Processo:</strong> Entre em contato via Discord ou email</li>
+                        <li><strong>Análise:</strong> Cada caso é analisado individualmente</li>
+                    </ul>
+                    <p>Reembolsos são creditados no método de pagamento original em até 5 dias úteis.</p>
+                </div>
+            </div>
+
+            <!-- License FAQs -->
+            <div class="faq-item" data-category="license">
+                <div class="faq-question">
+                    <h3>Como funcionam as licenças premium?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>As licenças premium oferecem:</p>
+                    <ul>
+                        <li><strong>Acesso completo:</strong> Recursos avançados desbloqueados</li>
+                        <li><strong>Suporte prioritário:</strong> Atendimento preferencial</li>
+                        <li><strong>Atualizações:</strong> Sempre a versão mais recente</li>
+                        <li><strong>Validade:</strong> Conforme especificado no produto</li>
+                    </ul>
+                    <p>Cada licença é vinculada ao seu hardware para evitar compartilhamento.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="license">
+                <div class="faq-question">
+                    <h3>Posso usar a licença em múltiplos PCs?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Por questões de segurança:</p>
+                    <ul>
+                        <li>Cada licença é válida para 1 PC específico</li>
+                        <li>O sistema identifica seu hardware automaticamente</li>
+                        <li>Mudanças de hardware podem requerer reativação</li>
+                        <li>Entre em contato se precisar transferir para outro PC</li>
+                    </ul>
+                    <p>Esta política protege nossos desenvolvedores e mantém preços acessíveis.</p>
+                </div>
+            </div>
+
+            <!-- Technical FAQs -->
+            <div class="faq-item" data-category="technical">
+                <div class="faq-question">
+                    <h3>Os softwares são seguros? Tem vírus?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Todos os nossos softwares são:</p>
+                    <ul>
+                        <li><strong>Verificados:</strong> Escaneados com múltiplos antivírus</li>
+                        <li><strong>Testados:</strong> Nossa equipe testa cada versão</li>
+                        <li><strong>Limpos:</strong> Livres de malware e vírus</li>
+                        <li><strong>Originais:</strong> Desenvolvidos internamente ou licenciados</li>
+                    </ul>
+                    <p>Alguns antivírus podem dar falsos positivos devido à natureza dos softwares de otimização.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="technical">
+                <div class="faq-question">
+                    <h3>O software não está funcionando, o que fazer?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Soluções comuns:</p>
+                    <ol>
+                        <li><strong>Execute como administrador:</strong> Clique direito → "Executar como administrador"</li>
+                        <li><strong>Desative o antivírus temporariamente</strong> durante a instalação</li>
+                        <li><strong>Verifique compatibilidade:</strong> Windows 10/11 64-bit</li>
+                        <li><strong>Reinicie o computador</strong> após a instalação</li>
+                    </ol>
+                    <p>Se o problema persistir, entre em contato com nosso suporte técnico 24/7.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="technical">
+                <div class="faq-question">
+                    <h3>Quais são os requisitos do sistema?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Requisitos mínimos gerais:</p>
+                    <ul>
+                        <li><strong>Sistema:</strong> Windows 10/11 (64-bit)</li>
+                        <li><strong>RAM:</strong> 4GB mínimo, 8GB recomendado</li>
+                        <li><strong>Processador:</strong> Intel Core i3 ou AMD equivalente</li>
+                        <li><strong>Espaço:</strong> Varia por produto (especificado na página)</li>
+                        <li><strong>Internet:</strong> Necessária para ativação e updates</li>
+                    </ul>
+                    <p>Requisitos específicos são listados na página de cada produto.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact CTA -->
+<section class="faq-contact">
+    <div class="container text-center">
+        <h2>Não encontrou sua resposta?</h2>
+        <p>Nossa equipe de suporte está sempre disponível para ajudar você</p>
+        
+        <div class="contact-options">
+            <a href="/contact" class="btn btn-primary btn-lg">
+                <i class="fas fa-envelope"></i>
+                Entrar em Contato
+            </a>
+            
+            <a href="/support" class="btn btn-outline btn-lg">
+                <i class="fas fa-headset"></i>
+                Central de Suporte
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.faq-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 6rem 0 4rem;
+    text-align: center;
+}
+
+.faq-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.search-faq {
+    position: relative;
+    max-width: 500px;
+    margin: 2rem auto 0;
+}
+
+.search-faq input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    outline: none;
+}
+
+.search-faq i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+}
+
+.faq-categories {
+    background: white;
+    padding: 2rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.category-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.category-tab {
+    background: none;
+    border: 2px solid #e5e7eb;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.category-tab.active,
+.category-tab:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.faq-content {
+    padding: 4rem 0;
+    background: #f9fafb;
+}
+
+.faq-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.faq-item {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.faq-question {
+    padding: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    transition: background-color 0.3s ease;
+}
+
+.faq-question:hover {
+    background: #f9fafb;
+}
+
+.faq-question h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.faq-question i {
+    color: #6b7280;
+    transition: transform 0.3s ease;
+}
+
+.faq-answer {
+    padding: 0 1.5rem 1.5rem;
+    background: #f9fafb;
+    display: none;
+    border-top: 1px solid #e5e7eb;
+}
+
+.faq-answer p {
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.faq-answer ul,
+.faq-answer ol {
+    color: #4b5563;
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.faq-answer li {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.faq-answer strong {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.faq-item.active .faq-answer {
+    display: block;
+}
+
+.faq-item.active .faq-question i {
+    transform: rotate(180deg);
+}
+
+.faq-item.hidden {
+    display: none;
+}
+
+.faq-contact {
+    background: white;
+    padding: 4rem 0;
+}
+
+.faq-contact h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1f2937;
+}
+
+.faq-contact p {
+    color: #6b7280;
+    margin-bottom: 2rem;
+    font-size: 1.125rem;
+}
+
+.contact-options {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .faq-hero h1 {
+        font-size: 2rem;
+    }
+    
+    .category-tabs {
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding: 0 1rem;
+    }
+    
+    .faq-question {
+        padding: 1rem;
+    }
+    
+    .faq-answer {
+        padding: 0 1rem 1rem;
+    }
+    
+    .contact-options {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryTabs = document.querySelectorAll('.category-tab');
+    const faqItems = document.querySelectorAll('.faq-item');
+    const faqQuestions = document.querySelectorAll('.faq-question');
+    const searchInput = document.getElementById('faqSearch');
+    
+    // Category filtering
+    categoryTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const category = this.dataset.category;
+            
+            // Update active tab
+            categoryTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter FAQ items
+            faqItems.forEach(item => {
+                const itemCategory = item.dataset.category;
+                
+                if (category === 'all' || category === itemCategory) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        });
+    });
+    
+    // FAQ toggle functionality
+    faqQuestions.forEach(question => {
+        question.addEventListener('click', function() {
+            const faqItem = this.parentElement;
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close all other FAQ items
+            document.querySelectorAll('.faq-item.active').forEach(item => {
+                if (item !== faqItem) {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Toggle current item
+            if (isActive) {
+                faqItem.classList.remove('active');
+            } else {
+                faqItem.classList.add('active');
+            }
+        });
+    });
+    
+    // Search functionality
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question h3').textContent.toLowerCase();
+            const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+            
+            if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+        
+        // Reset category filter when searching
+        if (searchTerm) {
+            categoryTabs.forEach(tab => tab.classList.remove('active'));
+            document.querySelector('[data-category="all"]').classList.add('active');
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -492,6 +492,67 @@ async def privacy_page(request: Request, db: Session = Depends(get_db)):
         "current_user": current_user
     })
 
+@app.get("/products", response_class=HTMLResponse)
+async def products_page(request: Request, db: Session = Depends(get_db)):
+    """Página de produtos"""
+    current_user = get_current_user_simple(request, db)
+    
+    # Buscar todos os produtos ativos
+    products = db.query(Product).filter(Product.is_active == True).all()
+    
+    return templates.TemplateResponse("products.html", {
+        "request": request,
+        "current_user": current_user,
+        "products": products
+    })
+
+@app.get("/categories", response_class=HTMLResponse)
+async def categories_page(request: Request, db: Session = Depends(get_db)):
+    """Página de categorias"""
+    current_user = get_current_user_simple(request, db)
+    
+    # Buscar categorias ativas
+    categories = db.query(Category).filter(Category.is_active == True).all()
+    
+    return templates.TemplateResponse("categories.html", {
+        "request": request,
+        "current_user": current_user,
+        "categories": categories
+    })
+
+@app.get("/profile", response_class=HTMLResponse)
+async def profile_page(request: Request, db: Session = Depends(get_db)):
+    """Página de perfil do usuário"""
+    current_user = get_current_user_simple(request, db)
+    
+    if not current_user:
+        return RedirectResponse(url="/login", status_code=302)
+    
+    return templates.TemplateResponse("profile.html", {
+        "request": request,
+        "current_user": current_user
+    })
+
+@app.get("/faq", response_class=HTMLResponse)
+async def faq_page(request: Request, db: Session = Depends(get_db)):
+    """Página de FAQ"""
+    current_user = get_current_user_simple(request, db)
+    
+    return templates.TemplateResponse("faq.html", {
+        "request": request,
+        "current_user": current_user
+    })
+
+@app.get("/status", response_class=HTMLResponse)
+async def status_page(request: Request, db: Session = Depends(get_db)):
+    """Página de status do sistema"""
+    current_user = get_current_user_simple(request, db)
+    
+    return templates.TemplateResponse("status.html", {
+        "request": request,
+        "current_user": current_user
+    })
+
 @app.get("/health")
 async def health_check():
     """Health check da aplicação"""
