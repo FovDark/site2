@@ -1,20 +1,21 @@
 import os
 import asyncio
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from models import Base, Category, User
+from config import get_config
 import logging
 
 logger = logging.getLogger(__name__)
 
-# Configuração do banco de dados
-DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
-    # Fallback para desenvolvimento local com SQLite
-    DATABASE_URL = "sqlite:///./fovdark.db"
+# Obter configurações da aplicação
+config = get_config()
+DATABASE_URL = config.get_database_url()
 
-# Engine síncrono para a aplicação principal
+logger.info(f"Conectando ao banco: {'PostgreSQL (Supabase)' if 'postgresql' in DATABASE_URL else 'SQLite'}")
+
+# Engine síncrono para aplicação principal - otimizado para Supabase
 if DATABASE_URL.startswith("sqlite"):
     engine = create_engine(
         DATABASE_URL,
@@ -22,11 +23,20 @@ if DATABASE_URL.startswith("sqlite"):
         connect_args={"check_same_thread": False}
     )
 else:
+    # Configuração otimizada para Supabase PostgreSQL
     engine = create_engine(
         DATABASE_URL,
         pool_pre_ping=True,
         pool_recycle=300,
-        echo=False
+        pool_size=10,
+        max_overflow=20,
+        pool_timeout=30,
+        echo=False,
+        connect_args={
+            "sslmode": "require",
+            "connect_timeout": 30,
+            "application_name": "FovDark_Gaming"
+        }
     )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

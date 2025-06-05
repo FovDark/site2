@@ -18,27 +18,32 @@ logger = logging.getLogger(__name__)
 # Importações locais
 from database import get_db, init_db
 from models import User, Product, Category, License
+from config import get_config
 from auth import hash_password, verify_password, create_access_token, verify_token
+
+# Obter configurações
+config = get_config()
 
 # Inicializar FastAPI
 app = FastAPI(
-    title="FovDark - Sistema de Licenças Digitais",
-    description="Plataforma completa para venda de licenças digitais",
-    version="1.0.0"
+    title="FovDark Gaming - Downloads & Digital Licenses",
+    description="Plataforma gaming para downloads de software e licenças digitais",
+    version="2.0.0",
+    debug=config.DEBUG
 )
 
-# Configurar middleware
+# Configurar middleware com configurações de produção
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=config.CORS_ORIGINS if config.is_production() else ["*"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
 
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["*"]
+    allowed_hosts=config.ALLOWED_HOSTS if config.is_production() else ["*"]
 )
 
 # Configurar arquivos estáticos e templates
