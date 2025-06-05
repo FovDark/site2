@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Erro - FovDark{% endblock %}
+
+{% block content %}
+<section style="padding: 4rem 0; text-align: center;">
+    <div class="container">
+        <div style="max-width: 500px; margin: 0 auto;">
+            <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--warning-color); margin-bottom: 2rem;"></i>
+            <h1 style="color: var(--gray-900); margin-bottom: 1rem;">Oops! Algo deu errado</h1>
+            <p style="color: var(--gray-600); font-size: 1.1rem; margin-bottom: 2rem;">
+                {{ error or "Ocorreu um erro inesperado. Por favor, tente novamente." }}
+            </p>
+            
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home"></i>
+                    Voltar ao Início
+                </a>
+                <button onclick="history.back()" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Página Anterior
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

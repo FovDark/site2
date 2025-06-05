@@ -1,447 +1,338 @@
 // FovDark - JavaScript Principal
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicialização
-    initializeApp();
+    // Inicializar componentes
+    initMobileMenu();
+    initUserMenu();
+    initFormValidation();
+    initLoadingStates();
+    initNotifications();
     
-    // Event Listeners
-    setupEventListeners();
-    
-    // Animações
-    setupAnimations();
+    console.log('FovDark carregado com sucesso!');
 });
 
-function initializeApp() {
-    // Verificar se há mensagens de alerta na URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const message = urlParams.get('message');
-    
-    if (message) {
-        showAlert(message, 'success');
-        // Limpar a URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-    
-    // Inicializar tooltips
-    initializeTooltips();
-    
-    // Configurar tema
-    setupTheme();
-}
-
-function setupEventListeners() {
-    // Formulários
-    setupFormHandlers();
-    
-    // Botões de ação
-    setupActionButtons();
-    
-    // Navegação mobile
-    setupMobileNavigation();
-    
-    // Busca
-    setupSearchHandlers();
-}
-
-function setupFormHandlers() {
-    // Formulário de login
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLogin);
-    }
-    
-    // Formulário de registro
-    const registerForm = document.getElementById('registerForm');
-    if (registerForm) {
-        registerForm.addEventListener('submit', handleRegister);
-    }
-    
-    // Validação em tempo real
-    setupRealTimeValidation();
-}
-
-function handleLogin(e) {
-    const form = e.target;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    
-    // Adicionar loading
-    if (submitBtn) {
-        submitBtn.innerHTML = '<span class="loading"></span> Entrando...';
-        submitBtn.disabled = true;
-    }
-    
-    // O formulário será enviado normalmente
-    // Em caso de erro, restaurar o botão
-    setTimeout(() => {
-        if (submitBtn) {
-            submitBtn.innerHTML = 'Entrar';
-            submitBtn.disabled = false;
-        }
-    }, 5000);
-}
-
-function handleRegister(e) {
-    const form = e.target;
-    const password = form.password.value;
-    const confirmPassword = form.confirm_password.value;
-    
-    // Validar senhas
-    if (password !== confirmPassword) {
-        e.preventDefault();
-        showAlert('As senhas não coincidem', 'danger');
-        return;
-    }
-    
-    if (password.length < 6) {
-        e.preventDefault();
-        showAlert('A senha deve ter pelo menos 6 caracteres', 'danger');
-        return;
-    }
-    
-    const submitBtn = form.querySelector('button[type="submit"]');
-    if (submitBtn) {
-        submitBtn.innerHTML = '<span class="loading"></span> Criando conta...';
-        submitBtn.disabled = true;
-    }
-}
-
-function setupRealTimeValidation() {
-    // Validação de email
-    const emailInputs = document.querySelectorAll('input[type="email"]');
-    emailInputs.forEach(input => {
-        input.addEventListener('blur', validateEmail);
-    });
-    
-    // Validação de senha
-    const passwordInputs = document.querySelectorAll('input[type="password"]');
-    passwordInputs.forEach(input => {
-        input.addEventListener('input', validatePassword);
-    });
-}
-
-function validateEmail(e) {
-    const input = e.target;
-    const email = input.value;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
-    if (email && !emailRegex.test(email)) {
-        showFieldError(input, 'Email inválido');
-    } else {
-        clearFieldError(input);
-    }
-}
-
-function validatePassword(e) {
-    const input = e.target;
-    const password = input.value;
-    
-    if (password && password.length < 6) {
-        showFieldError(input, 'Senha deve ter pelo menos 6 caracteres');
-    } else {
-        clearFieldError(input);
-    }
-}
-
-function showFieldError(input, message) {
-    clearFieldError(input);
-    
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'field-error';
-    errorDiv.textContent = message;
-    errorDiv.style.color = 'var(--danger-color)';
-    errorDiv.style.fontSize = '0.875rem';
-    errorDiv.style.marginTop = '0.25rem';
-    
-    input.parentNode.appendChild(errorDiv);
-    input.style.borderColor = 'var(--danger-color)';
-}
-
-function clearFieldError(input) {
-    const existingError = input.parentNode.querySelector('.field-error');
-    if (existingError) {
-        existingError.remove();
-    }
-    input.style.borderColor = '';
-}
-
-function setupActionButtons() {
-    // Botões de compra
-    const purchaseButtons = document.querySelectorAll('.purchase-btn');
-    purchaseButtons.forEach(btn => {
-        btn.addEventListener('click', handlePurchase);
-    });
-    
-    // Botões de download
-    const downloadButtons = document.querySelectorAll('.download-btn');
-    downloadButtons.forEach(btn => {
-        btn.addEventListener('click', handleDownload);
-    });
-    
-    // Botões de cópia
-    const copyButtons = document.querySelectorAll('.copy-btn');
-    copyButtons.forEach(btn => {
-        btn.addEventListener('click', handleCopy);
-    });
-}
-
-function handlePurchase(e) {
-    const button = e.target.closest('.purchase-btn');
-    const productId = button.dataset.productId;
-    const productName = button.dataset.productName;
-    
-    if (confirm(`Deseja comprar ${productName}?`)) {
-        // Redirecionar para página de pagamento ou processar compra
-        window.location.href = `/purchase/${productId}`;
-    }
-}
-
-function handleDownload(e) {
-    const button = e.target.closest('.download-btn');
-    const productId = button.dataset.productId;
-    const productName = button.dataset.productName;
-    
-    // Adicionar loading
-    const originalText = button.innerHTML;
-    button.innerHTML = '<span class="loading"></span> Baixando...';
-    button.disabled = true;
-    
-    // Simular download
-    fetch(`/api/download/${productId}`, {
-        method: 'POST',
-        credentials: 'include'
-    })
-    .then(response => {
-        if (response.ok) {
-            showAlert(`Download de ${productName} iniciado!`, 'success');
-        } else {
-            throw new Error('Erro no download');
-        }
-    })
-    .catch(error => {
-        showAlert('Erro ao iniciar download', 'danger');
-    })
-    .finally(() => {
-        button.innerHTML = originalText;
-        button.disabled = false;
-    });
-}
-
-function handleCopy(e) {
-    const button = e.target.closest('.copy-btn');
-    const textToCopy = button.dataset.copy;
-    
-    navigator.clipboard.writeText(textToCopy).then(() => {
-        showAlert('Copiado para a área de transferência!', 'success');
-        
-        // Feedback visual
-        const originalText = button.innerHTML;
-        button.innerHTML = '<i class="fas fa-check"></i>';
-        button.style.color = 'var(--success-color)';
-        
-        setTimeout(() => {
-            button.innerHTML = originalText;
-            button.style.color = '';
-        }, 2000);
-    }).catch(() => {
-        showAlert('Erro ao copiar', 'danger');
-    });
-}
-
-function setupMobileNavigation() {
-    // Toggle mobile menu
+// Menu Mobile
+function initMobileMenu() {
     const mobileToggle = document.getElementById('mobileToggle');
     const navLinks = document.querySelector('.nav-links');
     
     if (mobileToggle && navLinks) {
-        mobileToggle.addEventListener('click', () => {
+        mobileToggle.addEventListener('click', function() {
             navLinks.classList.toggle('show');
+            const icon = this.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
         });
     }
 }
 
-function setupSearchHandlers() {
-    // Busca de produtos
-    const productSearch = document.getElementById('productSearch');
-    if (productSearch) {
-        productSearch.addEventListener('input', debounce(handleProductSearch, 300));
-    }
+// Menu do Usuário
+function initUserMenu() {
+    const userMenuToggle = document.querySelector('.user-menu-toggle');
+    const userMenuDropdown = document.querySelector('.user-menu-dropdown');
     
-    // Busca de usuários
-    const userSearch = document.getElementById('userSearch');
-    if (userSearch) {
-        userSearch.addEventListener('input', debounce(handleUserSearch, 300));
-    }
-}
-
-function handleProductSearch(e) {
-    const query = e.target.value.toLowerCase();
-    const productCards = document.querySelectorAll('.product-card');
-    
-    productCards.forEach(card => {
-        const title = card.querySelector('.product-title').textContent.toLowerCase();
-        const description = card.querySelector('.product-description').textContent.toLowerCase();
+    if (userMenuToggle && userMenuDropdown) {
+        userMenuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            userMenuDropdown.style.display = 
+                userMenuDropdown.style.display === 'block' ? 'none' : 'block';
+        });
         
-        if (title.includes(query) || description.includes(query)) {
-            card.style.display = 'block';
-            card.classList.add('fade-in');
-        } else {
-            card.style.display = 'none';
-        }
-    });
-}
-
-function handleUserSearch(e) {
-    const query = e.target.value.toLowerCase();
-    const userRows = document.querySelectorAll('tr[data-user-id]');
-    
-    userRows.forEach(row => {
-        const username = row.querySelector('h4').textContent.toLowerCase();
-        const email = row.cells[1].textContent.toLowerCase();
-        
-        if (username.includes(query) || email.includes(query)) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
-}
-
-function setupAnimations() {
-    // Intersection Observer para animações
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('fade-in');
+        // Fechar menu ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (!userMenuToggle.contains(e.target)) {
+                userMenuDropdown.style.display = 'none';
             }
         });
-    }, observerOptions);
-    
-    // Observar elementos que devem animar
-    const animatedElements = document.querySelectorAll('.card, .product-card, .hero-content');
-    animatedElements.forEach(el => observer.observe(el));
+    }
 }
 
-function setupTheme() {
-    // Detectar preferência do sistema
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const savedTheme = localStorage.getItem('theme');
+// Validação de Formulários
+function initFormValidation() {
+    const forms = document.querySelectorAll('form');
     
-    const theme = savedTheme || (prefersDark ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', theme);
-}
-
-function initializeTooltips() {
-    // Adicionar tooltips simples
-    const elementsWithTooltip = document.querySelectorAll('[title]');
-    elementsWithTooltip.forEach(element => {
-        element.addEventListener('mouseenter', showTooltip);
-        element.addEventListener('mouseleave', hideTooltip);
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn && !submitBtn.disabled) {
+                // Adicionar loading
+                addLoadingState(submitBtn);
+                
+                // Validações específicas por formulário
+                if (form.id === 'loginForm') {
+                    return validateLoginForm(form, e);
+                } else if (form.id === 'registerForm') {
+                    return validateRegisterForm(form, e);
+                }
+            }
+        });
     });
 }
 
-function showTooltip(e) {
-    const element = e.target;
-    const title = element.getAttribute('title');
+// Validação Login
+function validateLoginForm(form, e) {
+    const username = form.querySelector('#username')?.value;
+    const password = form.querySelector('#password')?.value;
     
-    if (!title) return;
+    if (!username || !password) {
+        e.preventDefault();
+        showNotification('Por favor, preencha todos os campos', 'danger');
+        removeLoadingState(form.querySelector('button[type="submit"]'));
+        return false;
+    }
     
-    // Criar tooltip
-    const tooltip = document.createElement('div');
-    tooltip.className = 'tooltip';
-    tooltip.textContent = title;
-    tooltip.style.cssText = `
-        position: absolute;
-        background: var(--gray-900);
-        color: white;
-        padding: 0.5rem;
-        border-radius: 4px;
-        font-size: 0.875rem;
-        z-index: 1000;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.2s ease;
+    return true;
+}
+
+// Validação Registro
+function validateRegisterForm(form, e) {
+    const username = form.querySelector('#username')?.value;
+    const email = form.querySelector('#email')?.value;
+    const password = form.querySelector('#password')?.value;
+    const confirmPassword = form.querySelector('#confirm_password')?.value;
+    const acceptTerms = form.querySelector('input[name="accept_terms"]')?.checked;
+    
+    // Validar campos obrigatórios
+    if (!username || !email || !password || !confirmPassword) {
+        e.preventDefault();
+        showNotification('Por favor, preencha todos os campos obrigatórios', 'danger');
+        removeLoadingState(form.querySelector('button[type="submit"]'));
+        return false;
+    }
+    
+    // Validar senhas
+    if (password !== confirmPassword) {
+        e.preventDefault();
+        showNotification('As senhas não coincidem', 'danger');
+        removeLoadingState(form.querySelector('button[type="submit"]'));
+        return false;
+    }
+    
+    // Validar força da senha
+    if (password.length < 6) {
+        e.preventDefault();
+        showNotification('A senha deve ter pelo menos 6 caracteres', 'danger');
+        removeLoadingState(form.querySelector('button[type="submit"]'));
+        return false;
+    }
+    
+    // Validar termos
+    if (!acceptTerms) {
+        e.preventDefault();
+        showNotification('Você deve aceitar os termos de uso', 'danger');
+        removeLoadingState(form.querySelector('button[type="submit"]'));
+        return false;
+    }
+    
+    return true;
+}
+
+// Estados de Loading
+function initLoadingStates() {
+    // Adicionar loading aos links de navegação
+    const navLinks = document.querySelectorAll('a[href^="/"]');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (this.target !== '_blank') {
+                addLoadingState(this);
+            }
+        });
+    });
+}
+
+function addLoadingState(element) {
+    if (!element) return;
+    
+    element.disabled = true;
+    element.style.opacity = '0.7';
+    
+    // Salvar conteúdo original
+    if (!element.dataset.originalContent) {
+        element.dataset.originalContent = element.innerHTML;
+    }
+    
+    // Adicionar spinner
+    const spinner = '<span class="loading"></span>';
+    if (element.tagName === 'BUTTON') {
+        element.innerHTML = spinner + ' Carregando...';
+    } else {
+        element.style.position = 'relative';
+        element.innerHTML += ' ' + spinner;
+    }
+}
+
+function removeLoadingState(element) {
+    if (!element) return;
+    
+    element.disabled = false;
+    element.style.opacity = '';
+    
+    if (element.dataset.originalContent) {
+        element.innerHTML = element.dataset.originalContent;
+    }
+}
+
+// Sistema de Notificações
+function initNotifications() {
+    // Verificar se há mensagens flash no servidor
+    const flashMessages = document.querySelector('.flash-messages');
+    if (flashMessages) {
+        const messages = flashMessages.querySelectorAll('.alert');
+        messages.forEach(message => {
+            const type = message.classList.contains('alert-success') ? 'success' :
+                        message.classList.contains('alert-danger') ? 'danger' :
+                        message.classList.contains('alert-warning') ? 'warning' : 'info';
+            
+            showNotification(message.textContent.trim(), type);
+        });
+        
+        // Remover mensagens originais
+        flashMessages.remove();
+    }
+}
+
+function showNotification(message, type = 'info', duration = 5000) {
+    // Remover notificações existentes
+    const existing = document.querySelectorAll('.notification-toast');
+    existing.forEach(toast => toast.remove());
+    
+    // Criar nova notificação
+    const toast = document.createElement('div');
+    toast.className = `notification-toast alert alert-${type}`;
+    toast.innerHTML = `
+        <div class="notification-content">
+            <i class="fas ${getNotificationIcon(type)}"></i>
+            <span>${message}</span>
+            <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
     `;
     
-    document.body.appendChild(tooltip);
-    
-    // Posicionar tooltip
-    const rect = element.getBoundingClientRect();
-    tooltip.style.left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + 'px';
-    tooltip.style.top = rect.top - tooltip.offsetHeight - 8 + 'px';
-    
-    // Mostrar tooltip
-    requestAnimationFrame(() => {
-        tooltip.style.opacity = '1';
-    });
-    
-    // Remover title para evitar tooltip nativo
-    element.setAttribute('data-title', title);
-    element.removeAttribute('title');
-}
-
-function hideTooltip(e) {
-    const element = e.target;
-    const tooltip = document.querySelector('.tooltip');
-    
-    if (tooltip) {
-        tooltip.remove();
-    }
-    
-    // Restaurar title
-    const title = element.getAttribute('data-title');
-    if (title) {
-        element.setAttribute('title', title);
-        element.removeAttribute('data-title');
-    }
-}
-
-function showAlert(message, type = 'info') {
-    // Remover alertas existentes
-    const existingAlerts = document.querySelectorAll('.alert-toast');
-    existingAlerts.forEach(alert => alert.remove());
-    
-    // Criar novo alerta
-    const alert = document.createElement('div');
-    alert.className = `alert alert-${type} alert-toast`;
-    alert.textContent = message;
-    alert.style.cssText = `
+    // Estilos da notificação
+    toast.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
         z-index: 9999;
         min-width: 300px;
-        animation: slideIn 0.3s ease;
+        max-width: 500px;
+        animation: slideInRight 0.3s ease;
+        border-left: 4px solid var(--${type === 'danger' ? 'danger' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info'}-color);
     `;
     
-    document.body.appendChild(alert);
+    document.body.appendChild(toast);
     
-    // Remover após 5 segundos
-    setTimeout(() => {
-        alert.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => alert.remove(), 300);
-    }, 5000);
+    // Auto remover
+    if (duration > 0) {
+        setTimeout(() => {
+            toast.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
 }
 
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+function getNotificationIcon(type) {
+    switch(type) {
+        case 'success': return 'fa-check-circle';
+        case 'danger': return 'fa-exclamation-circle';
+        case 'warning': return 'fa-exclamation-triangle';
+        case 'info': return 'fa-info-circle';
+        default: return 'fa-info-circle';
+    }
+}
+
+// Utilitários
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const toggle = input.nextElementSibling;
+    const icon = toggle.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+
+function formatCurrency(value) {
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }).format(value);
+}
+
+function formatDate(date) {
+    return new Intl.DateTimeFormat('pt-BR').format(new Date(date));
+}
+
+// AJAX Helper
+async function makeRequest(url, method = 'GET', data = null) {
+    const options = {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+        }
     };
+    
+    if (data) {
+        options.body = JSON.stringify(data);
+    }
+    
+    try {
+        const response = await fetch(url, options);
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.message || 'Erro na requisição');
+        }
+        
+        return result;
+    } catch (error) {
+        console.error('Erro na requisição:', error);
+        showNotification(error.message || 'Erro na requisição', 'danger');
+        throw error;
+    }
 }
 
-// CSS adicional para animações
+// Funcionalidades específicas
+function purchaseProduct(productId) {
+    if (!confirm('Confirma a compra deste produto?')) {
+        return;
+    }
+    
+    const btn = event.target.closest('.btn');
+    addLoadingState(btn);
+    
+    makeRequest(`/api/purchase/${productId}`, 'POST')
+        .then(response => {
+            showNotification('Produto adicionado ao carrinho!', 'success');
+            // Redirecionar para checkout ou atualizar página
+            setTimeout(() => {
+                window.location.href = '/checkout';
+            }, 1500);
+        })
+        .catch(error => {
+            removeLoadingState(btn);
+        });
+}
+
+function downloadProduct(productId) {
+    const btn = event.target.closest('.btn');
+    addLoadingState(btn);
+    
+    window.location.href = `/api/download/${productId}`;
+    
+    setTimeout(() => {
+        removeLoadingState(btn);
+    }, 2000);
+}
+
+// Animações CSS
 const style = document.createElement('style');
 style.textContent = `
-    @keyframes slideIn {
+    @keyframes slideInRight {
         from {
             transform: translateX(100%);
             opacity: 0;
@@ -452,7 +343,7 @@ style.textContent = `
         }
     }
     
-    @keyframes slideOut {
+    @keyframes slideOutRight {
         from {
             transform: translateX(0);
             opacity: 1;
@@ -461,18 +352,43 @@ style.textContent = `
             transform: translateX(100%);
             opacity: 0;
         }
+    }
+    
+    .notification-toast {
+        box-shadow: var(--shadow-xl);
+        border-radius: var(--border-radius);
+    }
+    
+    .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .notification-close {
+        background: none;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+        opacity: 0.7;
+        margin-left: auto;
+    }
+    
+    .notification-close:hover {
+        opacity: 1;
     }
     
     .nav-links.show {
-        display: flex !important;
+        display: flex;
         flex-direction: column;
         position: absolute;
         top: 100%;
         left: 0;
         right: 0;
         background: white;
-        box-shadow: var(--shadow-lg);
         padding: 1rem;
+        box-shadow: var(--shadow-lg);
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
     }
     
     @media (max-width: 768px) {
@@ -481,4 +397,5 @@ style.textContent = `
         }
     }
 `;
+
 document.head.appendChild(style);

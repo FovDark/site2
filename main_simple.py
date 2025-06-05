@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 # Importações locais
 from database import get_db, init_db
-from models import User, Product, Category
+from models import User, Product, Category, License
 from auth import hash_password, verify_password, create_access_token, verify_token
 
 # Inicializar FastAPI
@@ -255,6 +255,237 @@ async def logout():
     response = RedirectResponse(url="/", status_code=302)
     response.delete_cookie(key="access_token")
     return response
+
+@app.get("/products")
+async def products_page(request: Request, db: Session = Depends(get_db)):
+    """Página de produtos"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        
+        # Buscar produtos com categorias
+        products = db.query(Product).join(Category).filter(Product.is_active == True).all()
+        categories = db.query(Category).filter(Category.is_active == True).all()
+        
+        return templates.TemplateResponse("products.html", {
+            "request": request,
+            "current_user": current_user,
+            "products": products,
+            "categories": categories
+        })
+    except Exception as e:
+        logger.error(f"Erro ao carregar produtos: {e}")
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "error": "Erro ao carregar produtos"
+        })
+
+@app.get("/categories")
+async def categories_page(request: Request, db: Session = Depends(get_db)):
+    """Página de categorias"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        categories = db.query(Category).filter(Category.is_active == True).all()
+        
+        return templates.TemplateResponse("categories.html", {
+            "request": request,
+            "current_user": current_user,
+            "categories": categories
+        })
+    except Exception as e:
+        logger.error(f"Erro ao carregar categorias: {e}")
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "error": "Erro ao carregar categorias"
+        })
+
+@app.get("/downloads")
+async def downloads_page(request: Request, db: Session = Depends(get_db)):
+    """Página de downloads do usuário"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        if not current_user:
+            return RedirectResponse(url="/login", status_code=302)
+        
+        # Buscar licenças ativas do usuário
+        licenses = db.query(License).filter(
+            License.user_id == current_user.id,
+            License.is_active == True
+        ).join(Product).all()
+        
+        return templates.TemplateResponse("downloads.html", {
+            "request": request,
+            "current_user": current_user,
+            "licenses": licenses
+        })
+    except Exception as e:
+        logger.error(f"Erro ao carregar downloads: {e}")
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "error": "Erro ao carregar downloads"
+        })
+
+@app.get("/products/{product_id}")
+async def product_detail(request: Request, product_id: int, db: Session = Depends(get_db)):
+    """Página de detalhes do produto"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product:
+            return templates.TemplateResponse("error.html", {
+                "request": request,
+                "error": "Produto não encontrado"
+            })
+        
+        # Verificar se usuário já possui licença
+        user_license = None
+        if current_user:
+            user_license = db.query(License).filter(
+                License.user_id == current_user.id,
+                License.product_id == product_id,
+                License.is_active == True
+            ).first()
+        
+        return templates.TemplateResponse("product_detail.html", {
+            "request": request,
+            "current_user": current_user,
+            "product": product,
+            "user_license": user_license
+        })
+    except Exception as e:
+        logger.error(f"Erro ao carregar produto: {e}")
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "error": "Erro ao carregar produto"
+        })
+
+@app.post("/api/purchase/{product_id}")
+async def api_purchase_product(request: Request, product_id: int, db: Session = Depends(get_db)):
+    """API para comprar produto"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        if not current_user:
+            return JSONResponse(
+                status_code=401,
+                content={"success": False, "message": "Login necessário"}
+            )
+        
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product:
+            return JSONResponse(
+                status_code=404,
+                content={"success": False, "message": "Produto não encontrado"}
+            )
+        
+        # Verificar se já possui licença ativa
+        existing_license = db.query(License).filter(
+            License.user_id == current_user.id,
+            License.product_id == product_id,
+            License.is_active == True
+        ).first()
+        
+        if existing_license:
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "Você já possui uma licença ativa para este produto"}
+            )
+        
+        # Criar licença diretamente (simulando pagamento aprovado)
+        from license import create_license
+        license_obj = create_license(db, current_user.id, product_id, product.duration_days)
+        
+        if license_obj:
+            return JSONResponse(content={
+                "success": True,
+                "message": "Produto comprado com sucesso!",
+                "license_key": license_obj.license_key
+            })
+        else:
+            return JSONResponse(
+                status_code=500,
+                content={"success": False, "message": "Erro ao processar compra"}
+            )
+        
+    except Exception as e:
+        logger.error(f"Erro na compra: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "Erro interno do servidor"}
+        )
+
+@app.get("/api/download/{product_id}")
+async def api_download_product(request: Request, product_id: int, db: Session = Depends(get_db)):
+    """API para download de produto"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        if not current_user:
+            return RedirectResponse(url="/login")
+        
+        # Verificar licença ativa
+        license_obj = db.query(License).filter(
+            License.user_id == current_user.id,
+            License.product_id == product_id,
+            License.is_active == True
+        ).first()
+        
+        if not license_obj:
+            return templates.TemplateResponse("error.html", {
+                "request": request,
+                "error": "Você não possui licença para este produto"
+            })
+        
+        product = db.query(Product).filter(Product.id == product_id).first()
+        
+        if product and product.download_url:
+            return RedirectResponse(url=product.download_url)
+        else:
+            return templates.TemplateResponse("error.html", {
+                "request": request,
+                "error": "Download não disponível para este produto"
+            })
+        
+    except Exception as e:
+        logger.error(f"Erro no download: {e}")
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "error": "Erro ao processar download"
+        })
+
+@app.get("/contact")
+async def contact_page(request: Request, db: Session = Depends(get_db)):
+    """Página de contato"""
+    current_user = get_current_user_simple(request, db)
+    return templates.TemplateResponse("contact.html", {
+        "request": request,
+        "current_user": current_user
+    })
+
+@app.get("/support")
+async def support_page(request: Request, db: Session = Depends(get_db)):
+    """Página de suporte"""
+    current_user = get_current_user_simple(request, db)
+    return templates.TemplateResponse("support.html", {
+        "request": request,
+        "current_user": current_user
+    })
+
+@app.get("/terms")
+async def terms_page(request: Request, db: Session = Depends(get_db)):
+    """Página de termos de uso"""
+    current_user = get_current_user_simple(request, db)
+    return templates.TemplateResponse("terms.html", {
+        "request": request,
+        "current_user": current_user
+    })
+
+@app.get("/privacy")
+async def privacy_page(request: Request, db: Session = Depends(get_db)):
+    """Página de política de privacidade"""
+    current_user = get_current_user_simple(request, db)
+    return templates.TemplateResponse("privacy.html", {
+        "request": request,
+        "current_user": current_user
+    })
 
 @app.get("/health")
 async def health_check():

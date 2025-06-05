@@ -1,427 +1,136 @@
 {% extends "base.html" %}
 
-{% block title %}
-{% if selected_category %}Produtos - {{ selected_category }} - FovDark{% else %}Todos os Produtos - FovDark{% endif %}
-{% endblock %}
+{% block title %}Produtos - FovDark{% endblock %}
 
 {% block content %}
-<section class="products-page">
+<!-- Header da Página -->
+<section style="background: var(--gray-900); color: white; padding: 4rem 0; text-align: center;">
     <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1>
-                {% if selected_category %}
-                    {{ selected_category }}
-                {% else %}
-                    Todos os Produtos
-                {% endif %}
-            </h1>
-            <p>Encontre as melhores licenças digitais para suas necessidades</p>
-        </div>
-
-        <!-- Filters -->
-        <div class="filters-section">
-            <div class="filters-container">
-                <div class="filter-group">
-                    <label>Categoria:</label>
-                    <div class="category-filters">
-                        <a href="/products" class="filter-btn {% if not selected_category %}active{% endif %}">
-                            <i class="fas fa-th"></i>
-                            Todas
-                        </a>
-                        {% for category in categories %}
-                        <a href="/products?category={{ category.name }}" 
-                           class="filter-btn {% if selected_category == category.name %}active{% endif %}">
-                            {% if category.name == "ISOs" %}
-                                <i class="fas fa-compact-disc"></i>
-                            {% elif category.name == "Programas" %}
-                                <i class="fas fa-desktop"></i>
-                            {% elif category.name == "Otimizadores" %}
-                                <i class="fas fa-tachometer-alt"></i>
-                            {% elif category.name == "Cheats" %}
-                                <i class="fas fa-gamepad"></i>
-                            {% elif category.name == "Trainers" %}
-                                <i class="fas fa-code"></i>
-                            {% elif category.name == "Mods" %}
-                                <i class="fas fa-puzzle-piece"></i>
-                            {% else %}
-                                <i class="fas fa-box"></i>
-                            {% endif %}
-                            {{ category.name }}
-                        </a>
-                        {% endfor %}
-                    </div>
-                </div>
-                
-                <div class="filter-group">
-                    <label>Ordenar por:</label>
-                    <select id="sort-select" class="filter-select" onchange="sortProducts(this.value)">
-                        <option value="newest">Mais Recentes</option>
-                        <option value="oldest">Mais Antigos</option>
-                        <option value="price-low">Menor Preço</option>
-                        <option value="price-high">Maior Preço</option>
-                        <option value="popular">Mais Populares</option>
-                        <option value="name">Nome A-Z</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <div class="search-container">
-                        <input type="text" id="search-input" placeholder="Buscar produtos..." class="search-input" onkeyup="searchProducts(this.value)">
-                        <i class="fas fa-search"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Products Grid -->
-        {% if products %}
-        <div class="products-grid" id="products-grid">
-            {% for product in products %}
-            <div class="product-card" data-category="{{ product.category.name }}" data-price="{{ product.price }}" data-downloads="{{ product.download_count }}" data-name="{{ product.name|lower }}">
-                <div class="product-image">
-                    {% if product.image_url %}
-                        <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy">
-                    {% else %}
-                        <div class="product-placeholder">
-                            {% if product.category.name == "ISOs" %}
-                                <i class="fas fa-compact-disc"></i>
-                            {% elif product.category.name == "Programas" %}
-                                <i class="fas fa-desktop"></i>
-                            {% elif product.category.name == "Otimizadores" %}
-                                <i class="fas fa-tachometer-alt"></i>
-                            {% elif product.category.name == "Cheats" %}
-                                <i class="fas fa-gamepad"></i>
-                            {% elif product.category.name == "Trainers" %}
-                                <i class="fas fa-code"></i>
-                            {% elif product.category.name == "Mods" %}
-                                <i class="fas fa-puzzle-piece"></i>
-                            {% else %}
-                                <i class="fas fa-box"></i>
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                    
-                    <div class="product-overlay">
-                        <a href="/product/{{ product.id }}" class="btn btn-primary">
-                            <i class="fas fa-eye"></i>
-                            Ver Detalhes
-                        </a>
-                        {% if user %}
-                        <button class="btn btn-outline" onclick="quickPurchase({{ product.id }})">
-                            <i class="fas fa-shopping-cart"></i>
-                            Comprar
-                        </button>
-                        {% endif %}
-                    </div>
-                    
-                    {% if product.featured %}
-                    <div class="product-badge featured">
-                        <i class="fas fa-star"></i>
-                        Destaque
-                    </div>
-                    {% endif %}
-                    
-                    {% if product.version %}
-                    <div class="product-version">
-                        v{{ product.version }}
-                    </div>
-                    {% endif %}
-                </div>
-                
-                <div class="product-info">
-                    <div class="product-category">
-                        <span class="category-tag">{{ product.category.name }}</span>
-                    </div>
-                    
-                    <h3 class="product-title">
-                        <a href="/product/{{ product.id }}">{{ product.name }}</a>
-                    </h3>
-                    
-                    <p class="product-description">
-                        {{ product.description[:120] }}{% if product.description|length > 120 %}...{% endif %}
-                    </p>
-                    
-                    <div class="product-meta">
-                        <div class="product-stats">
-                            <span class="stat-item">
-                                <i class="fas fa-download"></i>
-                                {{ product.download_count }}
-                            </span>
-                            {% if product.file_size %}
-                            <span class="stat-item">
-                                <i class="fas fa-hdd"></i>
-                                {{ "%.1f"|format(product.file_size / 1024 / 1024) }} MB
-                            </span>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="product-price">
-                            <span class="price-value">R$ {{ "%.2f"|format(product.price) }}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="product-actions">
-                        <a href="/product/{{ product.id }}" class="btn btn-outline btn-full">
-                            <i class="fas fa-info-circle"></i>
-                            Detalhes
-                        </a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        
-        <!-- Load More Button -->
-        <div class="load-more-container">
-            <button id="load-more-btn" class="btn btn-outline" onclick="loadMoreProducts()" style="display: none;">
-                <i class="fas fa-plus"></i>
-                Carregar Mais Produtos
-            </button>
-        </div>
-        
-        {% else %}
-        <div class="empty-state">
-            {% if selected_category %}
-                <i class="fas fa-box-open"></i>
-                <h3>Nenhum produto encontrado em {{ selected_category }}</h3>
-                <p>Não há produtos disponíveis nesta categoria no momento.</p>
-                <a href="/products" class="btn btn-primary">
-                    <i class="fas fa-th"></i>
-                    Ver Todas as Categorias
-                </a>
-            {% else %}
-                <i class="fas fa-exclamation-triangle"></i>
-                <h3>Nenhum produto encontrado</h3>
-                <p>Não há produtos disponíveis no momento. Volte em breve!</p>
-            {% endif %}
-        </div>
-        {% endif %}
+        <h1 style="color: white; margin-bottom: 1rem;">Nossos Produtos</h1>
+        <p style="font-size: 1.25rem; opacity: 0.9;">Explore nossa coleção completa de licenças digitais premium</p>
     </div>
 </section>
 
-<!-- Quick Purchase Modal -->
-<div id="quick-purchase-modal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Compra Rápida</h3>
-            <button class="modal-close" onclick="closeQuickPurchase()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <div id="quick-purchase-content">
-            <!-- Content will be loaded dynamically -->
+<!-- Filtros -->
+<section style="padding: 2rem 0; background: white; border-bottom: 1px solid var(--gray-200);">
+    <div class="container">
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <strong>Filtrar por categoria:</strong>
+            <a href="/products" class="btn btn-outline btn-sm">Todos</a>
+            {% for category in categories %}
+                <a href="/products?category={{ category.id }}" class="btn btn-outline btn-sm">
+                    <i class="{{ category.icon or 'fas fa-folder' }}"></i>
+                    {{ category.name }}
+                </a>
+            {% endfor %}
         </div>
     </div>
-</div>
+</section>
 
-<!-- Error/Success Messages -->
-{% if error %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        showToast('{{ error }}', 'error');
-    });
-</script>
-{% endif %}
-
-<script>
-let currentPage = 1;
-let isLoading = false;
-let hasMoreProducts = true;
-
-// Search functionality
-function searchProducts(query) {
-    const products = document.querySelectorAll('.product-card');
-    const searchTerm = query.toLowerCase();
-    
-    products.forEach(product => {
-        const name = product.dataset.name;
-        const description = product.querySelector('.product-description').textContent.toLowerCase();
-        
-        if (name.includes(searchTerm) || description.includes(searchTerm)) {
-            product.style.display = 'block';
-        } else {
-            product.style.display = 'none';
-        }
-    });
-}
-
-// Sort functionality
-function sortProducts(sortType) {
-    const grid = document.getElementById('products-grid');
-    const products = Array.from(grid.children);
-    
-    products.sort((a, b) => {
-        switch (sortType) {
-            case 'price-low':
-                return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
-            case 'price-high':
-                return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
-            case 'popular':
-                return parseInt(b.dataset.downloads) - parseInt(a.dataset.downloads);
-            case 'name':
-                return a.dataset.name.localeCompare(b.dataset.name);
-            case 'oldest':
-                return 1; // Keep original order for oldest
-            default: // newest
-                return -1; // Reverse order for newest
-        }
-    });
-    
-    // Clear grid and append sorted products
-    grid.innerHTML = '';
-    products.forEach(product => grid.appendChild(product));
-}
-
-// Quick purchase functionality
-async function quickPurchase(productId) {
-    try {
-        const response = await fetch(`/product/${productId}`);
-        if (!response.ok) throw new Error('Product not found');
-        
-        const productHtml = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(productHtml, 'text/html');
-        
-        // Extract product info (simplified - in real implementation, this would be an API call)
-        const productName = doc.querySelector('h1').textContent;
-        const productPrice = doc.querySelector('.price').textContent;
-        
-        document.getElementById('quick-purchase-content').innerHTML = `
-            <div class="quick-purchase-info">
-                <h4>${productName}</h4>
-                <div class="price">${productPrice}</div>
-                <form onsubmit="submitQuickPurchase(event, ${productId})">
-                    <div class="form-group">
-                        <label>HWID (Hardware ID):</label>
-                        <input type="text" id="quick-hwid" class="form-input" value="${getHWID()}" readonly>
-                        <small>Este ID vincula a licença ao seu dispositivo</small>
+<!-- Lista de Produtos -->
+<section style="padding: 4rem 0; background: var(--gray-50);">
+    <div class="container">
+        {% if products %}
+            <div class="grid grid-3">
+                {% for product in products %}
+                <div class="product-card">
+                    <div class="product-image">
+                        {% if product.image_url %}
+                            <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <i class="{{ product.category.icon or 'fas fa-cube' }}"></i>
+                        {% endif %}
+                        <div class="product-overlay">
+                            <a href="/products/{{ product.id }}" class="btn btn-primary">
+                                <i class="fas fa-eye"></i>
+                                Ver Detalhes
+                            </a>
+                        </div>
+                        {% if product.is_featured %}
+                            <div style="position: absolute; top: 1rem; right: 1rem; background: var(--warning-color); color: white; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600;">
+                                <i class="fas fa-star"></i> Destaque
+                            </div>
+                        {% endif %}
                     </div>
-                    <button type="submit" class="btn btn-primary btn-full">
-                        <i class="fas fa-credit-card"></i>
-                        Finalizar Compra
-                    </button>
-                </form>
+                    
+                    <div class="product-content">
+                        <div class="product-category">
+                            <i class="{{ product.category.icon or 'fas fa-folder' }}"></i>
+                            {{ product.category.name }}
+                        </div>
+                        
+                        <h3 class="product-title">
+                            <a href="/products/{{ product.id }}">{{ product.name }}</a>
+                        </h3>
+                        
+                        <p class="product-description">
+                            {{ product.description[:150] }}{% if product.description|length > 150 %}...{% endif %}
+                        </p>
+                        
+                        <div class="product-price">
+                            <span class="price">R$ {{ "%.2f"|format(product.price) }}</span>
+                            <span class="duration">{{ product.duration_days }} dias</span>
+                        </div>
+                        
+                        <div class="product-actions" style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                            {% if current_user %}
+                                <button onclick="purchaseProduct({{ product.id }})" class="btn btn-primary btn-sm" style="flex: 1;">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Comprar
+                                </button>
+                            {% else %}
+                                <a href="/login" class="btn btn-primary btn-sm" style="flex: 1;">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    Login para Comprar
+                                </a>
+                            {% endif %}
+                            <a href="/products/{{ product.id }}" class="btn btn-outline btn-sm">
+                                <i class="fas fa-info-circle"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-        `;
-        
-        document.getElementById('quick-purchase-modal').style.display = 'flex';
-        
-    } catch (error) {
-        showToast('Erro ao carregar produto', 'error');
+        {% else %}
+            <div class="text-center" style="padding: 4rem 0;">
+                <i class="fas fa-cube" style="font-size: 4rem; color: var(--gray-400); margin-bottom: 1rem;"></i>
+                <h3>Nenhum produto encontrado</h3>
+                <p style="color: var(--gray-600);">Não há produtos disponíveis no momento.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function purchaseProduct(productId) {
+    if (!confirm('Confirma a compra deste produto?')) {
+        return;
     }
-}
-
-function closeQuickPurchase() {
-    document.getElementById('quick-purchase-modal').style.display = 'none';
-}
-
-async function submitQuickPurchase(event, productId) {
-    event.preventDefault();
-    
-    const hwid = document.getElementById('quick-hwid').value;
-    const formData = new FormData();
-    formData.append('product_id', productId);
-    formData.append('hwid', hwid);
     
     try {
-        const response = await fetch('/api/purchase', {
+        const response = await fetch(`/api/purchase/${productId}`, {
             method: 'POST',
-            body: formData
+            headers: {
+                'Content-Type': 'application/json',
+            }
         });
         
         const result = await response.json();
         
         if (result.success) {
-            // Redirect to payment
-            window.location.href = result.payment_url;
+            showNotification('Produto comprado com sucesso!', 'success');
+            setTimeout(() => {
+                window.location.href = '/downloads';
+            }, 2000);
         } else {
-            showToast(result.error || 'Erro ao processar compra', 'error');
+            showNotification(result.message || 'Erro na compra', 'danger');
         }
     } catch (error) {
-        showToast('Erro de conexão', 'error');
+        showNotification('Erro na compra', 'danger');
     }
 }
-
-// Get HWID (same function as in painel.html)
-function getHWID() {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    ctx.textBaseline = 'top';
-    ctx.font = '14px Arial';
-    ctx.fillText('HWID Generation', 2, 2);
-    
-    const fingerprint = [
-        navigator.userAgent,
-        navigator.language,
-        screen.width + 'x' + screen.height,
-        new Date().getTimezoneOffset(),
-        canvas.toDataURL()
-    ].join('|');
-    
-    let hash = 0;
-    for (let i = 0; i < fingerprint.length; i++) {
-        const char = fingerprint.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-    }
-    
-    return Math.abs(hash).toString(16).toUpperCase();
-}
-
-// Load more products (pagination)
-async function loadMoreProducts() {
-    if (isLoading || !hasMoreProducts) return;
-    
-    isLoading = true;
-    const loadBtn = document.getElementById('load-more-btn');
-    loadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando...';
-    
-    try {
-        currentPage++;
-        const category = new URLSearchParams(window.location.search).get('category') || '';
-        const response = await fetch(`/api/products?page=${currentPage}&category=${category}`);
-        const data = await response.json();
-        
-        if (data.products && data.products.length > 0) {
-            const grid = document.getElementById('products-grid');
-            data.products.forEach(product => {
-                // Add new product cards to grid (implementation would depend on API response format)
-                // This is a simplified version
-            });
-            
-            if (data.products.length < 20) { // Assuming 20 products per page
-                hasMoreProducts = false;
-                loadBtn.style.display = 'none';
-            }
-        } else {
-            hasMoreProducts = false;
-            loadBtn.style.display = 'none';
-        }
-    } catch (error) {
-        showToast('Erro ao carregar mais produtos', 'error');
-    } finally {
-        isLoading = false;
-        loadBtn.innerHTML = '<i class="fas fa-plus"></i> Carregar Mais Produtos';
-    }
-}
-
-// Close modal when clicking outside
-window.onclick = function(event) {
-    const modal = document.getElementById('quick-purchase-modal');
-    if (event.target === modal) {
-        closeQuickPurchase();
-    }
-}
-
-// Initialize page
-document.addEventListener('DOMContentLoaded', function() {
-    // Show load more button if there are many products
-    const products = document.querySelectorAll('.product-card');
-    if (products.length >= 20) {
-        document.getElementById('load-more-btn').style.display = 'block';
-    }
-});
 </script>
 {% endblock %}
