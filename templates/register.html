@@ -27,10 +27,7 @@
                        name="username" 
                        class="form-control" 
                        placeholder="Escolha um nome de usuário"
-                       required
-                       minlength="3"
-                       maxlength="50">
-                <small class="form-help">Mínimo de 3 caracteres, sem espaços</small>
+                       required>
             </div>
 
             <div class="form-group">
@@ -44,7 +41,6 @@
                        class="form-control" 
                        placeholder="seu@email.com"
                        required>
-                <small class="form-help">Usaremos para enviar suas licenças</small>
             </div>
 
             <div class="form-group">
@@ -58,13 +54,11 @@
                            name="password" 
                            class="form-control" 
                            placeholder="Crie uma senha segura"
-                           required
-                           minlength="6">
+                           required>
                     <button type="button" class="password-toggle" onclick="togglePassword('password')">
                         <i class="fas fa-eye"></i>
                     </button>
                 </div>
-                <div class="password-strength" id="passwordStrength"></div>
             </div>
 
             <div class="form-group">
@@ -85,19 +79,11 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-options">
                 <label class="checkbox-label">
                     <input type="checkbox" name="accept_terms" required>
                     <span class="checkmark"></span>
-                    Eu aceito os <a href="/terms" target="_blank">Termos de Uso</a> e a <a href="/privacy" target="_blank">Política de Privacidade</a>
-                </label>
-            </div>
-
-            <div class="form-group">
-                <label class="checkbox-label">
-                    <input type="checkbox" name="newsletter">
-                    <span class="checkmark"></span>
-                    Quero receber novidades e promoções por email (opcional)
+                    Aceito os termos e condições
                 </label>
             </div>
 
@@ -126,56 +112,27 @@
     </div>
 
     <div class="auth-features">
-        <h3>Benefícios da conta FovDark</h3>
+        <h3>Por que criar uma conta?</h3>
         <div class="feature-list">
             <div class="feature-item">
-                <i class="fas fa-gift"></i>
+                <i class="fas fa-shield-check"></i>
                 <div>
-                    <h4>Conta Gratuita</h4>
-                    <p>Crie sua conta sem nenhum custo e explore nossa plataforma</p>
+                    <h4>Segurança Avançada</h4>
+                    <p>Proteção HWID e verificação em tempo real</p>
                 </div>
             </div>
             <div class="feature-item">
-                <i class="fas fa-history"></i>
+                <i class="fas fa-download"></i>
                 <div>
-                    <h4>Histórico de Compras</h4>
-                    <p>Acesse todo seu histórico e baixe novamente quando quiser</p>
+                    <h4>Download Imediato</h4>
+                    <p>Acesso instantâneo após confirmação</p>
                 </div>
             </div>
             <div class="feature-item">
-                <i class="fas fa-bell"></i>
+                <i class="fas fa-headset"></i>
                 <div>
-                    <h4>Notificações</h4>
-                    <p>Receba avisos sobre novos produtos e promoções exclusivas</p>
-                </div>
-            </div>
-            <div class="feature-item">
-                <i class="fas fa-crown"></i>
-                <div>
-                    <h4>Acesso VIP</h4>
-                    <p>Produtos exclusivos e descontos especiais para membros</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="trust-indicators">
-            <h4>Segurança Garantida</h4>
-            <div class="trust-grid">
-                <div class="trust-item">
-                    <i class="fas fa-shield-check"></i>
-                    <span>SSL Seguro</span>
-                </div>
-                <div class="trust-item">
-                    <i class="fas fa-lock"></i>
-                    <span>Dados Protegidos</span>
-                </div>
-                <div class="trust-item">
-                    <i class="fas fa-user-shield"></i>
-                    <span>LGPD Compliance</span>
-                </div>
-                <div class="trust-item">
-                    <i class="fas fa-certificate"></i>
-                    <span>Verificado</span>
+                    <h4>Suporte 24/7</h4>
+                    <p>Equipe sempre disponível para ajudar</p>
                 </div>
             </div>
         </div>
@@ -185,100 +142,258 @@
 
 {% block extra_css %}
 <style>
-.form-help {
-    display: block;
-    color: var(--gray-500);
-    font-size: 0.75rem;
-    margin-top: 0.25rem;
+.auth-page {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
 }
 
-.password-strength {
-    margin-top: 0.5rem;
-    height: 4px;
-    background: var(--gray-200);
-    border-radius: 2px;
-    overflow: hidden;
-}
-
-.password-strength::before {
-    content: '';
-    display: block;
-    height: 100%;
-    width: 0;
-    background: var(--danger-color);
-    transition: all 0.3s ease;
-}
-
-.password-strength.weak::before {
-    width: 33%;
-    background: var(--danger-color);
-}
-
-.password-strength.medium::before {
-    width: 66%;
-    background: var(--warning-color);
-}
-
-.password-strength.strong::before {
-    width: 100%;
-    background: var(--success-color);
-}
-
-.checkbox-label a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-.checkbox-label a:hover {
-    text-decoration: underline;
-}
-
-.trust-indicators {
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.trust-indicators h4 {
-    color: white;
-    text-align: center;
-    margin-bottom: 1.5rem;
-}
-
-.trust-grid {
+.auth-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-}
-
-.trust-item {
-    display: flex;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1rem;
     align-items: center;
-    gap: 0.5rem;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.875rem;
+    min-height: calc(100vh - 4rem);
 }
 
-.trust-item i {
-    color: var(--success-color);
-    font-size: 1rem;
+.auth-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 3rem;
+    box-shadow: var(--shadow-xl);
+    animation: slideInLeft 0.6s ease;
 }
 
-.auth-features .feature-list {
+.auth-header {
+    text-align: center;
     margin-bottom: 2rem;
 }
 
-@media (max-width: 768px) {
-    .trust-grid {
-        grid-template-columns: 1fr;
+.auth-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.auth-logo i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+}
+
+.auth-logo h1 {
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.auth-header h2 {
+    margin-bottom: 0.5rem;
+    color: var(--gray-900);
+}
+
+.auth-header p {
+    color: var(--gray-600);
+    font-size: 0.95rem;
+}
+
+.auth-form {
+    margin-bottom: 2rem;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-label i {
+    color: var(--primary-color);
+    width: 16px;
+}
+
+.password-input {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--gray-400);
+    cursor: pointer;
+    padding: 4px;
+}
+
+.password-toggle:hover {
+    color: var(--gray-600);
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1.5rem 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.checkbox-label input {
+    margin: 0;
+}
+
+.auth-divider {
+    text-align: center;
+    margin: 1.5rem 0;
+    position: relative;
+}
+
+.auth-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--gray-200);
+}
+
+.auth-divider span {
+    background: white;
+    padding: 0 1rem;
+    color: var(--gray-500);
+    font-size: 0.875rem;
+}
+
+.auth-footer p {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: var(--gray-600);
+}
+
+.auth-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.auth-links a {
+    color: var(--gray-500);
+    text-decoration: none;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.auth-links a:hover {
+    color: var(--primary-color);
+}
+
+.auth-features {
+    color: white;
+    animation: slideInRight 0.6s ease;
+}
+
+.auth-features h3 {
+    color: white;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+
+.feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.feature-item i {
+    font-size: 2rem;
+    color: var(--warning-color);
+    margin-top: 0.25rem;
+}
+
+.feature-item h4 {
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.feature-item p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
     }
-    
-    .auth-features {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .auth-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
         padding: 1rem;
     }
     
+    .auth-card {
+        padding: 2rem;
+    }
+    
+    .auth-features {
+        order: -1;
+        text-align: center;
+    }
+    
     .feature-list {
-        gap: 1.5rem;
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    .feature-item {
+        flex-direction: column;
+        text-align: center;
+        min-width: 200px;
     }
 }
 </style>
@@ -298,102 +413,6 @@ function togglePassword(inputId) {
         input.type = 'password';
         icon.className = 'fas fa-eye';
     }
-}
-
-// Validação em tempo real
-document.addEventListener('DOMContentLoaded', function() {
-    const passwordInput = document.getElementById('password');
-    const confirmPasswordInput = document.getElementById('confirm_password');
-    const strengthIndicator = document.getElementById('passwordStrength');
-    const form = document.getElementById('registerForm');
-
-    // Verificar força da senha
-    passwordInput.addEventListener('input', function() {
-        const password = this.value;
-        const strength = checkPasswordStrength(password);
-        
-        strengthIndicator.className = 'password-strength ' + strength;
-    });
-
-    // Verificar se as senhas coincidem
-    confirmPasswordInput.addEventListener('input', function() {
-        const password = passwordInput.value;
-        const confirmPassword = this.value;
-        
-        if (confirmPassword && password !== confirmPassword) {
-            this.setCustomValidity('As senhas não coincidem');
-        } else {
-            this.setCustomValidity('');
-        }
-    });
-
-    // Validação do formulário
-    form.addEventListener('submit', function(e) {
-        const password = passwordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
-        
-        if (password !== confirmPassword) {
-            e.preventDefault();
-            showAlert('As senhas não coincidem', 'danger');
-            return false;
-        }
-        
-        if (password.length < 6) {
-            e.preventDefault();
-            showAlert('A senha deve ter pelo menos 6 caracteres', 'danger');
-            return false;
-        }
-        
-        // Adicionar loading ao botão
-        const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.innerHTML = '<span class="loading"></span> Criando conta...';
-        submitBtn.disabled = true;
-    });
-});
-
-function checkPasswordStrength(password) {
-    if (password.length < 6) return 'weak';
-    
-    let score = 0;
-    
-    // Verificações
-    if (password.length >= 8) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[a-z]/.test(password)) score++;
-    if (/[0-9]/.test(password)) score++;
-    if (/[^A-Za-z0-9]/.test(password)) score++;
-    
-    if (score <= 2) return 'weak';
-    if (score <= 3) return 'medium';
-    return 'strong';
-}
-
-function showAlert(message, type) {
-    // Remover alertas existentes
-    const existingAlert = document.querySelector('.alert-toast');
-    if (existingAlert) {
-        existingAlert.remove();
-    }
-    
-    // Criar novo alerta
-    const alert = document.createElement('div');
-    alert.className = `alert alert-${type} alert-toast`;
-    alert.textContent = message;
-    alert.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        min-width: 300px;
-        animation: slideIn 0.3s ease;
-    `;
-    
-    document.body.appendChild(alert);
-    
-    // Remover após 5 segundos
-    setTimeout(() => {
-        alert.remove();
-    }, 5000);
 }
 </script>
 {% endblock %}
