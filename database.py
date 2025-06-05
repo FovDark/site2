@@ -11,16 +11,23 @@ logger = logging.getLogger(__name__)
 # Configuração do banco de dados
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
-    # Fallback para desenvolvimento local
-    DATABASE_URL = f"postgresql://{os.getenv('PGUSER', 'postgres')}:{os.getenv('PGPASSWORD', 'password')}@{os.getenv('PGHOST', 'localhost')}:{os.getenv('PGPORT', '5432')}/{os.getenv('PGDATABASE', 'fovdark')}"
+    # Fallback para desenvolvimento local com SQLite
+    DATABASE_URL = "sqlite:///./fovdark.db"
 
 # Engine síncrono para a aplicação principal
-engine = create_engine(
-    DATABASE_URL,
-    pool_pre_ping=True,
-    pool_recycle=300,
-    echo=False
-)
+if DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(
+        DATABASE_URL,
+        echo=False,
+        connect_args={"check_same_thread": False}
+    )
+else:
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        pool_recycle=300,
+        echo=False
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -32,7 +39,7 @@ def get_db():
     finally:
         db.close()
 
-async def create_tables():
+def create_tables():
     """Criar todas as tabelas e dados iniciais"""
     try:
         # Criar todas as tabelas
@@ -40,13 +47,13 @@ async def create_tables():
         logger.info("Tabelas criadas com sucesso")
         
         # Criar dados iniciais
-        await create_initial_data()
+        create_initial_data()
         
     except Exception as e:
         logger.error(f"Erro ao criar tabelas: {e}")
         raise
 
-async def create_initial_data():
+def create_initial_data():
     """Criar dados iniciais do sistema"""
     db = SessionLocal()
     try:
