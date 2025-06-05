@@ -13,7 +13,7 @@
                         <i class="fas fa-user-circle"></i>
                     </div>
                     <div class="welcome-text">
-                        <h1>Bem-vindo, {{ user.username }}!</h1>
+                        <h1>Bem-vindo, {{ current_user.username }}!</h1>
                         <p>Gerencie suas licenças e acompanhe suas atividades</p>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                     <i class="fas fa-calendar"></i>
                 </div>
                 <div class="stat-content">
-                    <div class="stat-number">{{ user.created_at.strftime('%d/%m/%Y') }}</div>
+                    <div class="stat-number">{{ current_user.created_at.strftime('%d/%m/%Y') if current_user.created_at else 'N/A' }}</div>
                     <div class="stat-label">Membro desde</div>
                 </div>
             </div>
