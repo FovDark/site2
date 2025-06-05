@@ -1,0 +1,88 @@
+Crie um sistema web completo de vendas de licenças digitais com as seguintes funcionalidades:
+nome site FovDark, disponibilizaçao de isos customizadas, programas, otimizadors, cheats e trainers, mods, sera feito deploy no railway, gere gitignore com dependencias repite
+## Estrutura Técnica
+- Backend: Python FastAPI com SQLAlchemy
+- Frontend: HTML/CSS/JavaScript (sem frameworks)
+- Banco de dados: PostgreSQL
+- Autenticação: JWT tokens
+- Pagamentos: Integração MercadoPago
+- Email: SendGrid ou SMTP
+## Funcionalidades Principais
+### Sistema de Usuários
+- Registro e login com validação
+- Recuperação de senha por email
+- Painel do usuário com status da licença
+- Sistema de níveis (usuário comum/admin)
+### Sistema de Produtos
+- CRUD completo de produtos
+- Categorias: software, ISOs, otimizadores
+- Preços e durações configuráveis
+- Upload de imagens para produtos
+- Sistema de tags e requisitos
+### Sistema de Licenças
+- Verificação automática de expiração
+- Status: pendente, ativa, expirada
+- Controle por HWID (hardware ID)
+- Downloads protegidos por licença ativa
+### Painel Administrativo
+- Dashboard com estatísticas
+- Gerenciamento de usuários
+- Gerenciamento de produtos
+- Histórico de pagamentos
+- Sistema de logs de ações
+### Sistema de Pagamentos
+- Integração completa infinite pay
+- Webhooks para confirmação automática
+- Diferentes planos de duração
+- Histórico de transações
+### Sistema de Downloads
+- Categorização por tipo
+- Controle de acesso baseado em licença
+- Contador de downloads
+- Arquivos protegidos
+- exeto links gratis
+## Estrutura de Arquivos
+projeto/
+main.py (servidor principal)
+models.py (modelos do banco)
+ auth.py (autenticação)
+database.py (Supabase)
+admin.py (funções admin)
+license.py (controle licenças)
+email_utils.py (envio emails)
+password_recovery.py (recuperação senha)
+templates/
+base.html
+index.html
+login.html
+register.html
+painel.html 
+admin.html
+static/
+style.css
+ script.js
+ uploads/
+requirements.txt
+
+## Recursos de Segurança
+- Rate limiting
+- Validação de entrada
+- Headers de segurança
+- Proteção CSRF
+- Sanitização de dados
+- Logs de segurança
+## Funcionalidades Específicas
+- Sistema de HWID para controle de dispositivos
+- Verificação automática de tokens
+- Cache inteligente para performance
+- Tratamento robusto de erros
+- Sistema de notificações (toasts)
+- Design responsivo
+- Tema personalizável
+## Configurações
+- Variáveis de ambiente para produção
+- Suporte para Railway/Heroku
+- Configuração de domínio customizado
+- Setup de webhook infinit pay
+- Configuração de email
+Implemente um sistema completo e funcional com todas essas características, priorizando segurança, performance e experiência do usuário.
