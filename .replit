@@ -22,8 +22,12 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python -m uvicorn main:app --host 0.0.0.0 --port 5000 --reload"
+args = "python -m uvicorn main_simple:app --host 0.0.0.0 --port 5000 --reload"
 waitForPort = 5000
 
 [deployment]
 run = ["sh", "-c", "python -m uvicorn main:app --host 0.0.0.0 --port 5000 --reload"]
+
+[[ports]]
+localPort = 5000
+externalPort = 80
