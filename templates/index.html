@@ -1,220 +1,357 @@
 {% extends "base.html" %}
 
-{% block title %}FovDark - Licenças Digitais Premium{% endblock %}
+{% block title %}FovDark - Gaming Software & Digital Downloads{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero">
+<section class="hero-gaming">
+    <div class="hero-overlay"></div>
     <div class="container">
         <div class="hero-content">
-            <h1>Licenças Digitais Premium</h1>
-            <p>Descubra a maior plataforma de ISOs customizadas, programas otimizados e soluções digitais para elevar sua experiência tecnológica ao próximo nível.</p>
-            <div class="hero-buttons">
-                <a href="/products" class="btn btn-primary btn-lg">
-                    <i class="fas fa-cube"></i>
-                    Explorar Produtos
+            <h1 class="hero-title fade-in">Tudo para otimizar sua experiência digital!</h1>
+            <p class="hero-subtitle fade-in-delay">Baixe programas, mods e ferramentas otimizadas — grátis ou premium.</p>
+            <div class="hero-buttons fade-in-delay-2">
+                <a href="/products" class="btn btn-gaming-primary btn-lg">
+                    <i class="fas fa-download"></i>
+                    Explorar Downloads
                 </a>
-                {% if not current_user %}
-                    <a href="/register" class="btn btn-outline btn-lg">
-                        <i class="fas fa-user-plus"></i>
-                        Criar Conta Grátis
+                <a href="/premium" class="btn btn-gaming-secondary btn-lg">
+                    <i class="fas fa-star"></i>
+                    Ver Planos Premium
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gaming Categories Section -->
+<section class="gaming-categories">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Categorias Gaming</h2>
+            <p class="section-subtitle">Encontre exatamente o que precisa para elevar seu setup</p>
+        </div>
+        
+        <div class="gaming-grid">
+            <div class="gaming-card card-animate" data-delay="0">
+                <div class="gaming-card-icon">
+                    <i class="fas fa-desktop"></i>
+                </div>
+                <div class="gaming-card-content">
+                    <h3>Softwares</h3>
+                    <p>Programas otimizados para performance máxima</p>
+                    <a href="/categories/softwares" class="gaming-btn">
+                        Explorar <i class="fas fa-arrow-right"></i>
                     </a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Features Section -->
-<section class="features-section" style="padding: 4rem 0; background: white;">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2>Por que escolher FovDark?</h2>
-            <p>Oferecemos as melhores soluções digitais com qualidade garantida</p>
-        </div>
-        
-        <div class="grid grid-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <div style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;">
-                        <i class="fas fa-shield-check"></i>
-                    </div>
-                    <h3>Segurança Garantida</h3>
-                    <p>Todas as licenças são protegidas por HWID e verificação em tempo real para máxima segurança.</p>
                 </div>
             </div>
             
-            <div class="card text-center">
-                <div class="card-body">
-                    <div style="font-size: 3rem; color: var(--success-color); margin-bottom: 1rem;">
-                        <i class="fas fa-download"></i>
-                    </div>
-                    <h3>Download Imediato</h3>
-                    <p>Acesso instantâneo aos seus produtos após a confirmação do pagamento, sem complicações.</p>
+            <div class="gaming-card card-animate" data-delay="100">
+                <div class="gaming-card-icon">
+                    <i class="fas fa-compact-disc"></i>
+                </div>
+                <div class="gaming-card-content">
+                    <h3>ISOs Gamers</h3>
+                    <p>Sistemas operacionais customizados para gaming</p>
+                    <a href="/categories/isos" class="gaming-btn">
+                        Explorar <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
             </div>
             
-            <div class="card text-center">
-                <div class="card-body">
-                    <div style="font-size: 3rem; color: var(--warning-color); margin-bottom: 1rem;">
-                        <i class="fas fa-headset"></i>
-                    </div>
-                    <h3>Suporte 24/7</h3>
-                    <p>Nossa equipe especializada está sempre disponível para ajudar você quando precisar.</p>
+            <div class="gaming-card card-animate" data-delay="200">
+                <div class="gaming-card-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="gaming-card-content">
+                    <h3>Otimizadores</h3>
+                    <p>Ferramentas para maximizar FPS e performance</p>
+                    <a href="/categories/otimizadores" class="gaming-btn">
+                        Explorar <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="gaming-card card-animate" data-delay="300">
+                <div class="gaming-card-icon">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <div class="gaming-card-content">
+                    <h3>Mods & Trainers</h3>
+                    <p>Modificações e trainers para seus jogos favoritos</p>
+                    <a href="/categories/mods" class="gaming-btn">
+                        Explorar <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="gaming-card card-animate" data-delay="400">
+                <div class="gaming-card-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="gaming-card-content">
+                    <h3>Cheats & Scripts</h3>
+                    <p>Scripts e cheats para vantagem competitiva</p>
+                    <a href="/categories/cheats" class="gaming-btn">
+                        Explorar <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="gaming-card card-animate" data-delay="500">
+                <div class="gaming-card-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <div class="gaming-card-content">
+                    <h3>Suporte</h3>
+                    <p>Atendimento 24/7 e suporte técnico especializado</p>
+                    <a href="/support" class="gaming-btn">
+                        Contatar <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Categories Section -->
-{% if categories %}
-<section class="categories-section" style="padding: 4rem 0; background: var(--gray-100);">
+<!-- Mais Baixados Section -->
+<section class="popular-downloads">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2>Categorias Principais</h2>
-            <p>Encontre exatamente o que precisa em nossas categorias especializadas</p>
+        <div class="section-header text-center">
+            <h2 class="section-title">Mais Baixados</h2>
+            <p class="section-subtitle">Os softwares mais populares da nossa comunidade</p>
         </div>
         
-        <div class="grid grid-4">
-            {% for category in categories %}
-            <a href="/category/{{ category.id }}" class="card category-card" style="text-decoration: none; color: inherit;">
-                <div class="card-body text-center">
-                    <div style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;">
-                        <i class="{{ category.icon or 'fas fa-folder' }}"></i>
-                    </div>
-                    <h3>{{ category.name }}</h3>
-                    <p>{{ category.description or 'Explore nossa seleção premium.' }}</p>
-                    <div class="btn btn-outline btn-sm mt-3">
-                        Ver Produtos
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
+        <div class="downloads-grid">
+            <div class="download-card card-animate" data-delay="0">
+                <div class="download-icon">
+                    <i class="fas fa-rocket"></i>
                 </div>
+                <div class="download-content">
+                    <h3>FovDark Optimizer</h3>
+                    <p>Sistema completo de otimização</p>
+                    <div class="download-stats">
+                        <span class="price free">GRÁTIS</span>
+                        <span class="downloads">1.2k downloads</span>
+                    </div>
+                    <a href="/download/fovdark-optimizer" class="download-btn">
+                        <i class="fas fa-download"></i> Baixar
+                    </a>
+                </div>
+            </div>
+            
+            <div class="download-card card-animate" data-delay="100">
+                <div class="download-icon">
+                    <i class="fas fa-compact-disc"></i>
+                </div>
+                <div class="download-content">
+                    <h3>Windows 11 Gaming</h3>
+                    <p>ISO otimizada para jogos</p>
+                    <div class="download-stats">
+                        <span class="price premium">PREMIUM</span>
+                        <span class="downloads">856 downloads</span>
+                    </div>
+                    <a href="/download/windows-11-gaming" class="download-btn">
+                        <i class="fas fa-star"></i> Premium
+                    </a>
+                </div>
+            </div>
+            
+            <div class="download-card card-animate" data-delay="200">
+                <div class="download-icon">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <div class="download-content">
+                    <h3>Gaming Trainer Pro</h3>
+                    <p>Trainer universal para jogos</p>
+                    <div class="download-stats">
+                        <span class="price free">GRÁTIS</span>
+                        <span class="downloads">643 downloads</span>
+                    </div>
+                    <a href="/download/gaming-trainer-pro" class="download-btn">
+                        <i class="fas fa-download"></i> Baixar
+                    </a>
+                </div>
+            </div>
+            
+            <div class="download-card card-animate" data-delay="300">
+                <div class="download-icon">
+                    <i class="fas fa-crosshairs"></i>
+                </div>
+                <div class="download-content">
+                    <h3>Aim Assistant</h3>
+                    <p>Assistente de mira profissional</p>
+                    <div class="download-stats">
+                        <span class="price premium">PREMIUM</span>
+                        <span class="downloads">2.1k downloads</span>
+                    </div>
+                    <a href="/download/aim-assistant" class="download-btn">
+                        <i class="fas fa-star"></i> Premium
+                    </a>
+                </div>
+            </div>
+            
+            <div class="download-card card-animate" data-delay="400">
+                <div class="download-icon">
+                    <i class="fas fa-broom"></i>
+                </div>
+                <div class="download-content">
+                    <h3>System Cleaner</h3>
+                    <p>Limpeza profunda do sistema</p>
+                    <div class="download-stats">
+                        <span class="price free">GRÁTIS</span>
+                        <span class="downloads">987 downloads</span>
+                    </div>
+                    <a href="/download/system-cleaner" class="download-btn">
+                        <i class="fas fa-download"></i> Baixar
+                    </a>
+                </div>
+            </div>
+            
+            <div class="download-card card-animate" data-delay="500">
+                <div class="download-icon">
+                    <i class="fas fa-memory"></i>
+                </div>
+                <div class="download-content">
+                    <h3>RAM Booster Pro</h3>
+                    <p>Otimizador avançado de memória</p>
+                    <div class="download-stats">
+                        <span class="price premium">PREMIUM</span>
+                        <span class="downloads">534 downloads</span>
+                    </div>
+                    <a href="/download/ram-booster-pro" class="download-btn">
+                        <i class="fas fa-star"></i> Premium
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center" style="margin-top: 3rem;">
+            <a href="/downloads" class="btn btn-gaming-outline btn-lg">
+                <i class="fas fa-th"></i>
+                Ver Todos os Downloads
             </a>
-            {% endfor %}
         </div>
     </div>
 </section>
-{% endif %}
 
-<!-- Featured Products -->
-{% if featured_products %}
-<section class="featured-products" style="padding: 4rem 0; background: white;">
+<!-- Como Funciona Section -->
+<section class="how-it-works">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2>Produtos em Destaque</h2>
-            <p>Os produtos mais populares e recomendados pela nossa comunidade</p>
+        <div class="section-header text-center">
+            <h2 class="section-title">Como Funciona</h2>
+            <p class="section-subtitle">Processo simples e seguro em 3 passos</p>
         </div>
         
-        <div class="grid grid-3">
-            {% for product in featured_products %}
-            <div class="product-card">
-                <div class="product-image">
-                    {% if product.image_url %}
-                        <img src="{{ product.image_url }}" alt="{{ product.name }}">
-                    {% else %}
-                        <i class="{{ product.category.icon or 'fas fa-cube' }}"></i>
-                    {% endif %}
-                    <div class="product-overlay">
-                        <a href="/products/{{ product.id }}" class="btn btn-primary">
-                            <i class="fas fa-eye"></i>
-                            Ver Detalhes
-                        </a>
-                    </div>
-                    {% if product.is_featured %}
-                        <div style="position: absolute; top: 1rem; right: 1rem; background: var(--warning-color); color: white; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600;">
-                            <i class="fas fa-star"></i> Destaque
-                        </div>
-                    {% endif %}
+        <div class="steps-grid">
+            <div class="step-card card-animate" data-delay="0">
+                <div class="step-number">1</div>
+                <div class="step-icon">
+                    <i class="fas fa-shield-check"></i>
                 </div>
-                
-                <div class="product-content">
-                    <div class="product-category">
-                        <i class="{{ product.category.icon or 'fas fa-folder' }}"></i>
-                        {{ product.category.name }}
-                    </div>
-                    
-                    <h3 class="product-title">
-                        <a href="/products/{{ product.id }}">{{ product.name }}</a>
-                    </h3>
-                    
-                    <p class="product-description">
-                        {{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}
-                    </p>
-                    
-                    <div class="product-price">
-                        <span class="price">R$ {{ "%.2f"|format(product.price) }}</span>
-                        <span class="duration">{{ product.duration_days }} dias</span>
-                    </div>
-                    
-                    <div class="product-actions" style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-                        <a href="/products/{{ product.id }}" class="btn btn-primary btn-sm" style="flex: 1;">
-                            <i class="fas fa-shopping-cart"></i>
-                            Comprar
-                        </a>
-                        <a href="/products/{{ product.id }}" class="btn btn-outline btn-sm">
-                            <i class="fas fa-info-circle"></i>
-                        </a>
-                    </div>
+                <div class="step-content">
+                    <h3>Baixe com Segurança</h3>
+                    <p>Todos os arquivos passam por verificação rigorosa de malware e são testados pela nossa equipe</p>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-        
-        <div class="text-center mt-4">
-            <a href="/products" class="btn btn-outline btn-lg">
-                <i class="fas fa-cube"></i>
-                Ver Todos os Produtos
-            </a>
+            
+            <div class="step-card card-animate" data-delay="200">
+                <div class="step-number">2</div>
+                <div class="step-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="step-content">
+                    <h3>Escolha Grátis ou Premium</h3>
+                    <p>Flexibilidade total com opções gratuitas e planos premium com recursos exclusivos</p>
+                </div>
+            </div>
+            
+            <div class="step-card card-animate" data-delay="400">
+                <div class="step-number">3</div>
+                <div class="step-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <div class="step-content">
+                    <h3>Receba Suporte Completo</h3>
+                    <p>Atendimento especializado 24/7 para resolver qualquer dúvida ou problema</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
-{% endif %}
 
-<!-- Stats Section -->
-<section class="stats-section" style="padding: 4rem 0; background: var(--primary-color); color: white;">
+<!-- Gaming Stats Section -->
+<section class="gaming-stats">
     <div class="container">
-        <div class="grid grid-4">
-            <div class="text-center">
-                <div style="font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem;">10K+</div>
-                <p style="opacity: 0.9;">Clientes Satisfeitos</p>
+        <div class="stats-grid">
+            <div class="stat-item card-animate" data-delay="0">
+                <div class="stat-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" data-count="10000">0</div>
+                    <div class="stat-suffix">K+</div>
+                    <p>Downloads Realizados</p>
+                </div>
             </div>
-            <div class="text-center">
-                <div style="font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem;">500+</div>
-                <p style="opacity: 0.9;">Produtos Disponíveis</p>
+            
+            <div class="stat-item card-animate" data-delay="100">
+                <div class="stat-icon">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" data-count="500">0</div>
+                    <div class="stat-suffix">+</div>
+                    <p>Softwares Disponíveis</p>
+                </div>
             </div>
-            <div class="text-center">
-                <div style="font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem;">24/7</div>
-                <p style="opacity: 0.9;">Suporte Técnico</p>
+            
+            <div class="stat-item card-animate" data-delay="200">
+                <div class="stat-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" data-count="98">0</div>
+                    <div class="stat-suffix">%</div>
+                    <p>Satisfação dos Usuários</p>
+                </div>
             </div>
-            <div class="text-center">
-                <div style="font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem;">99.9%</div>
-                <p style="opacity: 0.9;">Uptime Garantido</p>
+            
+            <div class="stat-item card-animate" data-delay="300">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" data-count="24">0</div>
+                    <div class="stat-suffix">/7</div>
+                    <p>Suporte Técnico</p>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- CTA Section -->
-<section class="cta-section" style="padding: 4rem 0; background: var(--gray-900); color: white;">
+<!-- Gaming CTA Section -->
+<section class="gaming-cta">
+    <div class="cta-overlay"></div>
     <div class="container text-center">
-        <h2 style="color: white; margin-bottom: 1rem;">Pronto para começar?</h2>
-        <p style="font-size: 1.25rem; opacity: 0.9; margin-bottom: 2rem;">
-            Junte-se a milhares de usuários que já confiam na FovDark para suas necessidades digitais.
+        <h2 class="cta-title">Pronto para dominar?</h2>
+        <p class="cta-subtitle">
+            Junte-se a milhares de gamers que já elevaram seu nível com a FovDark
         </p>
         
         {% if current_user %}
-            <a href="/products" class="btn btn-primary btn-lg">
-                <i class="fas fa-cube"></i>
-                Explorar Produtos
+            <a href="/products" class="btn btn-gaming-primary btn-lg">
+                <i class="fas fa-download"></i>
+                Explorar Downloads
             </a>
         {% else %}
-            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <a href="/register" class="btn btn-primary btn-lg">
+            <div class="cta-buttons">
+                <a href="/register" class="btn btn-gaming-primary btn-lg">
                     <i class="fas fa-user-plus"></i>
-                    Criar Conta Grátis
+                    Começar Agora
                 </a>
-                <a href="/login" class="btn btn-outline btn-lg" style="color: white; border-color: white;">
+                <a href="/login" class="btn btn-gaming-outline btn-lg">
                     <i class="fas fa-sign-in-alt"></i>
                     Fazer Login
                 </a>
@@ -226,41 +363,578 @@
 
 {% block extra_css %}
 <style>
-.category-card {
+/* Gaming Hero Section */
+.hero-gaming {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+    overflow: hidden;
+}
+
+.hero-gaming::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(0, 255, 127, 0.1) 0%, transparent 50%);
+    animation: pulse 4s ease-in-out infinite alternate;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(45deg, #00ffff, #ff00ff, #00ff7f);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 3s ease infinite;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Gaming Buttons */
+.btn-gaming-primary {
+    background: linear-gradient(135deg, #00ffff, #0080ff);
+    border: none;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+}
+
+.btn-gaming-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 255, 255, 0.5);
+    background: linear-gradient(135deg, #0080ff, #00ffff);
+}
+
+.btn-gaming-secondary {
+    background: linear-gradient(135deg, #ff00ff, #ff0080);
+    border: none;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 0, 255, 0.3);
+}
+
+.btn-gaming-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 0, 255, 0.5);
+    background: linear-gradient(135deg, #ff0080, #ff00ff);
+}
+
+.btn-gaming-outline {
+    background: transparent;
+    border: 2px solid #00ffff;
+    color: #00ffff;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
     transition: all 0.3s ease;
 }
 
-.category-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-xl);
-    text-decoration: none !important;
-}
-
-.category-card:hover .btn {
-    background: var(--primary-color);
+.btn-gaming-outline:hover {
+    background: linear-gradient(135deg, #00ffff, #0080ff);
     color: white;
-    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 255, 255, 0.3);
 }
 
-.hero {
-    min-height: 70vh;
+/* Gaming Categories */
+.gaming-categories {
+    padding: 5rem 0;
+    background: #0a0a0a;
+    position: relative;
+}
+
+.gaming-categories::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        linear-gradient(45deg, transparent 48%, rgba(0, 255, 255, 0.05) 50%, transparent 52%),
+        linear-gradient(-45deg, transparent 48%, rgba(255, 0, 255, 0.05) 50%, transparent 52%);
+}
+
+.section-header {
+    margin-bottom: 4rem;
+    position: relative;
+    z-index: 2;
+}
+
+.section-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, #00ffff, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.section-subtitle {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.gaming-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.gaming-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.gaming-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.gaming-card:hover::before {
+    left: 100%;
+}
+
+.gaming-card:hover {
+    transform: translateY(-10px);
+    border-color: #00ffff;
+    box-shadow: 0 15px 35px rgba(0, 255, 255, 0.2);
+}
+
+.gaming-card-icon {
+    font-size: 3rem;
+    color: #00ffff;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.gaming-card:hover .gaming-card-icon {
+    color: #ff00ff;
+    transform: scale(1.1);
+}
+
+.gaming-card-content h3 {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.gaming-card-content p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.gaming-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #00ffff;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    border: 1px solid #00ffff;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.gaming-btn:hover {
+    background: #00ffff;
+    color: #0a0a0a;
+    transform: translateX(5px);
+}
+
+/* Popular Downloads */
+.popular-downloads {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.downloads-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.download-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 2rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.download-card:hover {
+    transform: translateY(-5px);
+    border-color: #00ffff;
+    box-shadow: 0 10px 30px rgba(0, 255, 255, 0.15);
+}
+
+.download-icon {
+    font-size: 2.5rem;
+    color: #00ffff;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.download-content h3 {
+    color: white;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.download-content p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.download-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.price.free {
+    color: #00ff7f;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.price.premium {
+    color: #ff00ff;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.downloads {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+}
+
+.download-btn {
+    display: block;
+    text-align: center;
+    background: linear-gradient(135deg, #00ffff, #0080ff);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+}
+
+/* How It Works */
+.how-it-works {
+    padding: 5rem 0;
+    background: #0a0a0a;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+}
+
+.step-card {
+    text-align: center;
+    position: relative;
+}
+
+.step-number {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #00ffff, #ff00ff);
+    border-radius: 50%;
     display: flex;
     align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    color: white;
+    font-size: 1.2rem;
 }
 
-.features-section .card,
-.stats-section,
-.cta-section {
-    animation: fadeIn 0.6s ease-in-out;
+.step-icon {
+    font-size: 3rem;
+    color: #00ffff;
+    margin: 2rem 0 1.5rem;
 }
 
+.step-content h3 {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.step-content p {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+}
+
+/* Gaming Stats */
+.gaming-stats {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
+    position: relative;
+}
+
+.gaming-stats::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 25% 25%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.stat-item {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 2rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+    border-color: #00ffff;
+    box-shadow: 0 15px 35px rgba(0, 255, 255, 0.2);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    color: #00ffff;
+    margin-bottom: 1rem;
+}
+
+.stat-content {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 900;
+    color: white;
+}
+
+.stat-suffix {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #00ffff;
+}
+
+.stat-item p {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+}
+
+/* Gaming CTA */
+.gaming-cta {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.gaming-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 30% 40%, rgba(0, 255, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 60%, rgba(255, 0, 255, 0.15) 0%, transparent 50%);
+    animation: pulse 3s ease-in-out infinite alternate;
+}
+
+.cta-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.cta-title {
+    font-size: 3rem;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.cta-subtitle {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 2.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
+}
+
+/* Animations */
+@keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 1s ease-out;
+}
+
+.fade-in-delay {
+    animation: fadeIn 1s ease-out 0.3s both;
+}
+
+.fade-in-delay-2 {
+    animation: fadeIn 1s ease-out 0.6s both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-animate {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.6s ease;
+}
+
+.card-animate.animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-    .hero h1 {
-        font-size: 2rem;
+    .hero-title {
+        font-size: 2.5rem;
     }
     
-    .hero p {
-        font-size: 1rem;
+    .hero-subtitle {
+        font-size: 1.2rem;
     }
     
     .hero-buttons {
@@ -268,10 +942,319 @@
         align-items: center;
     }
     
-    .stats-section .grid-4 {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
+    .gaming-grid,
+    .downloads-grid,
+    .steps-grid,
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .cta-title {
+        font-size: 2rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .gaming-card,
+    .download-card,
+    .stat-item {
+        padding: 1.5rem;
+    }
+    
+    .hero-gaming {
+        min-height: 80vh;
     }
 }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('FovDark Gaming Homepage carregado!');
+    
+    // Intersection Observer for animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const delay = entry.target.dataset.delay || 0;
+                setTimeout(() => {
+                    entry.target.classList.add('animate');
+                }, delay);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    // Observe all animated elements
+    document.querySelectorAll('.card-animate').forEach(el => {
+        observer.observe(el);
+    });
+    
+    // Animated counters for stats
+    const animateCounter = (element, target, duration = 2000) => {
+        const start = 0;
+        const range = target - start;
+        const startTime = performance.now();
+        
+        const updateCounter = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function for smooth animation
+            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+            const current = Math.floor(start + (range * easeOutQuart));
+            
+            element.textContent = current;
+            
+            if (progress < 1) {
+                requestAnimationFrame(updateCounter);
+            } else {
+                element.textContent = target;
+            }
+        };
+        
+        requestAnimationFrame(updateCounter);
+    };
+    
+    // Stats counter observer
+    const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                const target = parseInt(counter.dataset.count);
+                
+                // Add delay based on index
+                const delay = Array.from(counter.closest('.stats-grid').children).indexOf(counter.closest('.stat-item')) * 200;
+                
+                setTimeout(() => {
+                    animateCounter(counter, target);
+                }, delay);
+                
+                statsObserver.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.5
+    });
+    
+    // Observe stat numbers
+    document.querySelectorAll('.stat-number').forEach(el => {
+        statsObserver.observe(el);
+    });
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Enhanced button hover effects
+    document.querySelectorAll('.btn-gaming-primary, .btn-gaming-secondary').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px) scale(1.05)';
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Gaming card hover effects with sound indication
+    document.querySelectorAll('.gaming-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            // Add subtle vibration effect
+            this.style.transform = 'translateY(-10px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Download card interactive effects
+    document.querySelectorAll('.download-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            const icon = this.querySelector('.download-icon i');
+            if (icon) {
+                icon.style.transform = 'rotate(360deg) scale(1.2)';
+                icon.style.transition = 'transform 0.5s ease';
+            }
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            const icon = this.querySelector('.download-icon i');
+            if (icon) {
+                icon.style.transform = 'rotate(0deg) scale(1)';
+            }
+        });
+    });
+    
+    // Parallax effect for hero section
+    window.addEventListener('scroll', function() {
+        const scrolled = window.pageYOffset;
+        const heroSection = document.querySelector('.hero-gaming');
+        
+        if (heroSection) {
+            heroSection.style.transform = `translateY(${scrolled * 0.5}px)`;
+        }
+    });
+    
+    // Dynamic background effects
+    const createFloatingParticles = () => {
+        const hero = document.querySelector('.hero-gaming');
+        if (!hero) return;
+        
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.style.cssText = `
+                position: absolute;
+                width: 2px;
+                height: 2px;
+                background: rgba(0, 255, 255, 0.5);
+                border-radius: 50%;
+                pointer-events: none;
+                animation: float ${5 + Math.random() * 10}s linear infinite;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                z-index: 1;
+            `;
+            hero.appendChild(particle);
+        }
+    };
+    
+    // Add floating particles animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(${Math.random() * 200 - 100}px);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Initialize particles
+    createFloatingParticles();
+    
+    // Gaming-style loading effect for buttons
+    document.querySelectorAll('.download-btn, .gaming-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            // Create loading effect
+            const rect = this.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            const size = Math.max(rect.width, rect.height);
+            
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${e.clientX - rect.left - size/2}px;
+                top: ${e.clientY - rect.top - size/2}px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+            `;
+            
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+    
+    // Add ripple animation
+    const rippleStyle = document.createElement('style');
+    rippleStyle.textContent = `
+        @keyframes ripple {
+            to {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(rippleStyle);
+    
+    // Performance monitoring
+    const perfObserver = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        entries.forEach((entry) => {
+            if (entry.entryType === 'navigation') {
+                console.log(`Page load time: ${entry.loadEventEnd - entry.loadEventStart}ms`);
+            }
+        });
+    });
+    
+    if ('PerformanceObserver' in window) {
+        perfObserver.observe({ entryTypes: ['navigation'] });
+    }
+    
+    // Enhanced accessibility
+    document.querySelectorAll('.gaming-card, .download-card, .stat-item').forEach(card => {
+        card.setAttribute('tabindex', '0');
+        
+        card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const link = this.querySelector('a');
+                if (link) {
+                    link.click();
+                }
+            }
+        });
+    });
+    
+    // Mobile touch enhancements
+    if ('ontouchstart' in window) {
+        document.querySelectorAll('.gaming-card, .download-card').forEach(card => {
+            card.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            card.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    }
+    
+    console.log('FovDark Gaming Features initialized successfully!');
+});
+</script>
 {% endblock %}
