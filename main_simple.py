@@ -459,6 +459,196 @@ async def api_download_product(request: Request, product_id: int, db: Session = 
             "error": "Erro ao processar download"
         })
 
+# Admin API Endpoints
+@app.post("/api/admin/products")
+async def api_create_product(
+    request: Request,
+    name: str = Form(...),
+    description: str = Form(...),
+    category_id: int = Form(...),
+    price: float = Form(0),
+    image_url: str = Form(None),
+    download_url: str = Form(None),
+    duration_days: int = Form(30),
+    tags: str = Form(None),
+    requirements: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    """API para criar produto (admin apenas)"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        if not current_user or not current_user.is_admin:
+            return JSONResponse(
+                status_code=403,
+                content={"success": False, "message": "Acesso negado"}
+            )
+        
+        # Verificar se categoria existe
+        category = db.query(Category).filter(Category.id == category_id).first()
+        if not category:
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "Categoria não encontrada"}
+            )
+        
+        # Criar produto
+        new_product = Product(
+            name=name,
+            description=description,
+            price=price,
+            category_id=category_id,
+            image_url=image_url if image_url else None,
+            download_url=download_url if download_url else None,
+            duration_days=duration_days if price > 0 else None,
+            tags=tags,
+            requirements=requirements,
+            is_active=True,
+            is_featured=False
+        )
+        
+        db.add(new_product)
+        db.commit()
+        
+        return JSONResponse(content={
+            "success": True,
+            "message": "Produto criado com sucesso!",
+            "product_id": new_product.id
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao criar produto: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "Erro interno do servidor"}
+        )
+
+@app.post("/api/admin/categories")
+async def api_create_category(
+    request: Request,
+    name: str = Form(...),
+    description: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    """API para criar categoria (admin apenas)"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        if not current_user or not current_user.is_admin:
+            return JSONResponse(
+                status_code=403,
+                content={"success": False, "message": "Acesso negado"}
+            )
+        
+        # Verificar se categoria já existe
+        existing = db.query(Category).filter(Category.name == name).first()
+        if existing:
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "Categoria já existe"}
+            )
+        
+        # Criar categoria
+        new_category = Category(
+            name=name,
+            description=description,
+            is_active=True
+        )
+        
+        db.add(new_category)
+        db.commit()
+        
+        return JSONResponse(content={
+            "success": True,
+            "message": "Categoria criada com sucesso!",
+            "category_id": new_category.id
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao criar categoria: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "Erro interno do servidor"}
+        )
+
+@app.get("/api/admin/users")
+async def api_get_users(request: Request, db: Session = Depends(get_db)):
+    """API para obter lista de usuários (admin apenas)"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        if not current_user or not current_user.is_admin:
+            return JSONResponse(
+                status_code=403,
+                content={"success": False, "message": "Acesso negado"}
+            )
+        
+        # Buscar usuários com contagem de licenças
+        users = db.query(User).all()
+        users_data = []
+        
+        for user in users:
+            license_count = db.query(License).filter(
+                License.user_id == user.id,
+                License.is_active == True
+            ).count()
+            
+            users_data.append({
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "is_active": user.is_active,
+                "is_admin": user.is_admin,
+                "license_count": license_count,
+                "created_at": user.created_at.strftime("%d/%m/%Y") if user.created_at else None
+            })
+        
+        return JSONResponse(content={
+            "success": True,
+            "users": users_data
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao buscar usuários: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "Erro interno do servidor"}
+        )
+
+@app.get("/api/admin/licenses")
+async def api_get_licenses(request: Request, db: Session = Depends(get_db)):
+    """API para obter lista de licenças (admin apenas)"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        if not current_user or not current_user.is_admin:
+            return JSONResponse(
+                status_code=403,
+                content={"success": False, "message": "Acesso negado"}
+            )
+        
+        # Buscar licenças com dados do usuário e produto
+        licenses = db.query(License).join(User).join(Product).all()
+        licenses_data = []
+        
+        for license_obj in licenses:
+            licenses_data.append({
+                "license_key": license_obj.license_key,
+                "user_username": license_obj.user.username,
+                "product_name": license_obj.product.name,
+                "is_active": license_obj.is_active,
+                "expires_at": license_obj.expires_at.strftime("%d/%m/%Y") if license_obj.expires_at else None,
+                "created_at": license_obj.created_at.strftime("%d/%m/%Y") if license_obj.created_at else None
+            })
+        
+        return JSONResponse(content={
+            "success": True,
+            "licenses": licenses_data
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao buscar licenças: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "Erro interno do servidor"}
+        )
+
 @app.get("/contact")
 async def contact_page(request: Request, db: Session = Depends(get_db)):
     """Página de contato"""
