@@ -125,11 +125,8 @@ def init_db():
     try:
         Base.metadata.create_all(bind=engine)
         
-        # Executar criação de dados iniciais de forma síncrona
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(create_initial_data())
-        loop.close()
+        # Criar dados iniciais
+        create_initial_data()
         
         logger.info("Banco de dados inicializado com sucesso")
         
@@ -141,7 +138,8 @@ def test_connection():
     """Testar conexão com o banco"""
     try:
         db = SessionLocal()
-        db.execute("SELECT 1")
+        from sqlalchemy import text
+        db.execute(text("SELECT 1"))
         db.close()
         logger.info("Conexão com banco de dados OK")
         return True
@@ -156,10 +154,7 @@ def reset_database():
         Base.metadata.create_all(bind=engine)
         
         # Recriar dados iniciais
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(create_initial_data())
-        loop.close()
+        create_initial_data()
         
         logger.info("Banco de dados resetado com sucesso")
         
