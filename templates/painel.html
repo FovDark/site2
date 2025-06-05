@@ -1,31 +1,57 @@
 {% extends "base.html" %}
 
-{% block title %}Painel do Usuário - FovDark{% endblock %}
+{% block title %}Painel do Usuário - FovDark Gaming{% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
-    <!-- Dashboard Header -->
-    <div class="dashboard-header">
+<div class="user-dashboard">
+    <!-- Top Navigation Bar -->
+    <div class="dashboard-nav">
         <div class="container">
-            <div class="header-content">
-                <div class="user-welcome">
+            <div class="nav-content">
+                <div class="user-info">
                     <div class="user-avatar">
-                        <i class="fas fa-user-circle"></i>
+                        <i class="fas fa-user-gaming"></i>
                     </div>
-                    <div class="welcome-text">
-                        <h1>Bem-vindo, {{ current_user.username }}!</h1>
-                        <p>Gerencie suas licenças e acompanhe suas atividades</p>
+                    <div class="user-details">
+                        <h3>{{ current_user.username }}</h3>
+                        <span class="user-status">
+                            <i class="fas fa-circle online"></i>
+                            Online
+                        </span>
                     </div>
                 </div>
                 
-                <div class="header-actions">
-                    <a href="/products" class="btn btn-primary">
-                        <i class="fas fa-shopping-cart"></i>
-                        Comprar Produtos
-                    </a>
-                    <a href="/downloads" class="btn btn-outline">
+                <div class="nav-tabs">
+                    <button class="nav-tab active" data-section="overview">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Visão Geral</span>
+                    </button>
+                    <button class="nav-tab" data-section="licenses">
+                        <i class="fas fa-key"></i>
+                        <span>Licenças</span>
+                    </button>
+                    <button class="nav-tab" data-section="downloads">
                         <i class="fas fa-download"></i>
-                        Downloads
+                        <span>Downloads</span>
+                    </button>
+                    <button class="nav-tab" data-section="purchases">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Compras</span>
+                    </button>
+                    <button class="nav-tab" data-section="profile">
+                        <i class="fas fa-user-cog"></i>
+                        <span>Perfil</span>
+                    </button>
+                </div>
+                
+                <div class="quick-actions">
+                    <a href="/products" class="btn btn-primary">
+                        <i class="fas fa-store"></i>
+                        Loja
+                    </a>
+                    <a href="/logout" class="btn btn-outline">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sair
                     </a>
                 </div>
             </div>
@@ -33,472 +59,1257 @@
     </div>
 
     <div class="container">
-        <!-- Quick Stats -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-key"></i>
+        <!-- Overview Section -->
+        <div id="overview-section" class="dashboard-section active">
+            <div class="section-header">
+                <h1>Bem-vindo de volta, {{ current_user.username }}!</h1>
+                <p>Aqui está um resumo das suas atividades recentes</p>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="stats-dashboard">
+                <div class="stat-card primary">
+                    <div class="stat-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="activeLicenses">0</div>
+                        <div class="stat-label">Licenças Ativas</div>
+                        <div class="stat-trend">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+2 esta semana</span>
+                        </div>
+                    </div>
+                    <div class="stat-action">
+                        <button class="btn-stat" data-section="licenses">Ver Todas</button>
+                    </div>
                 </div>
-                <div class="stat-content">
-                    <div class="stat-number">{{ licenses|length }}</div>
-                    <div class="stat-label">Licenças Ativas</div>
+                
+                <div class="stat-card success">
+                    <div class="stat-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalDownloads">0</div>
+                        <div class="stat-label">Downloads Realizados</div>
+                        <div class="stat-trend">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+5 este mês</span>
+                        </div>
+                    </div>
+                    <div class="stat-action">
+                        <button class="btn-stat" data-section="downloads">Ver Downloads</button>
+                    </div>
+                </div>
+                
+                <div class="stat-card warning">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="expiringLicenses">0</div>
+                        <div class="stat-label">Licenças Expirando</div>
+                        <div class="stat-trend">
+                            <i class="fas fa-clock"></i>
+                            <span>Próximos 7 dias</span>
+                        </div>
+                    </div>
+                    <div class="stat-action">
+                        <button class="btn-stat" onclick="showExpiringLicenses()">Verificar</button>
+                    </div>
+                </div>
+                
+                <div class="stat-card info">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ current_user.created_at.strftime('%d/%m') if current_user.created_at else 'N/A' }}</div>
+                        <div class="stat-label">Membro desde</div>
+                        <div class="stat-trend">
+                            <i class="fas fa-star"></i>
+                            <span>Usuário Ativo</span>
+                        </div>
+                    </div>
+                    <div class="stat-action">
+                        <button class="btn-stat" data-section="profile">Ver Perfil</button>
+                    </div>
                 </div>
             </div>
             
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-download"></i>
+            <!-- Quick Actions -->
+            <div class="quick-actions-grid">
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <h3>Adquirir Produtos</h3>
+                    <p>Explore nossa loja e encontre softwares, jogos e utilitários</p>
+                    <a href="/products" class="btn btn-primary">
+                        <i class="fas fa-store"></i>
+                        Ir para Loja
+                    </a>
                 </div>
-                <div class="stat-content">
-                    <div class="stat-number">{{ downloads|length }}</div>
-                    <div class="stat-label">Downloads</div>
+                
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-shield-check"></i>
+                    </div>
+                    <h3>Verificar Licenças</h3>
+                    <p>Confirme o status das suas licenças e renovações</p>
+                    <button class="btn btn-secondary" data-section="licenses">
+                        <i class="fas fa-key"></i>
+                        Ver Licenças
+                    </button>
                 </div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-credit-card"></i>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-number">{{ transactions|length }}</div>
-                    <div class="stat-label">Transações</div>
-                </div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-calendar"></i>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-number">{{ current_user.created_at.strftime('%d/%m/%Y') if current_user.created_at else 'N/A' }}</div>
-                    <div class="stat-label">Membro desde</div>
+                
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3>Área de Downloads</h3>
+                    <p>Acesse todos os seus downloads disponíveis</p>
+                    <button class="btn btn-success" data-section="downloads">
+                        <i class="fas fa-folder-open"></i>
+                        Acessar Downloads
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Dashboard Content -->
-        <div class="dashboard-content">
-            <!-- Licenses Section -->
-            <section class="dashboard-section">
-                <div class="section-header">
-                    <h2>
-                        <i class="fas fa-key"></i>
-                        Minhas Licenças
-                    </h2>
-                    <a href="/licenses" class="btn btn-outline btn-sm">Ver Todas</a>
+        <!-- Licenses Section -->
+        <div id="licenses-section" class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-key"></i> Minhas Licenças</h2>
+                <div class="header-actions">
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" data-filter="all">Todas</button>
+                        <button class="filter-tab" data-filter="active">Ativas</button>
+                        <button class="filter-tab" data-filter="expiring">Expirando</button>
+                        <button class="filter-tab" data-filter="expired">Expiradas</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="refreshLicenses()">
+                        <i class="fas fa-sync"></i>
+                        Atualizar
+                    </button>
                 </div>
-                
-                {% if licenses %}
-                    <div class="licenses-grid">
-                        {% for license in licenses[:4] %}
-                            <div class="license-card {% if license.is_expired %}expired{% elif license.status != 'active' %}inactive{% endif %}">
-                                <div class="license-header">
-                                    <div class="license-product">
-                                        <h4>{{ license.product.name }}</h4>
-                                        <span class="license-category">
-                                            <i class="{{ license.product.category.icon or 'fas fa-folder' }}"></i>
-                                            {{ license.product.category.name }}
-                                        </span>
-                                    </div>
-                                    
-                                    <div class="license-status">
-                                        {% if license.is_expired %}
-                                            <span class="status-badge expired">
-                                                <i class="fas fa-times-circle"></i>
-                                                Expirada
-                                            </span>
-                                        {% elif license.status == 'active' %}
-                                            <span class="status-badge active">
-                                                <i class="fas fa-check-circle"></i>
-                                                Ativa
-                                            </span>
-                                        {% else %}
-                                            <span class="status-badge inactive">
-                                                <i class="fas fa-pause-circle"></i>
-                                                {{ license.status.title() }}
-                                            </span>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                
-                                <div class="license-details">
-                                    <div class="license-key">
-                                        <label>Chave da Licença:</label>
-                                        <div class="key-display">
-                                            <code id="key-{{ license.id }}">{{ license.license_key }}</code>
-                                            <button class="copy-btn" data-copy="key-{{ license.id }}" title="Copiar chave">
-                                                <i class="fas fa-copy"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="license-info">
-                                        <div class="info-item">
-                                            <label>Expira em:</label>
-                                            <span>{{ license.expires_at.strftime('%d/%m/%Y %H:%M') }}</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <label>Dias restantes:</label>
-                                            <span class="{% if license.days_remaining <= 7 %}text-warning{% elif license.days_remaining <= 3 %}text-danger{% endif %}">
-                                                {{ license.days_remaining if not license.is_expired else 0 }} dias
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="license-actions">
-                                    {% if license.status == 'active' and not license.is_expired %}
-                                        {% if license.product.download_url %}
-                                            <button class="btn btn-primary btn-sm download-btn" 
-                                                    data-product-id="{{ license.product.id }}"
-                                                    data-product-name="{{ license.product.name }}">
-                                                <i class="fas fa-download"></i>
-                                                Download
-                                            </button>
-                                        {% endif %}
-                                        <button class="btn btn-outline btn-sm verify-btn" 
-                                                data-license-key="{{ license.license_key }}">
-                                            <i class="fas fa-shield-check"></i>
-                                            Verificar
-                                        </button>
-                                    {% else %}
-                                        <a href="/products/{{ license.product.id }}" class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-refresh"></i>
-                                            Renovar
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-key"></i>
-                        </div>
-                        <h3>Nenhuma licença encontrada</h3>
-                        <p>Você ainda não possui licenças ativas. Explore nossa loja e adquira seus primeiros produtos!</p>
-                        <a href="/products" class="btn btn-primary">
-                            <i class="fas fa-shopping-cart"></i>
-                            Explorar Produtos
-                        </a>
-                    </div>
-                {% endif %}
-            </section>
+            </div>
+            
+            <div class="licenses-container" id="licensesContainer">
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Carregando licenças...</p>
+                </div>
+            </div>
+        </div>
 
-            <!-- Recent Transactions -->
-            <section class="dashboard-section">
-                <div class="section-header">
-                    <h2>
-                        <i class="fas fa-credit-card"></i>
-                        Transações Recentes
-                    </h2>
-                    <a href="/transactions" class="btn btn-outline btn-sm">Ver Todas</a>
+        <!-- Downloads Section -->
+        <div id="downloads-section" class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-download"></i> Área de Downloads</h2>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Buscar downloads..." id="downloadSearch">
+                    </div>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn" data-view="list">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
                 </div>
-                
-                {% if transactions %}
-                    <div class="transactions-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Produto</th>
-                                    <th>Valor</th>
-                                    <th>Status</th>
-                                    <th>Data</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for transaction in transactions[:5] %}
-                                    <tr>
-                                        <td>
-                                            <div class="product-info">
-                                                <span class="product-name">{{ transaction.product.name }}</span>
-                                                <span class="product-category">{{ transaction.product.category.name }}</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="amount">R$ {{ "%.2f"|format(transaction.amount) }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="status-badge {{ transaction.status }}">
-                                                {% if transaction.status == 'approved' %}
-                                                    <i class="fas fa-check-circle"></i>
-                                                    Aprovado
-                                                {% elif transaction.status == 'pending' %}
-                                                    <i class="fas fa-clock"></i>
-                                                    Pendente
-                                                {% elif transaction.status == 'rejected' %}
-                                                    <i class="fas fa-times-circle"></i>
-                                                    Rejeitado
-                                                {% else %}
-                                                    {{ transaction.status.title() }}
-                                                {% endif %}
-                                            </span>
-                                        </td>
-                                        <td>{{ transaction.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
-                                        <td>
-                                            <div class="action-buttons">
-                                                {% if transaction.status == 'pending' %}
-                                                    <button class="btn btn-sm btn-outline check-payment-btn" 
-                                                            data-payment-id="{{ transaction.payment_id }}">
-                                                        <i class="fas fa-refresh"></i>
-                                                        Verificar
-                                                    </button>
-                                                {% elif transaction.status == 'approved' %}
-                                                    <span class="text-success">
-                                                        <i class="fas fa-check"></i>
-                                                        Concluído
-                                                    </span>
-                                                {% endif %}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-credit-card"></i>
-                        </div>
-                        <h3>Nenhuma transação encontrada</h3>
-                        <p>Suas transações aparecerão aqui após a primeira compra.</p>
-                    </div>
-                {% endif %}
-            </section>
+            </div>
+            
+            <div class="downloads-container" id="downloadsContainer">
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Carregando downloads...</p>
+                </div>
+            </div>
+        </div>
 
-            <!-- Recent Downloads -->
-            <section class="dashboard-section">
-                <div class="section-header">
-                    <h2>
-                        <i class="fas fa-download"></i>
-                        Downloads Recentes
-                    </h2>
-                    <a href="/downloads" class="btn btn-outline btn-sm">Área de Downloads</a>
+        <!-- Purchases Section -->
+        <div id="purchases-section" class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-shopping-cart"></i> Histórico de Compras</h2>
+                <div class="header-actions">
+                    <select class="filter-select" id="purchaseFilter">
+                        <option value="all">Todas as transações</option>
+                        <option value="approved">Aprovadas</option>
+                        <option value="pending">Pendentes</option>
+                        <option value="rejected">Rejeitadas</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="purchases-container" id="purchasesContainer">
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Carregando transações...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profile-section" class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="fas fa-user-cog"></i> Configurações do Perfil</h2>
+            </div>
+            
+            <div class="profile-container">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-circle"></i>
+                            <button class="change-avatar-btn">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        <div class="profile-info">
+                            <h3>{{ current_user.username }}</h3>
+                            <p>{{ current_user.email }}</p>
+                            <span class="member-badge">
+                                <i class="fas fa-star"></i>
+                                Membro {{ 'Premium' if current_user.is_admin else 'Padrão' }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-stats">
+                        <div class="profile-stat">
+                            <span class="stat-value" id="profileLicenses">0</span>
+                            <span class="stat-label">Licenças</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-value" id="profileDownloads">0</span>
+                            <span class="stat-label">Downloads</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-value" id="profileDays">0</span>
+                            <span class="stat-label">Dias Ativo</span>
+                        </div>
+                    </div>
                 </div>
                 
-                {% if downloads %}
-                    <div class="downloads-list">
-                        {% for download in downloads[:5] %}
-                            <div class="download-item">
-                                <div class="download-icon">
-                                    <i class="{{ download.product.category.icon or 'fas fa-file' }}"></i>
-                                </div>
-                                <div class="download-info">
-                                    <h4>{{ download.product.name }}</h4>
-                                    <p>{{ download.product.category.name }}</p>
-                                    <small>{{ download.downloaded_at.strftime('%d/%m/%Y %H:%M') }}</small>
-                                </div>
-                                <div class="download-actions">
-                                    <button class="btn btn-outline btn-sm download-again-btn" 
-                                            data-product-id="{{ download.product.id }}">
-                                        <i class="fas fa-download"></i>
-                                        Baixar Novamente
-                                    </button>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-download"></i>
+                <div class="profile-settings">
+                    <div class="settings-section">
+                        <h4><i class="fas fa-bell"></i> Notificações</h4>
+                        <div class="setting-item">
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span>Notificar sobre expiração de licenças</span>
                         </div>
-                        <h3>Nenhum download realizado</h3>
-                        <p>Seus downloads aparecerão aqui após baixar seus primeiros produtos.</p>
+                        <div class="setting-item">
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span>Receber ofertas por email</span>
+                        </div>
                     </div>
-                {% endif %}
-            </section>
+                    
+                    <div class="settings-section">
+                        <h4><i class="fas fa-shield-alt"></i> Segurança</h4>
+                        <div class="setting-item">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-key"></i>
+                                Alterar Senha
+                            </button>
+                        </div>
+                        <div class="setting-item">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-download"></i>
+                                Baixar Dados
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- License Verification Modal -->
-<div id="verifyModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Verificação de Licença</h3>
-            <button class="modal-close">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div id="verifyResult" class="verify-result"></div>
-            <div class="verify-info">
-                <p>Use esta verificação para confirmar se sua licença está ativa e funcionando corretamente.</p>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-        </div>
+<!-- Notification Toast -->
+<div class="toast" id="notificationToast">
+    <div class="toast-content">
+        <i class="toast-icon"></i>
+        <span class="toast-message"></span>
     </div>
+    <button class="toast-close">
+        <i class="fas fa-times"></i>
+    </button>
 </div>
 {% endblock %}
 
-{% block extra_scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Copy license key functionality
-    document.querySelectorAll('.copy-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const targetId = this.dataset.copy;
-            const target = document.getElementById(targetId);
-            
-            if (target) {
-                navigator.clipboard.writeText(target.textContent).then(() => {
-                    showToast('Chave copiada!', 'success');
-                    
-                    // Visual feedback
-                    const icon = this.querySelector('i');
-                    icon.classList.remove('fa-copy');
-                    icon.classList.add('fa-check');
-                    
-                    setTimeout(() => {
-                        icon.classList.remove('fa-check');
-                        icon.classList.add('fa-copy');
-                    }, 2000);
-                }).catch(() => {
-                    showToast('Erro ao copiar', 'error');
-                });
-            }
-        });
-    });
+{% block extra_css %}
+<style>
+/* User Dashboard Styles */
+.user-dashboard {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
+}
 
-    // Download functionality
-    document.querySelectorAll('.download-btn, .download-again-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const productId = this.dataset.productId;
-            const productName = this.dataset.productName;
-            
-            downloadProduct(productId, productName);
-        });
-    });
+/* Top Navigation */
+.dashboard-nav {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
 
-    function downloadProduct(productId, productName) {
-        showLoading();
-        
-        fetch(`/api/download/${productId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            hideLoading();
-            
-            if (data.success) {
-                showToast(`Download de ${productName} iniciado!`, 'success');
-                
-                // Redirecionar para URL de download
-                if (data.download_url) {
-                    window.open(data.download_url, '_blank');
-                }
-            } else {
-                showToast(data.message || 'Erro ao iniciar download', 'error');
-            }
-        })
-        .catch(error => {
-            hideLoading();
-            console.error('Download error:', error);
-            showToast('Erro interno do servidor', 'error');
-        });
+.nav-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.user-details h3 {
+    margin: 0;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.user-status {
+    color: #6b7280;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-status .online {
+    color: #10b981;
+}
+
+.nav-tabs {
+    display: flex;
+    gap: 0.5rem;
+    background: #f3f4f6;
+    padding: 0.25rem;
+    border-radius: 12px;
+}
+
+.nav-tab {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: none;
+    border-radius: 8px;
+    color: #6b7280;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-tab:hover, .nav-tab.active {
+    background: white;
+    color: #667eea;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.quick-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Dashboard Sections */
+.dashboard-section {
+    display: none;
+    padding: 2rem 0;
+}
+
+.dashboard-section.active {
+    display: block;
+}
+
+.section-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.section-header h1 {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.section-header h2 {
+    color: white;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.section-header p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.125rem;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Stats Dashboard */
+.stats-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.stat-card.primary::before {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.stat-card.success::before {
+    background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.stat-card.warning::before {
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.stat-card.info::before {
+    background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.stat-card.primary .stat-icon {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.stat-card.success .stat-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.stat-card.warning .stat-icon {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.stat-card.info .stat-icon {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #6b7280;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+}
+
+.stat-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #10b981;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.btn-stat {
+    padding: 0.5rem 1rem;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 8px;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-stat:hover {
+    background: #667eea;
+    color: white;
+}
+
+/* Quick Actions Grid */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.action-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.action-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+}
+
+.action-card h3 {
+    color: #1f2937;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.action-card p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+/* Filter Tabs */
+.filter-tabs {
+    display: flex;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.25rem;
+    border-radius: 12px;
+}
+
+.filter-tab {
+    padding: 0.5rem 1rem;
+    border: none;
+    background: none;
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-tab:hover, .filter-tab.active {
+    background: white;
+    color: #667eea;
+}
+
+/* Search Box */
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box i {
+    position: absolute;
+    left: 1rem;
+    color: #9ca3af;
+}
+
+.search-box input {
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
+.search-box input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* View Toggle */
+.view-toggle {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.view-btn {
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-btn:hover, .view-btn.active {
+    background: white;
+    color: #667eea;
+}
+
+/* Loading State */
+.loading-state {
+    text-align: center;
+    padding: 3rem;
+    color: white;
+}
+
+.loading-state i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Profile Card */
+.profile-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+}
+
+.profile-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1rem;
+}
+
+.profile-avatar i {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.change-avatar-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #667eea;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.member-badge {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 1.5rem;
+}
+
+.profile-stat {
+    text-align: center;
+}
+
+.profile-stat .stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.profile-stat .stat-label {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+/* Settings */
+.profile-settings {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+.settings-section h4 {
+    color: #1f2937;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.toggle-switch input {
+    display: none;
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ccc;
+    border-radius: 24px;
+    transition: 0.3s;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background: #667eea;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+/* Toast Notifications */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    display: none;
+    align-items: center;
+    gap: 1rem;
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+}
+
+.toast.show {
+    display: flex;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
     }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
 
-    // License verification
-    document.querySelectorAll('.verify-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const licenseKey = this.dataset.licenseKey;
-            verifyLicense(licenseKey);
+.toast-close {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .nav-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .nav-tabs {
+        order: -1;
+        width: 100%;
+        overflow-x: auto;
+    }
+    
+    .stats-dashboard {
+        grid-template-columns: 1fr;
+    }
+    
+    .profile-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-actions {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Dashboard Navigation
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize dashboard
+    initDashboard();
+    
+    // Navigation tabs
+    document.querySelectorAll('.nav-tab, [data-section]').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const section = this.dataset.section;
+            if (section) {
+                showSection(section);
+            }
         });
     });
+    
+    // Filter tabs
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            filterLicenses(filter);
+        });
+    });
+    
+    // View toggle
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const view = this.dataset.view;
+            toggleView(view);
+        });
+    });
+    
+    // Search functionality
+    const searchInput = document.getElementById('downloadSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(searchDownloads, 300));
+    }
+});
 
-    function verifyLicense(licenseKey) {
-        const modal = document.getElementById('verifyModal');
-        const resultDiv = document.getElementById('verifyResult');
+function initDashboard() {
+    // Load initial data
+    loadDashboardStats();
+    loadLicenses();
+    loadDownloads();
+    loadPurchases();
+    updateProfileStats();
+}
+
+function showSection(sectionName) {
+    // Hide all sections
+    document.querySelectorAll('.dashboard-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    // Remove active from nav tabs
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Show target section
+    const targetSection = document.getElementById(sectionName + '-section');
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+    
+    // Add active to nav tab
+    const targetTab = document.querySelector(`[data-section="${sectionName}"]`);
+    if (targetTab && targetTab.classList.contains('nav-tab')) {
+        targetTab.classList.add('active');
+    }
+    
+    // Load section data
+    switch(sectionName) {
+        case 'licenses':
+            loadLicenses();
+            break;
+        case 'downloads':
+            loadDownloads();
+            break;
+        case 'purchases':
+            loadPurchases();
+            break;
+        case 'profile':
+            updateProfileStats();
+            break;
+    }
+}
+
+async function loadDashboardStats() {
+    try {
+        // Simulate loading stats
+        await new Promise(resolve => setTimeout(resolve, 500));
         
-        modal.style.display = 'block';
-        resultDiv.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Verificando...</div>';
+        // Update stats (replace with actual API calls)
+        document.getElementById('activeLicenses').textContent = '3';
+        document.getElementById('totalDownloads').textContent = '12';
+        document.getElementById('expiringLicenses').textContent = '1';
         
-        fetch(`/api/verify-license/${licenseKey}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.valid) {
-                resultDiv.innerHTML = `
-                    <div class="verify-success">
-                        <i class="fas fa-check-circle"></i>
-                        <h4>Licença Válida</h4>
-                        <div class="license-details">
-                            <p><strong>Produto:</strong> ${data.license.product_name}</p>
-                            <p><strong>Status:</strong> ${data.license.status}</p>
-                            <p><strong>Expira em:</strong> ${new Date(data.license.expires_at).toLocaleString('pt-BR')}</p>
+    } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+    }
+}
+
+async function loadLicenses() {
+    const container = document.getElementById('licensesContainer');
+    if (!container) return;
+    
+    try {
+        container.innerHTML = `
+            <div class="loading-state">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Carregando licenças...</p>
+            </div>
+        `;
+        
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Mock license data
+        const licenses = [
+            {
+                id: 1,
+                productName: 'System Optimizer Pro',
+                category: 'Otimizadores',
+                status: 'active',
+                expiresAt: '2024-12-31',
+                daysRemaining: 45,
+                licenseKey: 'ABCD-EFGH-IJKL-MNOP'
+            },
+            {
+                id: 2,
+                productName: 'Game Booster Ultimate',
+                category: 'Gaming',
+                status: 'active',
+                expiresAt: '2024-11-15',
+                daysRemaining: 8,
+                licenseKey: 'WXYZ-1234-5678-9012'
+            }
+        ];
+        
+        container.innerHTML = generateLicensesHTML(licenses);
+        
+    } catch (error) {
+        container.innerHTML = `
+            <div class="error-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Erro ao carregar licenças</p>
+                <button class="btn btn-primary" onclick="loadLicenses()">Tentar Novamente</button>
+            </div>
+        `;
+    }
+}
+
+function generateLicensesHTML(licenses) {
+    if (licenses.length === 0) {
+        return `
+            <div class="empty-state">
+                <i class="fas fa-key"></i>
+                <h3>Nenhuma licença encontrada</h3>
+                <p>Você ainda não possui licenças. Explore nossa loja!</p>
+                <a href="/products" class="btn btn-primary">Ver Produtos</a>
+            </div>
+        `;
+    }
+    
+    return `
+        <div class="licenses-grid">
+            ${licenses.map(license => `
+                <div class="license-card ${license.status} ${license.daysRemaining <= 7 ? 'expiring' : ''}">
+                    <div class="license-header">
+                        <h4>${license.productName}</h4>
+                        <span class="status-badge ${license.status}">
+                            <i class="fas ${license.status === 'active' ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                            ${license.status === 'active' ? 'Ativa' : 'Inativa'}
+                        </span>
+                    </div>
+                    
+                    <div class="license-info">
+                        <div class="info-row">
+                            <span>Categoria:</span>
+                            <span>${license.category}</span>
+                        </div>
+                        <div class="info-row">
+                            <span>Expira em:</span>
+                            <span class="${license.daysRemaining <= 7 ? 'text-warning' : ''}">${license.daysRemaining} dias</span>
                         </div>
                     </div>
-                `;
-            } else {
-                resultDiv.innerHTML = `
-                    <div class="verify-error">
-                        <i class="fas fa-times-circle"></i>
-                        <h4>Licença Inválida</h4>
-                        <p>${data.message}</p>
+                    
+                    <div class="license-key">
+                        <label>Chave da Licença:</label>
+                        <div class="key-display">
+                            <code>${license.licenseKey}</code>
+                            <button class="copy-btn" onclick="copyToClipboard('${license.licenseKey}')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
                     </div>
-                `;
-            }
-        })
-        .catch(error => {
-            console.error('Verify error:', error);
-            resultDiv.innerHTML = `
-                <div class="verify-error">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h4>Erro na Verificação</h4>
-                    <p>Erro interno do servidor</p>
+                    
+                    <div class="license-actions">
+                        <button class="btn btn-primary btn-sm" onclick="downloadProduct(${license.id})">
+                            <i class="fas fa-download"></i>
+                            Download
+                        </button>
+                        <button class="btn btn-outline btn-sm" onclick="verifyLicense('${license.licenseKey}')">
+                            <i class="fas fa-shield-check"></i>
+                            Verificar
+                        </button>
+                    </div>
                 </div>
-            `;
-        });
-    }
+            `).join('')}
+        </div>
+    `;
+}
 
-    // Payment status check
-    document.querySelectorAll('.check-payment-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const paymentId = this.dataset.paymentId;
-            checkPaymentStatus(paymentId, this);
-        });
+async function loadDownloads() {
+    const container = document.getElementById('downloadsContainer');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="downloads-grid">
+            <div class="download-card">
+                <div class="download-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div class="download-info">
+                    <h4>System Optimizer Pro</h4>
+                    <p>Otimizadores • Versão 2.1.0</p>
+                    <small>Última atualização: 15/11/2024</small>
+                </div>
+                <div class="download-actions">
+                    <button class="btn btn-primary btn-sm">
+                        <i class="fas fa-download"></i>
+                        Baixar
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+async function loadPurchases() {
+    const container = document.getElementById('purchasesContainer');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="purchases-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Valor</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>System Optimizer Pro</td>
+                        <td>R$ 29,90</td>
+                        <td><span class="status-badge approved">Aprovado</span></td>
+                        <td>15/11/2024</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline">
+                                <i class="fas fa-receipt"></i>
+                                Recibo
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+function updateProfileStats() {
+    document.getElementById('profileLicenses').textContent = '3';
+    document.getElementById('profileDownloads').textContent = '12';
+    document.getElementById('profileDays').textContent = '45';
+}
+
+// Utility functions
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Chave copiada para área de transferência!', 'success');
     });
+}
 
-    function checkPaymentStatus(paymentId, button) {
-        const originalText = button.innerHTML;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
-        button.disabled = true;
-        
-        // Simular verificação de pagamento
-        setTimeout(() => {
-            button.innerHTML = originalText;
-            button.disabled = false;
-            showToast('Status do pagamento verificado', 'info');
-        }, 2000);
-    }
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('notificationToast');
+    const icon = toast.querySelector('.toast-icon');
+    const messageEl = toast.querySelector('.toast-message');
+    
+    icon.className = `toast-icon fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}`;
+    messageEl.textContent = message;
+    
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
 
-    // Auto-refresh for pending transactions
-    const pendingTransactions = document.querySelectorAll('.status-badge.pending').length;
-    if (pendingTransactions > 0) {
-        // Refresh page every 30 seconds if there are pending transactions
-        setTimeout(() => {
-            window.location.reload();
-        }, 30000);
-    }
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
 
-    // License expiration warnings
-    document.querySelectorAll('.license-card').forEach(card => {
-        const daysElement = card.querySelector('.info-item span[class*="text-"]');
-        if (daysElement) {
-            const daysText = daysElement.textContent;
-            const days = parseInt(daysText);
-            
-            if (days <= 3 && days > 0) {
-                showToast(`Licença expira em ${days} dias!`, 'warning');
-            }
-        }
-    });
-});
+function searchDownloads() {
+    const query = document.getElementById('downloadSearch').value.toLowerCase();
+    // Implement search logic
+    console.log('Searching for:', query);
+}
+
+function filterLicenses(filter) {
+    // Implement filter logic
+    console.log('Filtering licenses by:', filter);
+}
+
+function toggleView(view) {
+    // Implement view toggle logic
+    console.log('Toggling view to:', view);
+}
+
+// Action functions
+function downloadProduct(productId) {
+    showToast('Iniciando download...', 'info');
+    // Implement download logic
+}
+
+function verifyLicense(licenseKey) {
+    showToast('Verificando licença...', 'info');
+    // Implement verification logic
+}
+
+function refreshLicenses() {
+    loadLicenses();
+    showToast('Licenças atualizadas!', 'success');
+}
 </script>
 {% endblock %}
