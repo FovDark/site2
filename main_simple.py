@@ -320,6 +320,43 @@ async def categories_page(request: Request, db: Session = Depends(get_db)):
             "error": "Erro ao carregar categorias"
         })
 
+@app.get("/categories/{category_name}")
+async def category_products(request: Request, category_name: str, db: Session = Depends(get_db)):
+    """Página de produtos por categoria"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        
+        # Buscar categoria por nome (case insensitive)
+        category = db.query(Category).filter(
+            Category.name.ilike(f"%{category_name}%"),
+            Category.is_active == True
+        ).first()
+        
+        if not category:
+            # Se não encontrar categoria exata, redirecionar para produtos
+            return RedirectResponse(url="/products", status_code=302)
+        
+        # Buscar produtos da categoria
+        products = db.query(Product).filter(
+            Product.category_id == category.id,
+            Product.is_active == True
+        ).all()
+        
+        # Buscar todas as categorias para o menu
+        categories = db.query(Category).filter(Category.is_active == True).all()
+        
+        return templates.TemplateResponse("products.html", {
+            "request": request,
+            "current_user": current_user,
+            "products": products,
+            "categories": categories,
+            "selected_category": category,
+            "page_title": f"Produtos - {category.name}"
+        })
+    except Exception as e:
+        logger.error(f"Erro ao carregar produtos da categoria: {e}")
+        return RedirectResponse(url="/products", status_code=302)
+
 @app.get("/downloads")
 async def downloads_page(request: Request, db: Session = Depends(get_db)):
     """Página de downloads do usuário"""
