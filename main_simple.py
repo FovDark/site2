@@ -221,9 +221,23 @@ async def painel(request: Request, db: Session = Depends(get_db)):
     if not current_user:
         return RedirectResponse(url="/login", status_code=302)
     
+    # Buscar licenças do usuário
+    user_licenses = db.query(License).filter(
+        License.user_id == current_user.id
+    ).join(Product).join(Category).all()
+    
+    # Buscar estatísticas básicas
+    total_licenses = len(user_licenses)
+    active_licenses = len([l for l in user_licenses if l.status == "active"])
+    
     return templates.TemplateResponse("painel.html", {
         "request": request,
-        "current_user": current_user
+        "current_user": current_user,
+        "licenses": user_licenses,
+        "total_licenses": total_licenses,
+        "active_licenses": active_licenses,
+        "downloads": [],  # Por enquanto vazio
+        "transactions": []  # Por enquanto vazio
     })
 
 @app.get("/admin", response_class=HTMLResponse)
