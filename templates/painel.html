@@ -40,50 +40,50 @@
         </div>
 
         <!-- Quick Stats -->
-        <div class="gaming-grid">
-            <div class="gaming-card">
-                <div class="gaming-card-icon">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
                     <i class="fas fa-key"></i>
                 </div>
-                <div class="gaming-card-content">
-                    <h3>{{ active_licenses or 0 }}</h3>
-                    <p>Licenças Ativas</p>
+                <div class="stat-content">
+                    <div class="stat-number">{{ active_licenses or 0 }}</div>
+                    <div class="stat-label">Licenças Ativas</div>
                 </div>
             </div>
             
-            <div class="gaming-card">
-                <div class="gaming-card-icon">
+            <div class="stat-card">
+                <div class="stat-icon">
                     <i class="fas fa-download"></i>
                 </div>
-                <div class="gaming-card-content">
-                    <h3>{{ total_licenses or 0 }}</h3>
-                    <p>Total de Licenças</p>
+                <div class="stat-content">
+                    <div class="stat-number">{{ total_licenses or 0 }}</div>
+                    <div class="stat-label">Total de Licenças</div>
                 </div>
             </div>
             
-            <div class="gaming-card">
-                <div class="gaming-card-icon">
+            <div class="stat-card">
+                <div class="stat-icon">
                     <i class="fas fa-calendar"></i>
                 </div>
-                <div class="gaming-card-content">
-                    <h3>{{ current_user.created_at.strftime('%d/%m/%Y') if current_user.created_at else 'N/A' }}</h3>
-                    <p>Membro desde</p>
+                <div class="stat-content">
+                    <div class="stat-number">{{ current_user.created_at.strftime('%d/%m/%Y') if current_user.created_at else 'N/A' }}</div>
+                    <div class="stat-label">Membro desde</div>
                 </div>
             </div>
             
-            <div class="gaming-card">
-                <div class="gaming-card-icon">
+            <div class="stat-card">
+                <div class="stat-icon">
                     <i class="fas fa-shield-check"></i>
                 </div>
-                <div class="gaming-card-content">
-                    <h3>{{ 'Admin' if current_user.is_admin else 'Usuário' }}</h3>
-                    <p>Tipo de Conta</p>
+                <div class="stat-content">
+                    <div class="stat-number">{{ 'Admin' if current_user.is_admin else 'Usuário' }}</div>
+                    <div class="stat-label">Tipo de Conta</div>
                 </div>
             </div>
         </div>
 
         <!-- Licenses Section -->
-        <div class="gaming-content-card">
+        <div class="dashboard-section">
             <div class="section-header">
                 <h2>
                     <i class="fas fa-key"></i>

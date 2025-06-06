@@ -3,41 +3,43 @@
 {% block title %}Produtos - FovDark Gaming{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
-<div class="page-header">
-    <div class="page-header-content">
-        <div class="container">
-            <h1 class="page-title">Nossos Produtos</h1>
-            <p class="page-subtitle">Descubra nossa coleção completa de softwares, ISOs e ferramentas gaming</p>
+<!-- Products Hero -->
+<section class="products-hero">
+    <div class="container">
+        <div class="hero-content text-center">
+            <h1>Nossos Produtos</h1>
+            <p>Descubra nossa coleção completa de softwares, ISOs e ferramentas gaming</p>
         </div>
     </div>
-</div>
+</section>
 
 <!-- Filters Section -->
-<div class="content-section">
+<section class="products-filters">
     <div class="container">
-        <div class="gaming-content-card">
-            <div class="filters-wrapper">
-                <div class="filter-tabs">
-                    <button class="gaming-btn active" data-category="all">Todos</button>
-                    <button class="gaming-btn" data-category="free">Grátis</button>
-                    <button class="gaming-btn" data-category="premium">Premium</button>
-                    <button class="gaming-btn" data-category="software">Software</button>
-                    <button class="gaming-btn" data-category="iso">ISOs</button>
-                    <button class="gaming-btn" data-category="optimizer">Otimizadores</button>
-                </div>
-                
-                <div class="search-box">
-                    <input type="text" placeholder="Buscar produtos..." id="productSearch" class="form-control">
-                    <i class="fas fa-search"></i>
-                </div>
+        <div class="filters-wrapper">
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-category="all">Todos</button>
+                <button class="filter-tab" data-category="free">Grátis</button>
+                <button class="filter-tab" data-category="premium">Premium</button>
+                <button class="filter-tab" data-category="software">Software</button>
+                <button class="filter-tab" data-category="iso">ISOs</button>
+                <button class="filter-tab" data-category="optimizer">Otimizadores</button>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" placeholder="Buscar produtos..." id="productSearch">
+                <i class="fas fa-search"></i>
             </div>
         </div>
+    </div>
+</section>
 
-        <!-- Products Grid -->
-        <div class="gaming-grid" id="productsGrid">
+<!-- Products Grid -->
+<section class="products-grid-section">
+    <div class="container">
+        <div class="products-grid" id="productsGrid">
             {% for product in products %}
-            <div class="gaming-card" data-category="{{ product.category.name.lower() if product.category else 'software' }}" data-type="{{ 'free' if product.price == 0 else 'premium' }}">
+            <div class="product-card" data-category="{{ product.category.name.lower() if product.category else 'software' }}" data-type="{{ 'free' if product.price == 0 else 'premium' }}">
                 <div class="product-image">
                     {% if product.image_url %}
                         <img src="{{ product.image_url }}" alt="{{ product.name }}">
