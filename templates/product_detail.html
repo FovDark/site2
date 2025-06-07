@@ -276,9 +276,11 @@ async function submitPurchase(event) {
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
     
     try {
-        const response = await fetch('/api/purchase', {
+        const response = await fetch(`/api/purchase/${formData.get('product_id')}`, {
             method: 'POST',
-            body: formData
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
         
         const result = await response.json();

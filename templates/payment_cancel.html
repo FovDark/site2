@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Pagamento Cancelado - FovDark{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="container">
+            <h1 class="page-title">
+                <i class="fas fa-times-circle" style="color: #ef4444;"></i>
+                Pagamento Cancelado
+            </h1>
+            <p class="page-subtitle">A transação foi cancelada</p>
+        </div>
+    </div>
+</div>
+
+<div class="content-section">
+    <div class="container">
+        <div class="gaming-content-card" style="text-align: center; max-width: 600px; margin: 0 auto;">
+            <div style="font-size: 4rem; color: #ef4444; margin-bottom: 2rem;">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            
+            <h2 style="color: #dc2626; margin-bottom: 1rem;">Pagamento Cancelado</h2>
+            
+            <p style="font-size: 1.1rem; margin-bottom: 2rem; color: var(--gray-600);">
+                A transação foi cancelada. Nenhuma cobrança foi realizada em sua conta.
+            </p>
+            
+            {% if reference %}
+            <div style="background: var(--gray-50); padding: 1rem; border-radius: 10px; margin-bottom: 2rem;">
+                <strong>Referência:</strong> {{ reference }}
+            </div>
+            {% endif %}
+            
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/products" class="btn-gaming-primary">
+                    <i class="fas fa-shopping-cart"></i>
+                    Ver Produtos
+                </a>
+                <a href="/" class="btn-gaming-secondary">
+                    <i class="fas fa-home"></i>
+                    Voltar ao Início
+                </a>
+            </div>
+            
+            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--gray-200);">
+                <h3 style="margin-bottom: 1rem; color: var(--gray-700);">Precisa de Ajuda?</h3>
+                <ul style="text-align: left; color: var(--gray-600); max-width: 400px; margin: 0 auto;">
+                    <li style="margin-bottom: 0.5rem;">
+                        <i class="fas fa-headset" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
+                        Entre em contato com nosso suporte
+                    </li>
+                    <li style="margin-bottom: 0.5rem;">
+                        <i class="fas fa-question-circle" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
+                        Verifique nossas perguntas frequentes
+                    </li>
+                    <li style="margin-bottom: 0.5rem;">
+                        <i class="fas fa-credit-card" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
+                        Tente novamente com outro método de pagamento
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.btn-gaming-secondary {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-gaming-secondary:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}

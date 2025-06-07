@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Pagamento Pendente - FovDark{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="container">
+            <h1 class="page-title">
+                <i class="fas fa-clock" style="color: #f59e0b;"></i>
+                Pagamento Pendente
+            </h1>
+            <p class="page-subtitle">Aguardando confirmação do pagamento</p>
+        </div>
+    </div>
+</div>
+
+<div class="content-section">
+    <div class="container">
+        <div class="gaming-content-card" style="text-align: center; max-width: 600px; margin: 0 auto;">
+            <div style="font-size: 4rem; color: #f59e0b; margin-bottom: 2rem;">
+                <i class="fas fa-clock"></i>
+            </div>
+            
+            <h2 style="color: #d97706; margin-bottom: 1rem;">Pagamento em Processamento</h2>
+            
+            <p style="font-size: 1.1rem; margin-bottom: 2rem; color: var(--gray-600);">
+                Seu pagamento está sendo processado. Você receberá uma confirmação em breve.
+            </p>
+            
+            {% if reference %}
+            <div style="background: var(--gray-50); padding: 1rem; border-radius: 10px; margin-bottom: 2rem;">
+                <strong>Referência:</strong> {{ reference }}
+            </div>
+            {% endif %}
+            
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/painel" class="btn-gaming-primary">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Ir para o Painel
+                </a>
+                <a href="/products" class="btn-gaming-secondary">
+                    <i class="fas fa-shopping-cart"></i>
+                    Continuar Comprando
+                </a>
+            </div>
+            
+            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--gray-200);">
+                <h3 style="margin-bottom: 1rem; color: var(--gray-700);">O que acontece agora?</h3>
+                <ul style="text-align: left; color: var(--gray-600); max-width: 400px; margin: 0 auto;">
+                    <li style="margin-bottom: 0.5rem;">
+                        <i class="fas fa-credit-card" style="color: var(--warning-color); margin-right: 0.5rem;"></i>
+                        Seu pagamento está sendo verificado
+                    </li>
+                    <li style="margin-bottom: 0.5rem;">
+                        <i class="fas fa-envelope" style="color: var(--warning-color); margin-right: 0.5rem;"></i>
+                        Você receberá um email de confirmação
+                    </li>
+                    <li style="margin-bottom: 0.5rem;">
+                        <i class="fas fa-download" style="color: var(--warning-color); margin-right: 0.5rem;"></i>
+                        Após aprovação, sua licença ficará disponível
+                    </li>
+                </ul>
+            </div>
+            
+            <div style="margin-top: 2rem; padding: 1rem; background: #fef3c7; border-radius: 10px;">
+                <p style="margin: 0; color: #92400e; font-weight: 500;">
+                    <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
+                    O processamento pode levar alguns minutos. Mantenha esta página aberta ou verifique seu email.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.btn-gaming-secondary {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-gaming-secondary:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Auto refresh da página a cada 30 segundos */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.fas.fa-clock {
+    animation: pulse 2s ease-in-out infinite;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto refresh da página a cada 30 segundos para verificar status
+setTimeout(function() {
+    location.reload();
+}, 30000);
+</script>
+{% endblock %}
