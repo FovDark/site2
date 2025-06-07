@@ -28,7 +28,7 @@ from admin import get_admin_stats, create_product, update_product, delete_produc
 from license import verify_license, create_license, get_hwid
 from email_utils import send_password_reset_email, send_license_email
 from password_recovery import create_reset_token, verify_reset_token
-from infinite_pay import create_payment, verify_payment_webhook
+from infinite_pay_simple import create_payment_link
 from security import add_security_headers, validate_input, log_security_event
 
 # Configuração de logging
@@ -426,8 +426,8 @@ async def api_purchase_product(
                 "message": "Produto não encontrado"
             }, status_code=404)
         
-        # Criar pagamento no Infinite Pay
-        payment_data = create_payment(
+        # Criar link de pagamento no Infinite Pay
+        payment_data = create_payment_link(
             amount=product.price,
             description=f"Licença {product.name}",
             user_id=current_user.id,

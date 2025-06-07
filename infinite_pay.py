@@ -6,88 +6,59 @@ import json
 from datetime import datetime
 from typing import Dict, Any
 import logging
+from urllib.parse import urlencode
 
 logger = logging.getLogger(__name__)
 
-# Configurações do Infinite Pay
-INFINITE_PAY_API_URL = os.getenv("INFINITE_PAY_API_URL", "https://api.infinitepay.io")
-INFINITE_PAY_API_KEY = os.getenv("INFINITE_PAY_API_KEY", "")
-INFINITE_PAY_SECRET = os.getenv("INFINITE_PAY_SECRET", "")
+# Configurações do Infinite Pay - Link Integrado
+INFINITE_PAY_BASE_URL = os.getenv("INFINITE_PAY_BASE_URL", "https://app.infinitepay.io")
+INFINITE_PAY_USER_ID = os.getenv("INFINITE_PAY_USER_ID", "")  # ID do usuário no InfinitePay
 INFINITE_PAY_WEBHOOK_SECRET = os.getenv("INFINITE_PAY_WEBHOOK_SECRET", "")
 
 class InfinitePayAPI:
-    """Cliente para API do Infinite Pay"""
+    """Cliente para Infinite Pay - Link Integrado"""
     
     def __init__(self):
-        self.api_url = INFINITE_PAY_API_URL
-        self.api_key = INFINITE_PAY_API_KEY
-        self.secret = INFINITE_PAY_SECRET
+        self.base_url = INFINITE_PAY_BASE_URL
+        self.user_id = INFINITE_PAY_USER_ID
         self.webhook_secret = INFINITE_PAY_WEBHOOK_SECRET
         
-        if not self.api_key or not self.secret:
-            logger.warning("Configurações do Infinite Pay não encontradas")
+        if not self.user_id:
+            logger.warning("ID do usuário Infinite Pay não configurado")
     
-    def _make_request(self, method: str, endpoint: str, data: dict = None) -> dict:
-        """Fazer requisição para API"""
+    def create_payment_link(self, amount: float, description: str, user_id: int, product_id: int, **kwargs) -> dict:
+        """Criar link de pagamento do Infinite Pay"""
         try:
-            url = f"{self.api_url}{endpoint}"
-            headers = {
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
-            }
+            # Criar referência única
+            external_reference = f"user_{user_id}_product_{product_id}_{int(datetime.now().timestamp())}"
             
-            response = requests.request(
-                method=method,
-                url=url,
-                headers=headers,
-                json=data,
-                timeout=30
-            )
-            
-            response.raise_for_status()
-            return response.json()
-            
-        except requests.RequestException as e:
-            logger.error(f"Erro na requisição Infinite Pay: {e}")
-            return {"error": str(e)}
-        except Exception as e:
-            logger.error(f"Erro inesperado Infinite Pay: {e}")
-            return {"error": str(e)}
-    
-    def create_payment(self, amount: float, description: str, user_id: int, product_id: int, **kwargs) -> dict:
-        """Criar pagamento no Infinite Pay"""
-        try:
-            payment_data = {
-                "amount": int(amount * 100),  # Converter para centavos
-                "currency": "BRL",
+            # Parâmetros para o link integrado
+            params = {
+                "amount": f"{amount:.2f}".replace(".", ","),  # Formato brasileiro
                 "description": description,
-                "external_reference": f"user_{user_id}_product_{product_id}_{int(datetime.now().timestamp())}",
-                "payment_method_types": ["credit_card", "debit_card", "pix", "boleto"],
-                "success_url": f"{os.getenv('SITE_URL', 'http://localhost:5000')}/payment/success",
+                "reference": external_reference,
+                "return_url": f"{os.getenv('SITE_URL', 'http://localhost:5000')}/payment/success",
                 "cancel_url": f"{os.getenv('SITE_URL', 'http://localhost:5000')}/payment/cancel",
-                "webhook_url": f"{os.getenv('SITE_URL', 'http://localhost:5000')}/api/webhook/infinite-pay",
-                "metadata": {
-                    "user_id": user_id,
-                    "product_id": product_id,
-                    **kwargs
-                }
+                "webhook_url": f"{os.getenv('SITE_URL', 'http://localhost:5000')}/api/webhook/infinite-pay"
             }
             
-            response = self._make_request("POST", "/payments", payment_data)
-            
-            if "error" in response:
-                return {"success": False, "error": response["error"]}
+            # Gerar URL do link integrado
+            if self.user_id:
+                payment_url = f"{self.base_url}/checkout/{self.user_id}?" + urlencode(params)
+            else:
+                # URL genérica caso não tenha user_id configurado
+                payment_url = f"{self.base_url}/checkout?" + urlencode(params)
             
             return {
                 "success": True,
-                "payment_id": response.get("id"),
-                "payment_url": response.get("checkout_url"),
-                "status": response.get("status"),
-                "external_reference": payment_data["external_reference"]
+                "payment_url": payment_url,
+                "external_reference": external_reference,
+                "amount": amount,
+                "description": description
             }
             
         except Exception as e:
-            logger.error(f"Erro ao criar pagamento: {e}")
+            logger.error(f"Erro ao criar link de pagamento: {e}")
             return {"success": False, "error": str(e)}
     
     def get_payment(self, payment_id: str) -> dict:
