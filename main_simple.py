@@ -822,6 +822,51 @@ async def api_purchase_product(request: Request, product_id: int, db: Session = 
             content={"success": False, "message": "Erro interno do servidor"}
         )
 
+@app.post("/api/purchase/{product_id}")
+async def api_purchase_product(request: Request, product_id: int, db: Session = Depends(get_db)):
+    """API para comprar produto - redireciona para Stripe por padrão"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        if not current_user:
+            return JSONResponse({
+                "success": False,
+                "message": "Login necessário"
+            }, status_code=401)
+        
+        # Verificar se produto existe
+        product = db.query(Product).filter(Product.id == product_id, Product.is_active == True).first()
+        if not product:
+            return JSONResponse({
+                "success": False,
+                "message": "Produto não encontrado"
+            }, status_code=404)
+        
+        # Redirecionar para Stripe checkout por padrão
+        from stripe_simple import create_stripe_checkout_session
+        result = create_stripe_checkout_session(current_user.id, product_id, db)
+        
+        if result["success"]:
+            return JSONResponse({
+                "success": True,
+                "payment_url": result["checkout_url"],
+                "checkout_url": result["checkout_url"],
+                "session_id": result["session_id"],
+                "amount": result["amount"],
+                "product_name": result["product_name"]
+            })
+        else:
+            return JSONResponse({
+                "success": False,
+                "message": result.get("error", "Erro ao criar checkout")
+            }, status_code=400)
+            
+    except Exception as e:
+        logger.error(f"Erro na compra: {e}")
+        return JSONResponse({
+            "success": False,
+            "message": "Erro interno do servidor"
+        }, status_code=500)
+
 @app.get("/api/download/{product_id}")
 async def api_download_product(request: Request, product_id: int, db: Session = Depends(get_db)):
     """API para download de produto"""
