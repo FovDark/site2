@@ -340,10 +340,13 @@ async def api_download_product(request: Request, product_id: int, current_user: 
             }, status_code=401)
         
         # Verificar se usuário tem licença ativa para o produto
-        from license import check_license_for_product
-        license_obj = check_license_for_product(db, current_user.id, product_id)
+        license_obj = db.query(License).filter(
+            License.user_id == current_user.id,
+            License.product_id == product_id,
+            License.status == "active"
+        ).first()
         
-        if not license_obj:
+        if not license_obj or license_obj.is_expired:
             return JSONResponse({
                 "success": False,
                 "message": "Você não possui licença ativa para este produto"
@@ -363,11 +366,86 @@ async def api_download_product(request: Request, product_id: int, current_user: 
         return JSONResponse({
             "success": True,
             "download_url": product.download_url,
-            "product_name": product.name
+            "product_name": product.name,
+            "license_key": license_obj.license_key,
+            "expires_at": license_obj.expires_at.isoformat()
         })
         
     except Exception as e:
         logger.error(f"Erro no download: {e}")
+        return JSONResponse({
+            "success": False,
+            "message": "Erro interno do servidor"
+        }, status_code=500)
+
+@app.get("/download/file/{product_id}")
+async def secure_download_file(request: Request, product_id: int, current_user: User = Depends(get_current_user_simple), db: Session = Depends(get_db)):
+    """Download seguro de arquivo do produto"""
+    try:
+        if not current_user:
+            return JSONResponse({
+                "success": False,
+                "message": "Acesso não autorizado"
+            }, status_code=401)
+        
+        # Verificar licença ativa
+        license_obj = db.query(License).filter(
+            License.user_id == current_user.id,
+            License.product_id == product_id,
+            License.status == "active"
+        ).first()
+        
+        if not license_obj or license_obj.is_expired:
+            return JSONResponse({
+                "success": False,
+                "message": "Licença expirada ou inválida"
+            }, status_code=403)
+        
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product or not product.download_url:
+            return JSONResponse({
+                "success": False,
+                "message": "Arquivo não encontrado"
+            }, status_code=404)
+        
+        # Construir caminho do arquivo
+        file_path = f".{product.download_url}"
+        
+        from fastapi.responses import FileResponse
+        import os
+        
+        if not os.path.exists(file_path):
+            return JSONResponse({
+                "success": False,
+                "message": "Arquivo não encontrado no servidor"
+            }, status_code=404)
+        
+        # Registrar download
+        from models import Download
+        download_record = Download(
+            user_id=current_user.id,
+            license_id=license_obj.id,
+            product_id=product_id,
+            ip_address=request.client.host,
+            downloaded_at=datetime.utcnow()
+        )
+        db.add(download_record)
+        
+        # Incrementar contador
+        product.download_count += 1
+        db.commit()
+        
+        # Determinar nome do arquivo para download
+        filename = f"FovDark_{product.name.replace(' ', '_')}.exe"
+        
+        return FileResponse(
+            path=file_path,
+            filename=filename,
+            media_type="application/octet-stream"
+        )
+        
+    except Exception as e:
+        logger.error(f"Erro no download seguro: {e}")
         return JSONResponse({
             "success": False,
             "message": "Erro interno do servidor"
