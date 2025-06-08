@@ -104,3 +104,4 @@ user-agents
 uvicorn
 werkzeug
 stripe
+uvicorn
