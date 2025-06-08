@@ -499,6 +499,109 @@ async def api_license_status(request: Request, license_id: int, current_user: Us
             "message": "Erro interno do servidor"
         }, status_code=500)
 
+# ========================
+# ROTAS DE PAGAMENTO STRIPE
+# ========================
+
+@app.post("/api/stripe/checkout/{product_id}")
+async def stripe_checkout_product(
+    request: Request,
+    product_id: int,
+    db: Session = Depends(get_db)
+):
+    """API para criar checkout do Stripe"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        if not current_user:
+            return JSONResponse({
+                "success": False,
+                "message": "Login necessário"
+            }, status_code=401)
+        
+        # Importar função do Stripe
+        from stripe_simple import create_stripe_checkout_session
+        
+        # Criar sessão de checkout
+        result = create_stripe_checkout_session(current_user.id, product_id, db)
+        
+        if result["success"]:
+            return JSONResponse({
+                "success": True,
+                "checkout_url": result["checkout_url"],
+                "session_id": result["session_id"],
+                "amount": result["amount"],
+                "product_name": result["product_name"]
+            })
+        else:
+            return JSONResponse({
+                "success": False,
+                "message": result.get("error", "Erro ao criar checkout")
+            }, status_code=400)
+            
+    except Exception as e:
+        logger.error(f"Erro no checkout Stripe: {e}")
+        return JSONResponse({
+            "success": False,
+            "message": "Erro interno do servidor"
+        }, status_code=500)
+
+@app.post("/api/webhook/stripe")
+async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
+    """Webhook do Stripe para confirmação de pagamentos"""
+    try:
+        from stripe_simple import process_stripe_webhook_event
+        
+        payload = await request.body()
+        sig_header = request.headers.get('stripe-signature', '')
+        
+        # Processar evento
+        result = process_stripe_webhook_event(payload, sig_header, db)
+        
+        if result["success"]:
+            return JSONResponse({"status": "success", "message": result.get("message", "Processado")})
+        else:
+            return JSONResponse({"error": result.get("error", "Erro no processamento")}, status_code=400)
+        
+    except Exception as e:
+        logger.error(f"Erro no webhook Stripe: {e}")
+        return JSONResponse({"error": str(e)}, status_code=400)
+
+@app.get("/payment/success")
+async def payment_success(request: Request, session_id: str = None, db: Session = Depends(get_db)):
+    """Página de sucesso do pagamento"""
+    current_user = get_current_user_simple(request, db)
+    
+    success_data = {
+        "payment_confirmed": True,
+        "session_id": session_id
+    }
+    
+    return templates.TemplateResponse("payment_success.html", {
+        "request": request,
+        "current_user": current_user,
+        "success_data": success_data
+    })
+
+@app.get("/payment/cancel")
+async def payment_cancel(request: Request, db: Session = Depends(get_db)):
+    """Página de cancelamento do pagamento"""
+    current_user = get_current_user_simple(request, db)
+    
+    return templates.TemplateResponse("payment_cancel.html", {
+        "request": request,
+        "current_user": current_user
+    })
+
+@app.get("/payment/pending")
+async def payment_pending(request: Request, db: Session = Depends(get_db)):
+    """Página de pagamento pendente"""
+    current_user = get_current_user_simple(request, db)
+    
+    return templates.TemplateResponse("payment_pending.html", {
+        "request": request,
+        "current_user": current_user
+    })
+
 @app.get("/products")
 async def products_page(request: Request, db: Session = Depends(get_db)):
     """Página de produtos"""
