@@ -195,6 +195,72 @@ body {
     justify-content: center;
 }
 
+.btn-secondary {
+    background: var(--gray-600);
+    color: white;
+    border-color: var(--gray-600);
+}
+
+.btn-secondary:hover {
+    background: var(--gray-700);
+    border-color: var(--gray-700);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+}
+
+.btn-full {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Payment Methods */
+.payment-methods {
+    margin-top: 1.5rem;
+}
+
+.payment-methods h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 1rem;
+}
+
+.payment-btn {
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    min-height: 60px;
+    font-weight: 600;
+}
+
+.payment-btn i {
+    font-size: 1.2rem;
+}
+
+.payment-info {
+    font-size: 0.75rem;
+    font-weight: 400;
+    opacity: 0.8;
+}
+
+.payment-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.payment-btn:disabled:hover {
+    transform: none !important;
+    box-shadow: var(--shadow) !important;
+}
+
 /* Grid System */
 .grid {
     display: grid;
