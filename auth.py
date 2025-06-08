@@ -53,8 +53,16 @@ def verify_token(token: str):
         return None
 
 def authenticate_user(db: Session, username: str, password: str):
-    """Autenticar usuário - compatível com Supabase"""
+    """Autenticar usuário - aceita email ou nome de usuário"""
+    # Tentar encontrar por email primeiro
     user = db.query(User).filter(User.email == username).first()
+    
+    # Se não encontrou por email, verificar se é um username e buscar por padrão email
+    if not user:
+        # Se o input não contém @, assumir que é um username e buscar emails que começam com ele
+        if '@' not in username:
+            user = db.query(User).filter(User.email.like(f"{username}@%")).first()
+    
     if not user:
         return False
     if not verify_password(password, user.senha_hash):
@@ -93,7 +101,15 @@ def get_current_user(request: Request, db: Session):
             detail="Token inválido"
         )
     
+    # Tentar encontrar por email primeiro
     user = db.query(User).filter(User.email == username).first()
+    
+    # Se não encontrou por email, verificar se é um username e buscar por padrão email
+    if not user:
+        # Se o input não contém @, assumir que é um username e buscar emails que começam com ele
+        if '@' not in username:
+            user = db.query(User).filter(User.email.like(f"{username}@%")).first()
+    
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
