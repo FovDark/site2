@@ -52,16 +52,17 @@ def verify_token(token: str):
     except jwt.PyJWTError:
         return None
 
-def authenticate_user(db: Session, username: str, password: str):
+def authenticate_user(db: Session, username_or_email: str, password: str):
     """Autenticar usuário - aceita email ou nome de usuário"""
-    # Tentar encontrar por email primeiro
-    user = db.query(User).filter(User.email == username).first()
+    from sqlalchemy import or_
     
-    # Se não encontrou por email, verificar se é um username e buscar por padrão email
-    if not user:
-        # Se o input não contém @, assumir que é um username e buscar emails que começam com ele
-        if '@' not in username:
-            user = db.query(User).filter(User.email.like(f"{username}@%")).first()
+    # Buscar por email ou username em uma única query
+    user = db.query(User).filter(
+        or_(
+            User.email == username_or_email,
+            User.username == username_or_email
+        )
+    ).first()
     
     if not user:
         return False
@@ -101,14 +102,14 @@ def get_current_user(request: Request, db: Session):
             detail="Token inválido"
         )
     
-    # Tentar encontrar por email primeiro
-    user = db.query(User).filter(User.email == username).first()
-    
-    # Se não encontrou por email, verificar se é um username e buscar por padrão email
-    if not user:
-        # Se o input não contém @, assumir que é um username e buscar emails que começam com ele
-        if '@' not in username:
-            user = db.query(User).filter(User.email.like(f"{username}@%")).first()
+    # Buscar por email ou username
+    from sqlalchemy import or_
+    user = db.query(User).filter(
+        or_(
+            User.email == username,
+            User.username == username
+        )
+    ).first()
     
     if user is None:
         raise HTTPException(
