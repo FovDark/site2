@@ -103,3 +103,4 @@ sqlalchemy
 user-agents
 uvicorn
 werkzeug
+stripe

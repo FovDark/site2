@@ -112,6 +112,11 @@ class License(Base):
     expires_at = Column(DateTime, nullable=False)
     last_verified = Column(DateTime)
     
+    # Campos do Stripe
+    stripe_session_id = Column(String(255), index=True)  # ID da sessão do Stripe
+    payment_amount = Column(Float)  # Valor pago
+    payment_currency = Column(String(3), default='BRL')  # Moeda
+    
     # Relacionamentos
     user = relationship("User", back_populates="licenses")
     product = relationship("Product", back_populates="licenses")
