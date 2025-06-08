@@ -113,9 +113,11 @@ async def login(
 ):
     """Processar login"""
     try:
-        # Buscar usuário por email (compatível com Supabase)
-        user = db.query(User).filter(User.email == username).first()
-        if not user or not verify_password(password, user.senha_hash):
+        # Buscar usuário por email ou username
+        user = db.query(User).filter(
+            (User.email == username) | (User.username == username)
+        ).first()
+        if not user or not verify_password(password, user.password_hash):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Usuário ou senha incorretos"

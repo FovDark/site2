@@ -82,3 +82,4 @@ sqlalchemy
 user-agents
 uvicorn
 werkzeug
+uvicorn

@@ -19,7 +19,7 @@ class User(Base):
     created_at = Column(DateTime, nullable=True, default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
     hwid = Column(Text, nullable=True)
-    status_licenca = Column(String(50), nullable=True, default='pendente')
+    status_licenca = Column(String(50), nullable=True, default='ativo')
     tentativas_login = Column(Integer, nullable=True, default=0)
     ultimo_login = Column(DateTime, nullable=True)
     ip_registro = Column(String(45), nullable=True)
@@ -35,10 +35,6 @@ class User(Base):
     
     # Propriedades para compatibilidade com código existente
     @property
-    def username(self):
-        return self.email.split('@')[0] if self.email else None
-    
-    @property
     def password_hash(self):
         return self.senha_hash
     
@@ -48,7 +44,7 @@ class User(Base):
     
     @property
     def is_active(self):
-        return self.status_licenca != 'suspenso'
+        return self.status_licenca not in ['suspenso', 'inativo']
     
     @property
     def last_login(self):
