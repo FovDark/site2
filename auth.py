@@ -93,7 +93,7 @@ def get_current_user(request: Request, db: Session):
             detail="Token inválido"
         )
     
-    user = db.query(User).filter(User.username == username).first()
+    user = db.query(User).filter(User.email == username).first()
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
