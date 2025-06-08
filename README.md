@@ -1,138 +1,153 @@
-# FovDark Gaming - Digital Downloads & Licenses Platform
+# FovDark Gaming - Sistema de Licenças Digitais
 
-Uma plataforma moderna para downloads de software gaming e licenças digitais com estética cyberpunk.
+Uma plataforma completa para venda e gerenciamento de licenças digitais de software gaming.
 
 ## 🚀 Funcionalidades
 
-### Homepage Gaming
-- **Hero Section** com gradientes animados e estética cyberpunk
-- **6 Categorias Gaming**: Softwares, ISOs Gamers, Otimizadores, Mods & Trainers, Cheats & Scripts, Suporte
-- **Seção "Mais Baixados"** com 6 produtos populares (FovDark Optimizer, Windows 11 Gaming, etc.)
-- **"Como Funciona"** em 3 passos com animações
-- **Estatísticas Animadas** com contadores dinâmicos
-- **Animações de Scroll** com Intersection Observer
-- **Design Responsivo** para mobile
+### Para Usuários
+- **Cadastro e Login** - Sistema de autenticação seguro
+- **Catálogo de Produtos** - Navegação por categorias
+- **Sistema de Pagamentos** - Integração com Infinite Pay
+- **Downloads Seguros** - Acesso a produtos licenciados
+- **Painel do Usuário** - Gerenciamento de licenças ativas
 
-### Sistema Backend
-- **Sistema de Usuários** com autenticação JWT
-- **Gerenciamento de Produtos** com categorias
-- **Sistema de Licenças** com HWID
-- **Downloads Protegidos** por licença
-- **Painel Administrativo** completo
-- **Integração Supabase** PostgreSQL
+### Para Administradores
+- **Painel Administrativo** - Dashboard com estatísticas
+- **Gerenciamento de Produtos** - CRUD completo
+- **Controle de Usuários** - Ativação/suspensão
+- **Relatórios** - Analytics de vendas e licenças
+- **Logs do Sistema** - Monitoramento de atividades
 
-## 🛠 Tecnologias
+## 🛠️ Tecnologias
 
-- **Backend**: FastAPI + Python 3.11
-- **Database**: Supabase PostgreSQL
-- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
-- **Styling**: CSS Grid, Flexbox, Gradientes, Animações
-- **Authentication**: JWT + bcrypt
-- **ORM**: SQLAlchemy
+- **Backend:** FastAPI + Python 3.11
+- **Banco de Dados:** PostgreSQL / SQLite
+- **Frontend:** HTML5 + CSS3 + JavaScript
+- **Autenticação:** JWT + BCrypt
+- **Deploy:** Render / Docker
+- **Pagamentos:** Infinite Pay
 
-## 📦 Configuração no Replit
+## 📦 Instalação Local
 
-### 1. Configuração do Supabase
-1. Crie um projeto no [Supabase](https://supabase.com)
-2. Vá em Settings > Database
-3. Copie a Connection String (URI)
-4. Cole no campo `DATABASE_URL` nos Secrets do Replit
-
-### 2. Variáveis de Ambiente (Secrets)
-Configure estas variáveis nos Secrets do Replit:
-
+1. **Clone o repositório**
 ```bash
-DATABASE_URL=postgresql://user:password@host:port/database
-JWT_SECRET_KEY=seu-jwt-secret-aqui
-SECRET_KEY=sua-flask-secret-key-aqui
-ENVIRONMENT=production
+git clone <repository-url>
+cd fovdark-gaming
 ```
 
-### 3. Deploy Automático
-O projeto está configurado para deploy automático no Replit com:
-- Configurações de produção otimizadas
-- Pool de conexões PostgreSQL configurado
-- Middleware de segurança ativado
-- Logs estruturados
+2. **Crie ambiente virtual**
+```bash
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# ou
+venv\Scripts\activate  # Windows
+```
 
-## 🎮 Recursos Gaming
+3. **Instale dependências**
+```bash
+pip install -r requirements.txt
+```
 
-### Design Cyberpunk
-- Paleta de cores neon (cyan, magenta, verde)
-- Gradientes animados nos títulos
-- Efeitos de hover com transformações
-- Partículas flutuantes no hero
-- Backdrop filters e glass morphism
+4. **Configure variáveis de ambiente**
+```bash
+cp .env.example .env
+# Edite o arquivo .env com suas configurações
+```
 
-### Animações Interativas
-- Contadores animados nas estatísticas
-- Cards com entrada em fade + slide up
-- Hover effects nos botões e cards
-- Parallax no hero section
-- Ripple effects nos cliques
+5. **Execute a aplicação**
+```bash
+uvicorn main_simple:app --reload --host 0.0.0.0 --port 5000
+```
 
-### Funcionalidades JavaScript
-- Intersection Observer para performance
-- Smooth scrolling para âncoras
-- Animações baseadas em delay
-- Touch enhancements para mobile
-- Accessibility melhorada
+## 🌐 Deploy no Render
+
+### Configuração Rápida
+
+1. **Fork este repositório**
+2. **Conecte ao Render**
+   - Acesse [render.com](https://render.com)
+   - Conecte seu repositório GitHub
+3. **Crie PostgreSQL Database**
+   - New → PostgreSQL
+   - Anote a connection string
+4. **Crie Web Service**
+   - New → Web Service
+   - Build Command: `./build.sh`
+   - Start Command: `gunicorn main_simple:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT`
+
+### Variáveis de Ambiente Obrigatórias
+
+```env
+DATABASE_URL=postgresql://user:pass@host:port/db
+JWT_SECRET_KEY=sua-chave-jwt-secreta
+SECRET_KEY=sua-chave-secreta
+ENVIRONMENT=production
+DEBUG=false
+ALLOWED_HOSTS=seudominio.onrender.com
+CORS_ORIGINS=https://seudominio.onrender.com
+```
+
+## 🔧 Configuração Avançada
+
+### Email (Opcional)
+```env
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=seu-email@gmail.com
+SMTP_PASSWORD=sua-senha-app
+```
+
+### Pagamentos (Opcional)
+```env
+INFINITE_PAY_API_KEY=sua-chave-api
+INFINITE_PAY_WEBHOOK_SECRET=seu-webhook-secret
+```
 
 ## 📁 Estrutura do Projeto
 
 ```
-fovdark/
-├── main_simple.py          # Aplicação principal FastAPI
-├── config.py               # Configurações centralizadas
-├── database.py             # Conexão Supabase + SQLAlchemy
-├── models.py               # Modelos do banco de dados
-├── auth.py                 # Sistema de autenticação
-├── templates/
-│   ├── base.html          # Template base
-│   ├── index.html         # Homepage gaming
-│   ├── login.html         # Página de login
-│   ├── register.html      # Página de registro
-│   └── painel.html        # Painel do usuário
-├── static/
-│   ├── css/style.css      # Estilos principais
-│   └── js/script.js       # JavaScript principal
-└── README.md              # Este arquivo
+├── main_simple.py         # Aplicação principal
+├── models.py             # Modelos do banco
+├── database.py           # Configuração DB
+├── auth.py              # Autenticação
+├── config.py            # Configurações
+├── admin.py             # Funções admin
+├── license.py           # Sistema de licenças
+├── static/              # CSS, JS, imagens
+├── templates/           # Templates HTML
+├── requirements.txt     # Dependências
+├── render.yaml         # Config Render
+├── Dockerfile          # Container
+└── deploy_guide.md     # Guia detalhado
 ```
 
-## 🔧 Desenvolvimento Local
+## 🚦 Status do Sistema
 
-1. Clone o repositório
-2. Configure as variáveis de ambiente
-3. Execute:
-```bash
-python -m uvicorn main_simple:app --host 0.0.0.0 --port 5000 --reload
-```
+- ✅ Autenticação de usuários
+- ✅ Sistema de produtos e categorias
+- ✅ Gerenciamento de licenças
+- ✅ Painel administrativo
+- ✅ Interface responsiva
+- ✅ Pronto para deploy
+- ✅ Sistema de pagamentos
+- ✅ Envio de emails
 
-## 🚀 Deploy em Produção
+## 🔒 Segurança
 
-O projeto está otimizado para Replit Deployments com:
-- Configurações de segurança para produção
-- Pool de conexões PostgreSQL otimizado
-- CORS configurado para domínios Replit
-- SSL/TLS habilitado para Supabase
-
-### Dados Iniciais
-O sistema cria automaticamente:
-- **5 Categorias** padrão (ISOs Customizadas, Programas, Otimizadores, Cheats & Trainers, Mods)
-- **Usuário Admin** (admin/admin123)
-
-## 🎯 Próximos Passos
-
-1. **Sistema de Pagamentos**: Integração com gateways
-2. **Upload de Arquivos**: Sistema de downloads
-3. **API REST**: Endpoints para aplicações externas
-4. **Dashboard Analytics**: Métricas de downloads
-5. **Sistema de Avaliações**: Reviews de produtos
+- Rate limiting integrado
+- Headers de segurança
+- Validação de entrada
+- Criptografia de senhas
+- Tokens JWT seguros
+- CORS configurado
 
 ## 📞 Suporte
 
-Para suporte técnico ou dúvidas sobre implementação, consulte a documentação do projeto ou entre em contato através dos canais oficiais.
+Para dúvidas sobre deploy ou configuração, consulte:
+- `deploy_guide.md` - Guia completo de deploy
+- `.env.example` - Exemplo de configurações
+- Logs do Render - Para debug em produção
 
----
+## 📄 Licença
 
-**FovDark Gaming** - Elevando sua experiência digital ao próximo nível! 🎮
+Projeto proprietário - FovDark Gaming
