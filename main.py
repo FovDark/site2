@@ -791,6 +791,290 @@ async def api_forgot_password(request: Request, email: str = Form(...), db=Depen
             "message": "Erro interno do servidor"
         }, status_code=500)
 
+# Rotas de API Admin para gerenciamento de produtos
+@app.get("/admin/api/products/{product_id}")
+@limiter.limit("30/minute")
+async def api_get_product(
+    request: Request,
+    product_id: int,
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
+    """API para obter detalhes do produto (admin apenas)"""
+    try:
+        # Verificar se é admin
+        if not current_user.is_admin:
+            raise HTTPException(status_code=403, detail="Acesso negado")
+        
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product:
+            raise HTTPException(status_code=404, detail="Produto não encontrado")
+        
+        return {
+            "id": product.id,
+            "name": product.name,
+            "description": product.description,
+            "price": float(product.price),
+            "category_id": product.category_id,
+            "duration_days": product.duration_days,
+            "download_url": product.download_url,
+            "requirements": product.requirements,
+            "tags": product.tags,
+            "is_featured": product.is_featured,
+            "is_active": product.is_active,
+            "download_count": product.download_count,
+            "created_at": product.created_at.isoformat() if product.created_at else None
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erro ao obter produto {product_id}: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
+@app.put("/admin/api/products/{product_id}")
+@limiter.limit("10/minute")
+async def api_update_product(
+    request: Request,
+    product_id: int,
+    name: str = Form(...),
+    description: str = Form(...),
+    price: float = Form(...),
+    category_id: int = Form(...),
+    duration_days: int = Form(30),
+    download_url: str = Form(None),
+    requirements: str = Form(None),
+    tags: str = Form(None),
+    is_featured: bool = Form(False),
+    image: UploadFile = File(None),
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
+    """API para atualizar produto (admin apenas)"""
+    try:
+        # Verificar se é admin
+        if not current_user.is_admin:
+            raise HTTPException(status_code=403, detail="Acesso negado")
+        
+        # Buscar produto
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product:
+            raise HTTPException(status_code=404, detail="Produto não encontrado")
+        
+        # Validar dados
+        if price < 0:
+            raise HTTPException(status_code=400, detail="Preço deve ser positivo")
+        
+        if duration_days < 1:
+            raise HTTPException(status_code=400, detail="Duração deve ser pelo menos 1 dia")
+        
+        # Verificar se categoria existe
+        category = db.query(Category).filter(Category.id == category_id).first()
+        if not category:
+            raise HTTPException(status_code=400, detail="Categoria não encontrada")
+        
+        # Atualizar dados do produto
+        product.name = name.strip()
+        product.description = description.strip() if description else None
+        product.price = price
+        product.category_id = category_id
+        product.duration_days = duration_days
+        product.download_url = download_url.strip() if download_url else None
+        product.requirements = requirements.strip() if requirements else None
+        product.tags = tags.strip() if tags else None
+        product.is_featured = is_featured
+        product.updated_at = datetime.utcnow()
+        
+        # Processar imagem se fornecida
+        if image and image.filename:
+            # Validar tipo de arquivo
+            allowed_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+            file_extension = os.path.splitext(image.filename)[1].lower()
+            
+            if file_extension not in allowed_extensions:
+                raise HTTPException(status_code=400, detail="Tipo de imagem não permitido")
+            
+            # Salvar imagem
+            image_filename = f"product_{product_id}_{uuid.uuid4().hex}{file_extension}"
+            image_path = f"static/uploads/{image_filename}"
+            
+            with open(image_path, "wb") as buffer:
+                shutil.copyfileobj(image.file, buffer)
+            
+            # Remover imagem antiga se existir
+            if product.image_url:
+                old_image_path = f"static/uploads/{os.path.basename(product.image_url)}"
+                if os.path.exists(old_image_path):
+                    os.remove(old_image_path)
+            
+            product.image_url = f"/uploads/{image_filename}"
+        
+        db.commit()
+        
+        return {
+            "success": True,
+            "message": "Produto atualizado com sucesso",
+            "product": {
+                "id": product.id,
+                "name": product.name,
+                "price": float(product.price)
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erro ao atualizar produto {product_id}: {e}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
+@app.delete("/admin/api/products/{product_id}")
+@limiter.limit("10/minute")
+async def api_delete_product(
+    request: Request,
+    product_id: int,
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
+    """API para deletar produto (admin apenas)"""
+    try:
+        # Verificar se é admin
+        if not current_user.is_admin:
+            raise HTTPException(status_code=403, detail="Acesso negado")
+        
+        # Buscar produto
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product:
+            raise HTTPException(status_code=404, detail="Produto não encontrado")
+        
+        # Verificar se existem licenças ativas para este produto
+        active_licenses = db.query(License).filter(
+            License.product_id == product_id,
+            License.status == 'active'
+        ).count()
+        
+        if active_licenses > 0:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Não é possível deletar produto com {active_licenses} licenças ativas"
+            )
+        
+        # Remover imagem se existir
+        if product.image_url:
+            image_path = f"static/uploads/{os.path.basename(product.image_url)}"
+            if os.path.exists(image_path):
+                os.remove(image_path)
+        
+        # Deletar produto
+        db.delete(product)
+        db.commit()
+        
+        return {
+            "success": True,
+            "message": "Produto deletado com sucesso"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erro ao deletar produto {product_id}: {e}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
+@app.get("/admin/api/users/{user_id}")
+@limiter.limit("30/minute")
+async def api_get_user(
+    request: Request,
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
+    """API para obter detalhes do usuário (admin apenas)"""
+    try:
+        # Verificar se é admin
+        if not current_user.is_admin:
+            raise HTTPException(status_code=403, detail="Acesso negado")
+        
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+        
+        # Buscar licenças ativas
+        active_licenses = db.query(License).filter(
+            License.user_id == user_id,
+            License.status == 'active'
+        ).count()
+        
+        # Buscar total de compras
+        total_purchases = db.query(Transaction).filter(
+            Transaction.user_id == user_id,
+            Transaction.status == 'approved'
+        ).count()
+        
+        return {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "is_active": user.is_active,
+            "is_admin": user.is_admin,
+            "active_licenses_count": active_licenses,
+            "total_purchases": total_purchases,
+            "last_login": user.last_login.isoformat() if user.last_login else None,
+            "created_at": user.created_at.strftime('%d/%m/%Y %H:%M') if user.created_at else None
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erro ao obter usuário {user_id}: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
+@app.put("/admin/api/users/{user_id}/status")
+@limiter.limit("10/minute")
+async def api_update_user_status(
+    request: Request,
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
+    """API para atualizar status do usuário (admin apenas)"""
+    try:
+        # Verificar se é admin
+        if not current_user.is_admin:
+            raise HTTPException(status_code=403, detail="Acesso negado")
+        
+        # Obter dados do corpo da requisição
+        body = await request.json()
+        is_active = body.get("is_active")
+        
+        if is_active is None:
+            raise HTTPException(status_code=400, detail="Status is_active é obrigatório")
+        
+        # Buscar usuário
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+        
+        # Não permitir desativar próprio usuário admin
+        if user.id == current_user.id and user.is_admin and not is_active:
+            raise HTTPException(status_code=400, detail="Não é possível desativar sua própria conta admin")
+        
+        # Atualizar status
+        user.is_active = is_active
+        db.commit()
+        
+        return {
+            "success": True,
+            "message": f"Usuário {'ativado' if is_active else 'desativado'} com sucesso"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erro ao atualizar status do usuário {user_id}: {e}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
 @app.get("/logout")
 async def logout():
     """Logout do usuário"""
