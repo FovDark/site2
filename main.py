@@ -315,27 +315,15 @@ async def product_detail(request: Request, product_id: int, db=Depends(get_db)):
 async def downloads_page(request: Request, current_user: User = Depends(get_current_user), db=Depends(get_db)):
     """Página de downloads do usuário"""
     try:
-        # Buscar licenças ativas do usuário
-        active_licenses = db.query(License).filter(
-            License.user_id == current_user.id,
-            License.status == "active",
-            License.expires_at > datetime.utcnow()
-        ).all()
+        from stripe_simple import get_user_active_licenses
         
-        # Buscar produtos disponíveis para download
-        available_products = []
-        for license_obj in active_licenses:
-            product = db.query(Product).filter(Product.id == license_obj.product_id).first()
-            if product and product.download_url:
-                available_products.append({
-                    "product": product,
-                    "license": license_obj
-                })
+        # Obter licenças ativas do usuário
+        user_licenses = get_user_active_licenses(db, current_user.id)
         
         return templates.TemplateResponse("downloads.html", {
             "request": request,
             "user": current_user,
-            "available_products": available_products
+            "user_licenses": user_licenses
         })
         
     except Exception as e:
@@ -343,7 +331,7 @@ async def downloads_page(request: Request, current_user: User = Depends(get_curr
         return templates.TemplateResponse("downloads.html", {
             "request": request,
             "user": current_user,
-            "available_products": [],
+            "user_licenses": [],
             "error": "Erro ao carregar downloads"
         })
 
@@ -522,7 +510,7 @@ async def stripe_webhook(request: Request, db=Depends(get_db)):
         
     except Exception as e:
         logger.error(f"Erro no webhook Stripe: {e}")
-        return JSONResponse({"error": "Erro interno"}, status_code=500)onse({"error": "Erro interno"}, status_code=500)
+        return JSONResponse({"error": "Erro interno"}, status_code=500)
 
 @app.post("/api/webhook/infinite-pay")
 @limiter.limit("100/minute")
@@ -683,7 +671,7 @@ async def api_verify_license(request: Request, license_key: str, hwid: str = Non
             "message": "Erro interno do servidor"
         }, status_code=500)
 
-@app.post("/api/download/{product_id}")
+@app.get("/api/download/{product_id}")
 @limiter.limit("10/minute")
 async def api_download_product(
     request: Request,
@@ -691,39 +679,48 @@ async def api_download_product(
     current_user: User = Depends(get_current_user),
     db=Depends(get_db)
 ):
-    """API para fazer download de produto"""
+    """API para fazer download de produto (somente com licença ativa)"""
     try:
-        # Verificar se usuário tem licença ativa para o produto
-        license_obj = db.query(License).filter(
-            License.user_id == current_user.id,
-            License.product_id == product_id,
-            License.status == "active",
-            License.expires_at > datetime.utcnow()
-        ).first()
+        from stripe_simple import check_user_license
         
-        if not license_obj:
+        # Verificar se usuário tem licença ativa para este produto
+        license_check = check_user_license(db, current_user.id, product_id)
+        
+        if not license_check.get('has_license', False):
             return JSONResponse({
                 "success": False,
-                "message": "Licença não encontrada ou expirada"
+                "message": "Você precisa de uma licença ativa para fazer download deste produto"
             }, status_code=403)
         
+        # Buscar produto
         product = db.query(Product).filter(Product.id == product_id).first()
         if not product or not product.download_url:
             return JSONResponse({
                 "success": False,
-                "message": "Download não disponível"
+                "message": "Produto ou link de download não encontrado"
             }, status_code=404)
         
-        # Registrar download
-        download = Download(
-            user_id=current_user.id,
-            product_id=product_id,
-            license_id=license_obj.id
-        )
+        # Buscar a licença para registrar o download
+        license_obj = db.query(License).filter(
+            License.user_id == current_user.id,
+            License.product_id == product_id,
+            License.status == 'active',
+            License.expires_at > datetime.utcnow()
+        ).first()
         
-        db.add(download)
-        db.commit()
+        if license_obj:
+            # Registrar download
+            download_record = Download(
+                user_id=current_user.id,
+                product_id=product_id,
+                license_id=license_obj.id,
+                ip_address=request.client.host if request.client else "unknown",
+                user_agent=request.headers.get("user-agent", "")
+            )
+            db.add(download_record)
+            db.commit()
         
+        # Retornar informações do download
         return JSONResponse({
             "success": True,
             "download_url": product.download_url
