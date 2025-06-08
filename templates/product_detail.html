@@ -137,52 +137,67 @@
                     {% endif %}
 
                     {% if user %}
-                    <form id="purchase-form" onsubmit="submitPurchase(event)">
-                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                        
-                        <div class="form-group">
-                            <label for="hwid" class="form-label">
-                                <i class="fas fa-desktop"></i>
-                                Hardware ID (HWID)
-                            </label>
-                            <div class="hwid-input-group">
-                                <input type="text" id="hwid" name="hwid" class="form-input" readonly>
-                                <button type="button" class="btn btn-outline btn-sm" onclick="regenerateHwid()">
-                                    <i class="fas fa-sync"></i>
-                                </button>
-                            </div>
-                            <small class="form-hint">
+                        {% if product.price == 0 %}
+                        <!-- Download Gratuito -->
+                        <div class="free-download-section">
+                            <a href="/api/download/{{ product.id }}" class="btn btn-success btn-large btn-full download-btn">
+                                <i class="fas fa-download"></i>
+                                Download Gratuito
+                            </a>
+                            <p class="download-info">
                                 <i class="fas fa-info-circle"></i>
-                                Este ID vincula a licença ao seu dispositivo
-                            </small>
+                                Disponível imediatamente após login
+                            </p>
                         </div>
-
-                        <div class="payment-methods">
-                            <h4>Escolha o método de pagamento:</h4>
+                        {% else %}
+                        <!-- Produto Pago -->
+                        <form id="purchase-form" onsubmit="submitPurchase(event)">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
                             
-                            <button type="submit" class="btn btn-pix btn-large btn-full payment-btn featured-payment">
-                                <i class="fas fa-qrcode"></i>
-                                Pagar com PIX
-                                <span class="payment-info">✨ Aprovação Instantânea - Recomendado</span>
-                            </button>
-                            
-                            <div class="alternative-payments">
-                                <p class="alternative-label">Ou escolha outra forma:</p>
-                                
-                                <button type="button" class="btn btn-primary btn-large btn-full payment-btn" onclick="payWithStripe()">
-                                    <i class="fab fa-stripe"></i>
-                                    Cartão Internacional
-                                    <span class="payment-info">Crédito/Débito via Stripe</span>
-                                </button>
-                                
-                                <button type="button" class="btn btn-secondary btn-large btn-full payment-btn" onclick="payWithInfinitePay()">
-                                    <i class="fas fa-credit-card"></i>
-                                    Outros Métodos
-                                    <span class="payment-info">Boleto, Cartão Nacional</span>
-                                </button>
+                            <div class="form-group">
+                                <label for="hwid" class="form-label">
+                                    <i class="fas fa-desktop"></i>
+                                    Hardware ID (HWID)
+                                </label>
+                                <div class="hwid-input-group">
+                                    <input type="text" id="hwid" name="hwid" class="form-input" readonly>
+                                    <button type="button" class="btn btn-outline btn-sm" onclick="regenerateHwid()">
+                                        <i class="fas fa-sync"></i>
+                                    </button>
+                                </div>
+                                <small class="form-hint">
+                                    <i class="fas fa-info-circle"></i>
+                                    Este ID vincula a licença ao seu dispositivo
+                                </small>
                             </div>
-                        </div>
-                    </form>
+
+                            <div class="payment-methods">
+                                <h4>Escolha o método de pagamento:</h4>
+                                
+                                <button type="submit" class="btn btn-pix btn-large btn-full payment-btn featured-payment">
+                                    <i class="fas fa-qrcode"></i>
+                                    Pagar com PIX
+                                    <span class="payment-info">✨ Aprovação Instantânea - Recomendado</span>
+                                </button>
+                                
+                                <div class="alternative-payments">
+                                    <p class="alternative-label">Ou escolha outra forma:</p>
+                                    
+                                    <button type="button" class="btn btn-primary btn-large btn-full payment-btn" onclick="payWithStripe()">
+                                        <i class="fab fa-stripe"></i>
+                                        Cartão Internacional
+                                        <span class="payment-info">Crédito/Débito via Stripe</span>
+                                    </button>
+                                    
+                                    <button type="button" class="btn btn-secondary btn-large btn-full payment-btn" onclick="payWithInfinitePay()">
+                                        <i class="fas fa-credit-card"></i>
+                                        Outros Métodos
+                                        <span class="payment-info">Boleto, Cartão Nacional</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        {% endif %}
                     {% else %}
                     <div class="login-prompt">
                         <p>Faça login para comprar este produto</p>

@@ -1215,3 +1215,40 @@ body {
         padding: 1.5rem;
     }
 }
+
+/* ===== PRODUTOS GRATUITOS E PAGOS ===== */
+.free-price {
+    color: #10b981 !important;
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+.free-download-section {
+    margin: 2rem 0;
+}
+
+.download-info {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #6b7280;
+    text-align: center;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-success {
+    background: #10b981;
+    color: white;
+}
+
+.badge-info {
+    background: #3b82f6;
+    color: white;
+}
