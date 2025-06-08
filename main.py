@@ -30,6 +30,7 @@ from email_utils import send_password_reset_email, send_license_email
 from password_recovery import create_reset_token, verify_reset_token
 from infinite_pay_simple import create_payment_link
 from security import add_security_headers, validate_input, log_security_event
+from stripe_integration import create_checkout_session, handle_successful_payment, verify_webhook_signature, process_webhook_event
 
 # Configuração de logging
 logging.basicConfig(level=logging.INFO)
@@ -465,6 +466,61 @@ async def api_purchase_product(
             "message": "Erro interno do servidor"
         }, status_code=500)
 
+@app.post("/api/stripe/checkout/{product_id}")
+@limiter.limit("5/minute")
+async def stripe_checkout_product(
+    request: Request,
+    product_id: int,
+    current_user: User = Depends(get_current_user),
+    db=Depends(get_db)
+):
+    """API para checkout com Stripe"""
+    try:
+        checkout_data = create_checkout_session(product_id, current_user.id, db)
+        
+        return JSONResponse({
+            "success": True,
+            "checkout_url": checkout_data["checkout_url"],
+            "session_id": checkout_data["session_id"]
+        })
+        
+    except HTTPException as e:
+        return JSONResponse({
+            "success": False,
+            "message": e.detail
+        }, status_code=e.status_code)
+    except Exception as e:
+        logger.error(f"Erro no checkout Stripe para produto {product_id}: {e}")
+        return JSONResponse({
+            "success": False,
+            "message": "Erro interno do servidor"
+        }, status_code=500)
+
+@app.post("/api/webhook/stripe")
+@limiter.limit("100/minute")
+async def stripe_webhook(request: Request, db=Depends(get_db)):
+    """Webhook do Stripe para confirmação de pagamentos"""
+    try:
+        payload = await request.body()
+        sig_header = request.headers.get('stripe-signature')
+        
+        if not sig_header:
+            return JSONResponse({"error": "Signature missing"}, status_code=400)
+        
+        # Verificar assinatura do webhook
+        event = verify_webhook_signature(payload, sig_header)
+        
+        # Processar evento
+        result = process_webhook_event(event, db)
+        
+        return JSONResponse({"status": "success", "result": result})
+        
+    except HTTPException as e:
+        return JSONResponse({"error": e.detail}, status_code=e.status_code)
+    except Exception as e:
+        logger.error(f"Erro no webhook Stripe: {e}")
+        return JSONResponse({"error": "Erro interno"}, status_code=500)
+
 @app.post("/api/webhook/infinite-pay")
 @limiter.limit("100/minute")
 async def infinite_pay_webhook(request: Request, db=Depends(get_db)):
@@ -511,17 +567,24 @@ async def infinite_pay_webhook(request: Request, db=Depends(get_db)):
         return JSONResponse({"error": "Erro interno"}, status_code=500)
 
 @app.get("/payment/success")
-async def payment_success(request: Request, ref: str = None, db=Depends(get_db)):
+async def payment_success(request: Request, ref: str = None, session_id: str = None, db=Depends(get_db)):
     """Página de sucesso do pagamento"""
     try:
-        if ref:
-            # Buscar transação pela referência
+        license_data = None
+        
+        # Se é um pagamento do Stripe
+        if session_id:
+            try:
+                license_data = handle_successful_payment(session_id, db)
+            except Exception as e:
+                logger.error(f"Erro ao processar pagamento Stripe: {e}")
+        
+        # Se é um pagamento do Infinite Pay
+        elif ref:
             transaction = db.query(Transaction).filter(Transaction.payment_id == ref).first()
             if transaction:
-                # Atualizar status para aprovado
                 transaction.status = "approved"
                 
-                # Criar licença
                 product = db.query(Product).filter(Product.id == transaction.product_id).first()
                 if product:
                     license_obj = create_license(
@@ -531,7 +594,6 @@ async def payment_success(request: Request, ref: str = None, db=Depends(get_db))
                         duration_days=product.duration_days or 30
                     )
                     
-                    # Enviar email com licença
                     user = db.query(User).filter(User.id == transaction.user_id).first()
                     if user:
                         send_license_email(user.email, license_obj, product)
@@ -540,7 +602,9 @@ async def payment_success(request: Request, ref: str = None, db=Depends(get_db))
         
         return templates.TemplateResponse("payment_success.html", {
             "request": request,
-            "reference": ref
+            "reference": ref,
+            "session_id": session_id,
+            "license_data": license_data
         })
         
     except Exception as e:

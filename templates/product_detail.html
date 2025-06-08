@@ -148,10 +148,21 @@
                             </small>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-large btn-full">
-                            <i class="fas fa-credit-card"></i>
-                            Comprar Agora
-                        </button>
+                        <div class="payment-methods">
+                            <h4>Escolha o método de pagamento:</h4>
+                            
+                            <button type="button" class="btn btn-primary btn-large btn-full payment-btn" onclick="payWithStripe()">
+                                <i class="fab fa-stripe"></i>
+                                Pagar com Stripe
+                                <span class="payment-info">Cartão de Crédito/Débito</span>
+                            </button>
+                            
+                            <button type="submit" class="btn btn-secondary btn-large btn-full payment-btn">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Pagar com Infinite Pay
+                                <span class="payment-info">PIX, Boleto, Cartão</span>
+                            </button>
+                        </div>
                     </form>
                     {% else %}
                     <div class="login-prompt">
@@ -263,7 +274,61 @@ function regenerateHwid() {
     showToast('Novo HWID gerado!', 'success');
 }
 
-// Submit purchase
+// Pay with Stripe
+async function payWithStripe() {
+    const productId = document.querySelector('input[name="product_id"]').value;
+    const submitBtn = document.querySelector('.payment-btn');
+    
+    // Disable buttons
+    const buttons = document.querySelectorAll('.payment-btn');
+    buttons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.onclick && btn.onclick.toString().includes('payWithStripe')) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Criando checkout...';
+        }
+    });
+    
+    try {
+        const response = await fetch(`/api/stripe/checkout/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Show success modal
+            document.getElementById('purchase-success-modal').style.display = 'flex';
+            
+            // Redirect to Stripe checkout
+            setTimeout(() => {
+                window.location.href = result.checkout_url;
+            }, 1000);
+        } else {
+            showToast(result.message || 'Erro ao criar checkout', 'error');
+            // Re-enable buttons
+            buttons.forEach(btn => {
+                btn.disabled = false;
+                if (btn.onclick && btn.onclick.toString().includes('payWithStripe')) {
+                    btn.innerHTML = '<i class="fab fa-stripe"></i> Pagar com Stripe <span class="payment-info">Cartão de Crédito/Débito</span>';
+                }
+            });
+        }
+    } catch (error) {
+        showToast('Erro de conexão', 'error');
+        // Re-enable buttons
+        buttons.forEach(btn => {
+            btn.disabled = false;
+            if (btn.onclick && btn.onclick.toString().includes('payWithStripe')) {
+                btn.innerHTML = '<i class="fab fa-stripe"></i> Pagar com Stripe <span class="payment-info">Cartão de Crédito/Débito</span>';
+            }
+        });
+    }
+}
+
+// Submit purchase (Infinite Pay)
 async function submitPurchase(event) {
     event.preventDefault();
     
@@ -271,8 +336,9 @@ async function submitPurchase(event) {
     const formData = new FormData(form);
     const submitBtn = form.querySelector('button[type="submit"]');
     
-    // Disable submit button
-    submitBtn.disabled = true;
+    // Disable all payment buttons
+    const buttons = document.querySelectorAll('.payment-btn');
+    buttons.forEach(btn => btn.disabled = true);
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
     
     try {
@@ -294,14 +360,16 @@ async function submitPurchase(event) {
                 window.location.href = result.payment_url;
             }, 2000);
         } else {
-            showToast(result.error || 'Erro ao processar compra', 'error');
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-credit-card"></i> Comprar Agora';
+            showToast(result.message || 'Erro ao processar compra', 'error');
+            // Re-enable buttons
+            buttons.forEach(btn => btn.disabled = false);
+            submitBtn.innerHTML = '<i class="fas fa-money-bill-wave"></i> Pagar com Infinite Pay <span class="payment-info">PIX, Boleto, Cartão</span>';
         }
     } catch (error) {
         showToast('Erro de conexão', 'error');
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-credit-card"></i> Comprar Agora';
+        // Re-enable buttons
+        buttons.forEach(btn => btn.disabled = false);
+        submitBtn.innerHTML = '<i class="fas fa-money-bill-wave"></i> Pagar com Infinite Pay <span class="payment-info">PIX, Boleto, Cartão</span>';
     }
 }
 
