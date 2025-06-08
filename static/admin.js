@@ -54,21 +54,26 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Botões de editar produto
-        document.querySelectorAll('.edit-product-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const productId = this.getAttribute('data-product-id');
+        // Usar delegação de eventos para botões dinâmicos
+        document.addEventListener('click', function(e) {
+            // Botão editar produto
+            if (e.target.closest('.edit-product-btn')) {
+                e.preventDefault();
+                const btn = e.target.closest('.edit-product-btn');
+                const productId = btn.getAttribute('data-product-id');
+                console.log('Editando produto:', productId);
                 editProduct(productId);
-            });
-        });
-        
-        // Botões de deletar produto
-        document.querySelectorAll('.delete-product-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const productId = this.getAttribute('data-product-id');
-                const productName = this.getAttribute('data-product-name');
+            }
+            
+            // Botão deletar produto
+            if (e.target.closest('.delete-product-btn')) {
+                e.preventDefault();
+                const btn = e.target.closest('.delete-product-btn');
+                const productId = btn.getAttribute('data-product-id');
+                const productName = btn.getAttribute('data-product-name');
+                console.log('Deletando produto:', productId, productName);
                 deleteProduct(productId, productName);
-            });
+            }
         });
         
         // Form de produto
@@ -143,20 +148,31 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             showLoading('Carregando dados do produto...');
             
+            // Obter token de autenticação do cookie
+            const token = getCookie('access_token');
+            console.log('Token encontrado:', !!token);
+            
             const response = await fetch(`/admin/api/products/${productId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                    'Authorization': `Bearer ${token}`,
+                    'Cookie': `access_token=${token}`
+                },
+                credentials: 'include'
             });
             
             hideLoading();
             
+            console.log('Response status:', response.status);
+            
             if (response.ok) {
                 const productData = await response.json();
+                console.log('Product data received:', productData);
                 openProductModal(productData);
             } else {
                 const error = await response.json();
+                console.error('API Error:', error);
                 showAlert('Erro ao carregar produto: ' + (error.detail || 'Erro desconhecido'), 'error');
             }
         } catch (error) {
@@ -174,8 +190,9 @@ document.addEventListener('DOMContentLoaded', function() {
             showLoading(isEditMode ? 'Atualizando produto...' : 'Criando produto...');
             
             const formData = new FormData(productForm);
+            const token = getCookie('access_token');
             
-            let url = '/admin/api/products';
+            let url = '/api/admin/products';
             let method = 'POST';
             
             if (isEditMode) {
@@ -185,7 +202,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const response = await fetch(url, {
                 method: method,
-                body: formData
+                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                credentials: 'include'
             });
             
             hideLoading();
@@ -221,11 +242,15 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             showLoading('Deletando produto...');
             
+            const token = getCookie('access_token');
+            
             const response = await fetch(`/admin/api/products/${productId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                }
+                    'Authorization': `Bearer ${token}`
+                },
+                credentials: 'include'
             });
             
             hideLoading();
@@ -426,6 +451,13 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * Utilitários
      */
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+    
     function showLoading(message = 'Carregando...') {
         // Criar ou atualizar elemento de loading
         let loader = document.getElementById('globalLoader');
