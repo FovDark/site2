@@ -45,10 +45,7 @@ def verify_token(token: str):
     """Verificar e decodificar token JWT"""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            return None
-        return username
+        return payload
     except jwt.PyJWTError:
         return None
 

@@ -59,13 +59,16 @@ def get_current_user_simple(request: Request, db: Session = Depends(get_db)):
         auth_cookie = request.cookies.get("access_token")
         if auth_cookie and auth_cookie.startswith("Bearer "):
             token = auth_cookie[7:]
-            username = verify_token(token)
-            if username:
-                user = db.query(User).filter(User.username == username).first()
-                if user and user.is_active:
-                    return user
-    except:
-        pass
+            payload = verify_token(token)
+            if payload:
+                # O token contém email no campo 'sub'
+                email = payload.get("sub")
+                if email:
+                    user = db.query(User).filter(User.email == email).first()
+                    if user and user.is_active:
+                        return user
+    except Exception as e:
+        logger.error(f"Erro na autenticação: {e}")
     return None
 
 @app.on_event("startup")

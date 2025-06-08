@@ -13,7 +13,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), unique=True, index=True, nullable=True)
     email = Column(String(255), unique=True, index=True, nullable=False)
-    senha_hash = Column(String(255), nullable=False)
+    password_hash = Column(String(255), nullable=False)
     data_expiracao = Column(DateTime, nullable=True)
     is_admin = Column(Boolean, nullable=True, default=False)
     created_at = Column(DateTime, nullable=True, default=datetime.utcnow)
@@ -34,13 +34,6 @@ class User(Base):
         return f"<User(email='{self.email}', status='{self.status_licenca}')>"
     
     # Propriedades para compatibilidade com código existente
-    @property
-    def password_hash(self):
-        return self.senha_hash
-    
-    @password_hash.setter
-    def password_hash(self, value):
-        self.senha_hash = value
     
     @property
     def is_active(self):
