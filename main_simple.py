@@ -927,6 +927,59 @@ async def api_delete_product(
             content={"success": False, "message": "Erro interno do servidor"}
         )
 
+@app.post("/api/change-password")
+async def api_change_password(request: Request, db: Session = Depends(get_db)):
+    """API para alterar senha do usuário"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        if not current_user:
+            return JSONResponse(
+                status_code=401,
+                content={"success": False, "message": "Login necessário"}
+            )
+        
+        # Obter dados do request JSON
+        body = await request.json()
+        current_password = body.get("current_password")
+        new_password = body.get("new_password")
+        
+        if not current_password or not new_password:
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "Senha atual e nova senha são obrigatórias"}
+            )
+        
+        # Verificar senha atual
+        if not verify_password(current_password, current_user.senha_hash):
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "Senha atual incorreta"}
+            )
+        
+        # Validar nova senha
+        if len(new_password) < 6:
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "A nova senha deve ter pelo menos 6 caracteres"}
+            )
+        
+        # Atualizar senha
+        current_user.senha_hash = hash_password(new_password)
+        db.commit()
+        
+        return JSONResponse(content={
+            "success": True,
+            "message": "Senha alterada com sucesso!"
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao alterar senha: {e}")
+        db.rollback()
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "Erro interno do servidor"}
+        )
+
 @app.get("/health")
 async def health_check():
     """Health check da aplicação"""
