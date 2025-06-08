@@ -136,6 +136,43 @@ class License(Base):
         if self.is_expired:
             return 0
         return (self.expires_at - datetime.utcnow()).days
+    
+    @property
+    def time_remaining(self):
+        """Retorna tempo restante detalhado da licença"""
+        if self.is_expired:
+            return {"days": 0, "hours": 0, "minutes": 0, "seconds": 0, "total_seconds": 0}
+        
+        remaining = self.expires_at - datetime.utcnow()
+        total_seconds = int(remaining.total_seconds())
+        
+        days = remaining.days
+        hours = remaining.seconds // 3600
+        minutes = (remaining.seconds % 3600) // 60
+        seconds = remaining.seconds % 60
+        
+        return {
+            "days": days,
+            "hours": hours,
+            "minutes": minutes,
+            "seconds": seconds,
+            "total_seconds": total_seconds
+        }
+    
+    @property
+    def formatted_time_remaining(self):
+        """Retorna tempo restante formatado como string"""
+        if self.is_expired:
+            return "Expirada"
+        
+        time_data = self.time_remaining
+        
+        if time_data["days"] > 0:
+            return f"{time_data['days']}d {time_data['hours']}h {time_data['minutes']}m"
+        elif time_data["hours"] > 0:
+            return f"{time_data['hours']}h {time_data['minutes']}m {time_data['seconds']}s"
+        else:
+            return f"{time_data['minutes']}m {time_data['seconds']}s"
 
 class Transaction(Base):
     """Modelo de transação"""

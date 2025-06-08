@@ -373,6 +373,54 @@ async def api_download_product(request: Request, product_id: int, current_user: 
             "message": "Erro interno do servidor"
         }, status_code=500)
 
+@app.get("/api/license/{license_id}/status")
+async def api_license_status(request: Request, license_id: int, current_user: User = Depends(get_current_user_simple), db: Session = Depends(get_db)):
+    """API para obter status da licença em tempo real"""
+    try:
+        if not current_user:
+            return JSONResponse({
+                "success": False,
+                "message": "Login necessário"
+            }, status_code=401)
+        
+        # Buscar licença do usuário
+        license_obj = db.query(License).filter(
+            License.id == license_id,
+            License.user_id == current_user.id
+        ).first()
+        
+        if not license_obj:
+            return JSONResponse({
+                "success": False,
+                "message": "Licença não encontrada"
+            }, status_code=404)
+        
+        # Verificar se expirou e atualizar status
+        if license_obj.is_expired and license_obj.status == "active":
+            license_obj.status = "expired"
+            db.commit()
+        
+        # Retornar dados da licença
+        return JSONResponse({
+            "success": True,
+            "license": {
+                "id": license_obj.id,
+                "license_key": license_obj.license_key,
+                "status": license_obj.status,
+                "is_expired": license_obj.is_expired,
+                "time_remaining": license_obj.time_remaining,
+                "formatted_time": license_obj.formatted_time_remaining,
+                "expires_at": license_obj.expires_at.isoformat()
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro ao obter status da licença: {e}")
+        return JSONResponse({
+            "success": False,
+            "message": "Erro interno do servidor"
+        }, status_code=500)
+
 @app.get("/products")
 async def products_page(request: Request, db: Session = Depends(get_db)):
     """Página de produtos"""

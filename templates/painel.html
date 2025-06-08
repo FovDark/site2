@@ -237,9 +237,11 @@
                                         <span>{{ license.expires_at.strftime('%d/%m/%Y %H:%M') if license.expires_at else 'Permanente' }}</span>
                                     </div>
                                     <div class="info-item">
-                                        <label>Dias restantes:</label>
-                                        <span class="{% if license.days_remaining <= 7 %}text-warning{% elif license.days_remaining <= 3 %}text-danger{% endif %}">
-                                            {{ license.days_remaining if not license.is_expired else 0 }} dias
+                                        <label>Tempo restante:</label>
+                                        <span class="license-countdown" 
+                                              data-license-id="{{ license.id }}" 
+                                              data-expires="{{ license.expires_at.isoformat() if license.expires_at else '' }}">
+                                            {{ license.formatted_time_remaining }}
                                         </span>
                                     </div>
                                 </div>
@@ -857,8 +859,59 @@ function togglePasswordForm() {
     }
 }
 
+// License countdown functionality
+function updateLicenseCountdowns() {
+    const countdownElements = document.querySelectorAll('.license-countdown');
+    
+    countdownElements.forEach(element => {
+        const licenseId = element.getAttribute('data-license-id');
+        const expiresAt = element.getAttribute('data-expires');
+        
+        if (!expiresAt) return;
+        
+        const expirationDate = new Date(expiresAt);
+        const now = new Date();
+        const timeDiff = expirationDate - now;
+        
+        if (timeDiff <= 0) {
+            element.textContent = 'Expirada';
+            element.style.color = '#dc2626';
+            return;
+        }
+        
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+        
+        let timeString = '';
+        if (days > 0) {
+            timeString = `${days}d ${hours}h ${minutes}m`;
+        } else if (hours > 0) {
+            timeString = `${hours}h ${minutes}m ${seconds}s`;
+        } else {
+            timeString = `${minutes}m ${seconds}s`;
+        }
+        
+        element.textContent = timeString;
+        
+        // Color coding based on time remaining
+        if (days <= 1) {
+            element.style.color = '#dc2626'; // Red for critical
+        } else if (days <= 3) {
+            element.style.color = '#f59e0b'; // Yellow for warning
+        } else {
+            element.style.color = '#059669'; // Green for good
+        }
+    });
+}
+
 // Handle password change form submission
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize countdown updates
+    updateLicenseCountdowns();
+    setInterval(updateLicenseCountdowns, 1000); // Update every second
+    
     const changePasswordForm = document.getElementById('changePasswordForm');
     if (changePasswordForm) {
         changePasswordForm.addEventListener('submit', function(e) {
