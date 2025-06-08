@@ -317,13 +317,21 @@ async def downloads_page(request: Request, current_user: User = Depends(get_curr
     try:
         from stripe_simple import get_user_active_licenses
         
-        # Obter licenças ativas do usuário
+        # Obter licenças ativas do usuário (produtos pagos)
         user_licenses = get_user_active_licenses(db, current_user.id)
+        
+        # Obter produtos gratuitos disponíveis
+        free_products = db.query(Product).filter(
+            Product.is_active == True,
+            Product.price == 0,
+            Product.download_url.isnot(None)
+        ).all()
         
         return templates.TemplateResponse("downloads.html", {
             "request": request,
             "user": current_user,
-            "user_licenses": user_licenses
+            "licenses": user_licenses,
+            "free_products": free_products
         })
         
     except Exception as e:
@@ -679,19 +687,8 @@ async def api_download_product(
     current_user: User = Depends(get_current_user),
     db=Depends(get_db)
 ):
-    """API para fazer download de produto (somente com licença ativa)"""
+    """API para fazer download de produto (gratuito com login, pago com licença)"""
     try:
-        from stripe_simple import check_user_license
-        
-        # Verificar se usuário tem licença ativa para este produto
-        license_check = check_user_license(db, current_user.id, product_id)
-        
-        if not license_check.get('has_license', False):
-            return JSONResponse({
-                "success": False,
-                "message": "Você precisa de uma licença ativa para fazer download deste produto"
-            }, status_code=403)
-        
         # Buscar produto
         product = db.query(Product).filter(Product.id == product_id).first()
         if not product or not product.download_url:
@@ -699,6 +696,44 @@ async def api_download_product(
                 "success": False,
                 "message": "Produto ou link de download não encontrado"
             }, status_code=404)
+        
+        # Se produto é gratuito, apenas verificar login
+        if product.is_free:
+            # Registrar download gratuito
+            download_record = Download(
+                user_id=current_user.id,
+                product_id=product_id,
+                license_id=None,  # Produtos gratuitos não precisam de licença
+                ip_address=request.client.host if request.client else "unknown",
+                user_agent=request.headers.get("user-agent", "")
+            )
+            db.add(download_record)
+            
+            # Incrementar contador de downloads
+            db.query(Product).filter(Product.id == product_id).update({
+                'download_count': Product.download_count + 1
+            })
+            db.commit()
+            
+            return JSONResponse({
+                "success": True,
+                "download_url": product.download_url,
+                "product_name": product.name,
+                "is_free": True,
+                "message": "Download gratuito liberado"
+            })
+        
+        # Se produto é pago, verificar licença ativa
+        from stripe_simple import check_user_license
+        license_check = check_user_license(db, current_user.id, product_id)
+        
+        if not license_check.get('has_license', False):
+            return JSONResponse({
+                "success": False,
+                "message": "Você precisa comprar uma licença para fazer download deste produto pago",
+                "requires_purchase": True,
+                "product_price": float(product.price)
+            }, status_code=403)
         
         # Buscar a licença para registrar o download
         license_obj = db.query(License).filter(
@@ -709,7 +744,7 @@ async def api_download_product(
         ).first()
         
         if license_obj:
-            # Registrar download
+            # Registrar download licenciado
             download_record = Download(
                 user_id=current_user.id,
                 product_id=product_id,

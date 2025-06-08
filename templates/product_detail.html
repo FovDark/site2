@@ -122,10 +122,19 @@
             <!-- Purchase Section -->
             <div class="purchase-section">
                 <div class="purchase-card">
+                    {% if product.price == 0 %}
+                    <!-- Produto Gratuito -->
+                    <div class="price-section">
+                        <div class="price free-price">GRATUITO</div>
+                        <div class="price-label">Download Liberado</div>
+                    </div>
+                    {% else %}
+                    <!-- Produto Pago -->
                     <div class="price-section">
                         <div class="price">R$ {{ "%.2f"|format(product.price) }}</div>
                         <div class="price-label">Licença Digital</div>
                     </div>
+                    {% endif %}
 
                     {% if user %}
                     <form id="purchase-form" onsubmit="submitPurchase(event)">

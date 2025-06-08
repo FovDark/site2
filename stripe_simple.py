@@ -11,7 +11,7 @@ from models import User, Product, License, Transaction
 stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
 def create_stripe_checkout_session(user_id: int, product_id: int, db: Session) -> dict:
-    """Criar sessão de checkout do Stripe"""
+    """Criar sessão de checkout do Stripe para produtos pagos"""
     try:
         # Buscar produto e usuário
         product = db.query(Product).filter(Product.id == product_id).first()
@@ -20,12 +20,16 @@ def create_stripe_checkout_session(user_id: int, product_id: int, db: Session) -
         if not product or not user:
             return {"success": False, "error": "Produto ou usuário não encontrado"}
         
+        # Verificar se o produto é pago
+        if float(product.price) == 0:
+            return {"success": False, "error": "Produto gratuito não requer pagamento"}
+        
         # URL base
         base_url = os.environ.get('REPLIT_DEV_DOMAIN', 'localhost:5000')
         if not base_url.startswith('http'):
             base_url = f"https://{base_url}"
         
-        # Criar sessão
+        # Criar sessão automaticamente para produto pago
         session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[{
@@ -33,7 +37,8 @@ def create_stripe_checkout_session(user_id: int, product_id: int, db: Session) -
                     'currency': 'brl',
                     'product_data': {
                         'name': str(product.name),
-                        'description': f"Licença de {product.duration_days} dias",
+                        'description': f"Licença de {product.duration_days} dias para {product.name}",
+                        'images': [str(product.image_url)] if product.image_url else [],
                     },
                     'unit_amount': int(float(product.price) * 100),
                 },
@@ -46,6 +51,7 @@ def create_stripe_checkout_session(user_id: int, product_id: int, db: Session) -
                 'user_id': str(user_id),
                 'product_id': str(product_id),
                 'duration_days': str(product.duration_days),
+                'product_type': 'paid_automatic',
             },
             customer_email=str(user.email),
             expires_at=int((datetime.utcnow() + timedelta(minutes=30)).timestamp()),

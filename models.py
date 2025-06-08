@@ -97,6 +97,16 @@ class Product(Base):
     def tags_list(self):
         """Retorna lista de tags"""
         return [tag.strip() for tag in (self.tags or "").split(",") if tag.strip()]
+    
+    @property
+    def is_free(self):
+        """Verifica se o produto é gratuito"""
+        return self.price == 0.0 or self.price is None
+    
+    @property
+    def is_paid(self):
+        """Verifica se o produto é pago"""
+        return not self.is_free
 
 class License(Base):
     """Modelo de licença"""
