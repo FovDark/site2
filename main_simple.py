@@ -288,6 +288,91 @@ async def logout():
     response.delete_cookie(key="access_token")
     return response
 
+@app.get("/contact")
+async def contact_page(request: Request, db: Session = Depends(get_db)):
+    """Página de contato"""
+    current_user = get_current_user_simple(request, db)
+    return templates.TemplateResponse("contact.html", {
+        "request": request,
+        "current_user": current_user
+    })
+
+@app.post("/api/verify-license")
+async def api_verify_license(request: Request, license_key: str = Form(...), hwid: str = Form(None), db: Session = Depends(get_db)):
+    """API para verificar licença"""
+    try:
+        from license import verify_license
+        is_valid, license_obj = verify_license(db, license_key, hwid)
+        
+        if is_valid and license_obj:
+            return JSONResponse({
+                "success": True,
+                "valid": True,
+                "license": {
+                    "id": license_obj.id,
+                    "product_id": license_obj.product_id,
+                    "expires_at": license_obj.expires_at.isoformat() if license_obj.expires_at else None,
+                    "status": license_obj.status
+                }
+            })
+        else:
+            return JSONResponse({
+                "success": True,
+                "valid": False,
+                "message": "Licença inválida ou expirada"
+            })
+    except Exception as e:
+        logger.error(f"Erro ao verificar licença: {e}")
+        return JSONResponse({
+            "success": False,
+            "valid": False,
+            "message": "Erro interno do servidor"
+        }, status_code=500)
+
+@app.get("/api/download/{product_id}")
+async def api_download_product(request: Request, product_id: int, current_user: User = Depends(get_current_user_simple), db: Session = Depends(get_db)):
+    """API para fazer download de produto"""
+    try:
+        if not current_user:
+            return JSONResponse({
+                "success": False,
+                "message": "Login necessário"
+            }, status_code=401)
+        
+        # Verificar se usuário tem licença ativa para o produto
+        from license import check_license_for_product
+        license_obj = check_license_for_product(db, current_user.id, product_id)
+        
+        if not license_obj:
+            return JSONResponse({
+                "success": False,
+                "message": "Você não possui licença ativa para este produto"
+            }, status_code=403)
+        
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product or not product.download_url:
+            return JSONResponse({
+                "success": False,
+                "message": "Download não disponível"
+            }, status_code=404)
+        
+        # Incrementar contador de downloads
+        product.download_count += 1
+        db.commit()
+        
+        return JSONResponse({
+            "success": True,
+            "download_url": product.download_url,
+            "product_name": product.name
+        })
+        
+    except Exception as e:
+        logger.error(f"Erro no download: {e}")
+        return JSONResponse({
+            "success": False,
+            "message": "Erro interno do servidor"
+        }, status_code=500)
+
 @app.get("/products")
 async def products_page(request: Request, db: Session = Depends(get_db)):
     """Página de produtos"""
@@ -330,7 +415,7 @@ async def categories_page(request: Request, db: Session = Depends(get_db)):
             "error": "Erro ao carregar categorias"
         })
 
-@app.get("/categories/{category_name}")
+@app.get("/category/{category_name}")
 async def category_products(request: Request, category_name: str, db: Session = Depends(get_db)):
     """Página de produtos por categoria"""
     try:
@@ -394,38 +479,64 @@ async def downloads_page(request: Request, db: Session = Depends(get_db)):
         })
 
 @app.get("/products/{product_id}")
+@app.get("/product/{product_id}")
 async def product_detail(request: Request, product_id: int, db: Session = Depends(get_db)):
     """Página de detalhes do produto"""
     try:
         current_user = get_current_user_simple(request, db)
         
-        product = db.query(Product).filter(Product.id == product_id).first()
-        if not product:
+        # Buscar produto com categoria
+        product = db.query(Product).join(Category).filter(Product.id == product_id).first()
+        if not product or not product.is_active:
             return templates.TemplateResponse("error.html", {
                 "request": request,
-                "error": "Produto não encontrado"
+                "current_user": current_user,
+                "error": "Produto não encontrado ou indisponível"
             })
         
-        # Verificar se usuário já possui licença
+        # Verificar se usuário já possui licença ativa
         user_license = None
+        can_download = False
         if current_user:
             user_license = db.query(License).filter(
                 License.user_id == current_user.id,
                 License.product_id == product_id,
                 License.status == "active"
             ).first()
+            can_download = user_license is not None
+        
+        # Buscar produtos relacionados da mesma categoria
+        related_products = db.query(Product).filter(
+            Product.category_id == product.category_id,
+            Product.id != product_id,
+            Product.is_active == True
+        ).limit(4).all()
+        
+        # Formatar preço
+        formatted_price = f"R$ {product.price:.2f}".replace(".", ",")
+        
+        # Processar tags
+        tags_list = []
+        if product.tags:
+            tags_list = [tag.strip() for tag in product.tags.split(",")]
         
         return templates.TemplateResponse("product_detail.html", {
             "request": request,
             "current_user": current_user,
             "product": product,
-            "user_license": user_license
+            "user_license": user_license,
+            "can_download": can_download,
+            "related_products": related_products,
+            "formatted_price": formatted_price,
+            "tags_list": tags_list,
+            "page_title": f"{product.name} - FovDark Gaming"
         })
     except Exception as e:
-        logger.error(f"Erro ao carregar produto: {e}")
+        logger.error(f"Erro ao carregar produto {product_id}: {e}")
         return templates.TemplateResponse("error.html", {
             "request": request,
-            "error": "Erro ao carregar produto"
+            "current_user": current_user,
+            "error": "Erro ao carregar detalhes do produto"
         })
 
 @app.post("/api/purchase/{product_id}")
