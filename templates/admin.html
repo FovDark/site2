@@ -614,5 +614,250 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="/static/js/admin.js"></script>
+<script>
+// Admin JavaScript integrado
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Admin JS carregado');
+    
+    const productModal = document.getElementById('productModal');
+    const productForm = document.getElementById('productForm');
+    const productModalTitle = document.getElementById('productModalTitle');
+    
+    let currentEditingProductId = null;
+    let isEditMode = false;
+    
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+    
+    function showAlert(message, type = 'info') {
+        alert(message);
+    }
+    
+    function showLoading(message) {
+        console.log('Loading:', message);
+    }
+    
+    function hideLoading() {
+        console.log('Loading hidden');
+    }
+    
+    // Delegação de eventos
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.edit-product-btn')) {
+            e.preventDefault();
+            const btn = e.target.closest('.edit-product-btn');
+            const productId = btn.getAttribute('data-product-id');
+            console.log('Editando produto:', productId);
+            editProduct(productId);
+        }
+        
+        if (e.target.closest('.delete-product-btn')) {
+            e.preventDefault();
+            const btn = e.target.closest('.delete-product-btn');
+            const productId = btn.getAttribute('data-product-id');
+            const productName = btn.getAttribute('data-product-name');
+            deleteProduct(productId, productName);
+        }
+        
+        if (e.target.classList.contains('modal-close') || e.target.getAttribute('data-dismiss') === 'modal') {
+            closeModal();
+        }
+    });
+    
+    window.addEventListener('click', function(e) {
+        if (e.target === productModal) {
+            closeModal();
+        }
+    });
+    
+    if (productForm) {
+        productForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveProduct();
+        });
+    }
+    
+    async function editProduct(productId) {
+        try {
+            console.log('Carregando produto:', productId);
+            showLoading('Carregando dados do produto...');
+            
+            const response = await fetch(`/admin/api/products/${productId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include'
+            });
+            
+            console.log('Response status:', response.status);
+            hideLoading();
+            
+            if (response.ok) {
+                const productData = await response.json();
+                console.log('Dados recebidos:', productData);
+                openProductModal(productData);
+            } else {
+                const errorText = await response.text();
+                console.error('Erro:', errorText);
+                showAlert('Erro ao carregar produto: ' + errorText);
+            }
+        } catch (error) {
+            hideLoading();
+            console.error('Erro:', error);
+            showAlert('Erro ao carregar produto: ' + error.message);
+        }
+    }
+    
+    function openProductModal(productData = null) {
+        console.log('Abrindo modal:', productData);
+        
+        isEditMode = productData !== null;
+        currentEditingProductId = isEditMode ? productData.id : null;
+        
+        if (productModalTitle) {
+            productModalTitle.textContent = isEditMode ? 'Editar Produto' : 'Novo Produto';
+        }
+        
+        if (productForm) {
+            productForm.reset();
+        }
+        
+        if (isEditMode && productData) {
+            const fields = {
+                'productName': productData.name,
+                'productCategory': productData.category_id,
+                'productPrice': productData.price,
+                'productDuration': productData.duration_days,
+                'productDescription': productData.description,
+                'productDownloadUrl': productData.download_url,
+                'productRequirements': productData.requirements,
+                'productTags': productData.tags,
+                'productFeatured': productData.is_featured
+            };
+            
+            Object.keys(fields).forEach(fieldId => {
+                const element = document.getElementById(fieldId);
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        element.checked = fields[fieldId] || false;
+                    } else {
+                        element.value = fields[fieldId] || '';
+                    }
+                }
+            });
+        }
+        
+        if (productModal) {
+            productModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    
+    function closeModal() {
+        if (productModal) {
+            productModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        isEditMode = false;
+        currentEditingProductId = null;
+        if (productForm) {
+            productForm.reset();
+        }
+    }
+    
+    async function saveProduct() {
+        try {
+            console.log('Salvando produto...');
+            showLoading(isEditMode ? 'Atualizando produto...' : 'Criando produto...');
+            
+            const formData = new FormData(productForm);
+            
+            let url = '/api/admin/products';
+            let method = 'POST';
+            
+            if (isEditMode) {
+                url = `/admin/api/products/${currentEditingProductId}`;
+                method = 'PUT';
+            }
+            
+            const response = await fetch(url, {
+                method: method,
+                body: formData,
+                credentials: 'include'
+            });
+            
+            console.log('Save response:', response.status);
+            hideLoading();
+            
+            if (response.ok) {
+                const result = await response.json();
+                showAlert(isEditMode ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!');
+                closeModal();
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                const errorText = await response.text();
+                showAlert('Erro ao salvar: ' + errorText);
+            }
+        } catch (error) {
+            hideLoading();
+            console.error('Erro:', error);
+            showAlert('Erro ao salvar: ' + error.message);
+        }
+    }
+    
+    async function deleteProduct(productId, productName) {
+        if (!confirm(`Deletar "${productName}"?`)) return;
+        
+        try {
+            showLoading('Deletando produto...');
+            
+            const response = await fetch(`/admin/api/products/${productId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            });
+            
+            hideLoading();
+            
+            if (response.ok) {
+                showAlert('Produto deletado com sucesso!');
+                const row = document.querySelector(`tr[data-product-id="${productId}"]`);
+                if (row) row.remove();
+            } else {
+                const errorText = await response.text();
+                showAlert('Erro ao deletar: ' + errorText);
+            }
+        } catch (error) {
+            hideLoading();
+            showAlert('Erro ao deletar: ' + error.message);
+        }
+    }
+    
+    // Navegação entre abas
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+            
+            tabButtons.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            this.classList.add('active');
+            const targetContent = document.getElementById(targetTab + '-tab');
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+        });
+    });
+    
+    console.log('Admin JS inicializado');
+});
+</script>
 {% endblock %}
