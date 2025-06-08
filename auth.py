@@ -53,15 +53,15 @@ def verify_token(token: str):
         return None
 
 def authenticate_user(db: Session, username: str, password: str):
-    """Autenticar usuário"""
-    user = db.query(User).filter(User.username == username).first()
+    """Autenticar usuário - compatível com Supabase"""
+    user = db.query(User).filter(User.email == username).first()
     if not user:
         return False
-    if not verify_password(password, user.password_hash):
+    if not verify_password(password, user.senha_hash):
         return False
     
     # Atualizar último login
-    user.last_login = datetime.utcnow()
+    user.ultimo_login = datetime.utcnow()
     db.commit()
     
     return user

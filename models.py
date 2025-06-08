@@ -7,18 +7,22 @@ import uuid
 Base = declarative_base()
 
 class User(Base):
-    """Modelo de usuário"""
+    """Modelo de usuário compatível com Supabase"""
     __tablename__ = "users"
     
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(50), unique=True, index=True, nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)
-    password_hash = Column(String(255), nullable=False)
-    is_active = Column(Boolean, default=True)
-    is_admin = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    last_login = Column(DateTime)
+    senha_hash = Column(String(255), nullable=False)
+    data_expiracao = Column(DateTime, nullable=True)
+    is_admin = Column(Boolean, nullable=True, default=False)
+    created_at = Column(DateTime, nullable=True, default=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
+    hwid = Column(Text, nullable=True)
+    status_licenca = Column(String(50), nullable=True, default='pendente')
+    tentativas_login = Column(Integer, nullable=True, default=0)
+    ultimo_login = Column(DateTime, nullable=True)
+    ip_registro = Column(String(45), nullable=True)
+    ip_ultimo_login = Column(String(45), nullable=True)
     
     # Relacionamentos
     licenses = relationship("License", back_populates="user")
@@ -26,7 +30,32 @@ class User(Base):
     downloads = relationship("Download", back_populates="user")
     
     def __repr__(self):
-        return f"<User(username='{self.username}', email='{self.email}')>"
+        return f"<User(email='{self.email}', status='{self.status_licenca}')>"
+    
+    # Propriedades para compatibilidade com código existente
+    @property
+    def username(self):
+        return self.email.split('@')[0] if self.email else None
+    
+    @property
+    def password_hash(self):
+        return self.senha_hash
+    
+    @password_hash.setter
+    def password_hash(self, value):
+        self.senha_hash = value
+    
+    @property
+    def is_active(self):
+        return self.status_licenca != 'suspenso'
+    
+    @property
+    def last_login(self):
+        return self.ultimo_login
+    
+    @last_login.setter
+    def last_login(self, value):
+        self.ultimo_login = value
 
 class Category(Base):
     """Modelo de categoria de produtos"""

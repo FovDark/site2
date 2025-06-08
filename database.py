@@ -111,13 +111,13 @@ def create_initial_data():
             # Importar hash_password aqui para evitar importação circular
             from auth import hash_password
             
-            # Criar usuário admin padrão
+            # Criar usuário admin padrão compatível com Supabase
             admin_user = User(
-                username="admin",
                 email="admin@fovdark.com",
-                password_hash=hash_password("admin123"),
-                is_active=True,
-                is_admin=True
+                senha_hash=hash_password("admin123"),
+                is_admin=True,
+                status_licenca="ativo",
+                tentativas_login=0
             )
             
             db.add(admin_user)

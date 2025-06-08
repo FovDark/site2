@@ -3,6 +3,7 @@ Versão simplificada do main.py para resolver problemas de importação
 """
 import os
 import logging
+from datetime import datetime
 from fastapi import FastAPI, Request, Depends, Form, HTTPException, status
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
@@ -112,9 +113,9 @@ async def login(
 ):
     """Processar login"""
     try:
-        # Buscar usuário
-        user = db.query(User).filter(User.username == username).first()
-        if not user or not verify_password(password, user.password_hash):
+        # Buscar usuário por email (compatível com Supabase)
+        user = db.query(User).filter(User.email == username).first()
+        if not user or not verify_password(password, user.senha_hash):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Usuário ou senha incorretos"
@@ -126,8 +127,12 @@ async def login(
                 detail="Conta desativada"
             )
         
+        # Atualizar último login
+        user.ultimo_login = datetime.utcnow()
+        db.commit()
+        
         # Criar token de acesso
-        access_token = create_access_token(data={"sub": user.username})
+        access_token = create_access_token(data={"sub": user.email})
         
         # Redirecionar para o painel
         response = RedirectResponse(url="/painel", status_code=302)
