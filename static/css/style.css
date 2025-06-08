@@ -261,6 +261,225 @@ body {
     box-shadow: var(--shadow) !important;
 }
 
+/* PIX Button - Featured Payment */
+.btn-pix {
+    background: linear-gradient(135deg, #32d583 0%, #00b894 100%);
+    color: white;
+    border: 2px solid #32d583;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-pix:hover {
+    background: linear-gradient(135deg, #00b894 0%, #32d583 100%);
+    border-color: #00b894;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(50, 213, 131, 0.3);
+}
+
+.btn-pix::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-pix:hover::before {
+    left: 100%;
+}
+
+.featured-payment {
+    box-shadow: 0 4px 20px rgba(50, 213, 131, 0.2);
+    border: 2px solid #32d583;
+}
+
+.featured-payment .payment-info {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+/* Alternative Payments Section */
+.alternative-payments {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.alternative-label {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--gray-500);
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.alternative-payments .payment-btn {
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+    min-height: 50px;
+}
+
+.alternative-payments .payment-btn:hover {
+    opacity: 1;
+}
+
+/* PIX Highlight Animation */
+@keyframes pix-glow {
+    0%, 100% {
+        box-shadow: 0 4px 20px rgba(50, 213, 131, 0.2);
+    }
+    50% {
+        box-shadow: 0 4px 30px rgba(50, 213, 131, 0.4);
+    }
+}
+
+.featured-payment {
+    animation: pix-glow 3s ease-in-out infinite;
+}
+
+/* Payment method icons */
+.payment-btn i.fa-qrcode {
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.payment-btn i.fab.fa-stripe {
+    color: #635bff;
+}
+
+.btn-secondary .payment-btn i {
+    color: white;
+}
+
+/* PIX Benefits Section */
+.pix-benefits {
+    padding: 3rem 0;
+    background: linear-gradient(135deg, #f8fffe 0%, #e8f9f4 100%);
+    border-top: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.pix-banner {
+    background: linear-gradient(135deg, #32d583 0%, #00b894 100%);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(50, 213, 131, 0.3);
+}
+
+.pix-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: pix-pulse 4s ease-in-out infinite;
+}
+
+@keyframes pix-pulse {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.1) rotate(180deg);
+        opacity: 0.4;
+    }
+}
+
+.pix-content {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.pix-icon {
+    font-size: 3rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 1.5rem;
+    border-radius: 50%;
+    backdrop-filter: blur(10px);
+}
+
+.pix-text h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pix-text p {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.pix-features {
+    display: flex;
+    gap: 1.5rem;
+    margin-left: auto;
+}
+
+.pix-feature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 0.5rem;
+    backdrop-filter: blur(10px);
+    min-width: 80px;
+}
+
+.pix-feature i {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Responsive PIX Section */
+@media (max-width: 768px) {
+    .pix-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+    }
+    
+    .pix-features {
+        margin-left: 0;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .pix-feature {
+        min-width: 70px;
+        padding: 0.75rem;
+    }
+    
+    .pix-icon {
+        font-size: 2.5rem;
+        padding: 1rem;
+    }
+    
+    .pix-text h3 {
+        font-size: 1.25rem;
+    }
+}
+
 /* Grid System */
 .grid {
     display: grid;

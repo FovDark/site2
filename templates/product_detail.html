@@ -151,17 +151,27 @@
                         <div class="payment-methods">
                             <h4>Escolha o método de pagamento:</h4>
                             
-                            <button type="button" class="btn btn-primary btn-large btn-full payment-btn" onclick="payWithStripe()">
-                                <i class="fab fa-stripe"></i>
-                                Pagar com Stripe
-                                <span class="payment-info">Cartão de Crédito/Débito</span>
+                            <button type="submit" class="btn btn-pix btn-large btn-full payment-btn featured-payment">
+                                <i class="fas fa-qrcode"></i>
+                                Pagar com PIX
+                                <span class="payment-info">✨ Aprovação Instantânea - Recomendado</span>
                             </button>
                             
-                            <button type="submit" class="btn btn-secondary btn-large btn-full payment-btn">
-                                <i class="fas fa-money-bill-wave"></i>
-                                Pagar com Infinite Pay
-                                <span class="payment-info">PIX, Boleto, Cartão</span>
-                            </button>
+                            <div class="alternative-payments">
+                                <p class="alternative-label">Ou escolha outra forma:</p>
+                                
+                                <button type="button" class="btn btn-primary btn-large btn-full payment-btn" onclick="payWithStripe()">
+                                    <i class="fab fa-stripe"></i>
+                                    Cartão Internacional
+                                    <span class="payment-info">Crédito/Débito via Stripe</span>
+                                </button>
+                                
+                                <button type="button" class="btn btn-secondary btn-large btn-full payment-btn" onclick="payWithInfinitePay()">
+                                    <i class="fas fa-credit-card"></i>
+                                    Outros Métodos
+                                    <span class="payment-info">Boleto, Cartão Nacional</span>
+                                </button>
+                            </div>
                         </div>
                     </form>
                     {% else %}
@@ -328,21 +338,21 @@ async function payWithStripe() {
     }
 }
 
-// Submit purchase (Infinite Pay)
-async function submitPurchase(event) {
-    event.preventDefault();
-    
-    const form = event.target;
-    const formData = new FormData(form);
-    const submitBtn = form.querySelector('button[type="submit"]');
+// Pay with Infinite Pay (Outros métodos)
+async function payWithInfinitePay() {
+    const productId = document.querySelector('input[name="product_id"]').value;
     
     // Disable all payment buttons
     const buttons = document.querySelectorAll('.payment-btn');
-    buttons.forEach(btn => btn.disabled = true);
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+    buttons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.onclick && btn.onclick.toString().includes('payWithInfinitePay')) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+        }
+    });
     
     try {
-        const response = await fetch(`/api/purchase/${formData.get('product_id')}`, {
+        const response = await fetch(`/api/purchase/${productId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -361,16 +371,69 @@ async function submitPurchase(event) {
             }, 2000);
         } else {
             showToast(result.message || 'Erro ao processar compra', 'error');
-            // Re-enable buttons
-            buttons.forEach(btn => btn.disabled = false);
-            submitBtn.innerHTML = '<i class="fas fa-money-bill-wave"></i> Pagar com Infinite Pay <span class="payment-info">PIX, Boleto, Cartão</span>';
+            resetPaymentButtons();
         }
     } catch (error) {
         showToast('Erro de conexão', 'error');
-        // Re-enable buttons
-        buttons.forEach(btn => btn.disabled = false);
-        submitBtn.innerHTML = '<i class="fas fa-money-bill-wave"></i> Pagar com Infinite Pay <span class="payment-info">PIX, Boleto, Cartão</span>';
+        resetPaymentButtons();
     }
+}
+
+// Submit purchase (PIX - Principal)
+async function submitPurchase(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    // Disable all payment buttons
+    const buttons = document.querySelectorAll('.payment-btn');
+    buttons.forEach(btn => btn.disabled = true);
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando PIX...';
+    
+    try {
+        const response = await fetch(`/api/purchase/${formData.get('product_id')}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Show success modal
+            document.getElementById('purchase-success-modal').style.display = 'flex';
+            
+            // Redirect to payment after a short delay
+            setTimeout(() => {
+                window.location.href = result.payment_url;
+            }, 1500);
+        } else {
+            showToast(result.message || 'Erro ao processar compra', 'error');
+            resetPaymentButtons();
+        }
+    } catch (error) {
+        showToast('Erro de conexão', 'error');
+        resetPaymentButtons();
+    }
+}
+
+// Reset payment buttons to original state
+function resetPaymentButtons() {
+    const buttons = document.querySelectorAll('.payment-btn');
+    buttons.forEach(btn => {
+        btn.disabled = false;
+        
+        if (btn.onclick && btn.onclick.toString().includes('payWithStripe')) {
+            btn.innerHTML = '<i class="fab fa-stripe"></i> Cartão Internacional <span class="payment-info">Crédito/Débito via Stripe</span>';
+        } else if (btn.onclick && btn.onclick.toString().includes('payWithInfinitePay')) {
+            btn.innerHTML = '<i class="fas fa-credit-card"></i> Outros Métodos <span class="payment-info">Boleto, Cartão Nacional</span>';
+        } else if (btn.type === 'submit') {
+            btn.innerHTML = '<i class="fas fa-qrcode"></i> Pagar com PIX <span class="payment-info">✨ Aprovação Instantânea - Recomendado</span>';
+        }
+    });
 }
 
 // Load related products
