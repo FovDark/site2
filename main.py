@@ -476,19 +476,25 @@ async def stripe_checkout_product(
 ):
     """API para checkout com Stripe"""
     try:
-        checkout_data = create_checkout_session(product_id, current_user.id, db)
+        from stripe_simple import create_stripe_checkout_session
         
-        return JSONResponse({
-            "success": True,
-            "checkout_url": checkout_data["checkout_url"],
-            "session_id": checkout_data["session_id"]
-        })
+        checkout_result = create_stripe_checkout_session(current_user.id, product_id, db)
         
-    except HTTPException as e:
-        return JSONResponse({
-            "success": False,
-            "message": e.detail
-        }, status_code=e.status_code)
+        if checkout_result["success"]:
+            return JSONResponse({
+                "success": True,
+                "checkout_url": checkout_result["checkout_url"],
+                "session_id": checkout_result["session_id"],
+                "amount": checkout_result["amount"],
+                "product_name": checkout_result["product_name"],
+                "duration_days": checkout_result["duration_days"]
+            })
+        else:
+            return JSONResponse({
+                "success": False,
+                "message": checkout_result.get("error", "Erro ao criar checkout")
+            }, status_code=400)
+        
     except Exception as e:
         logger.error(f"Erro no checkout Stripe para produto {product_id}: {e}")
         return JSONResponse({
@@ -501,25 +507,22 @@ async def stripe_checkout_product(
 async def stripe_webhook(request: Request, db=Depends(get_db)):
     """Webhook do Stripe para confirmação de pagamentos"""
     try:
+        from stripe_simple import process_stripe_webhook_event
+        
         payload = await request.body()
-        sig_header = request.headers.get('stripe-signature')
-        
-        if not sig_header:
-            return JSONResponse({"error": "Signature missing"}, status_code=400)
-        
-        # Verificar assinatura do webhook
-        event = verify_webhook_signature(payload, sig_header)
+        sig_header = request.headers.get('stripe-signature', '')
         
         # Processar evento
-        result = process_webhook_event(event, db)
+        result = process_stripe_webhook_event(payload, sig_header, db)
         
-        return JSONResponse({"status": "success", "result": result})
+        if result["success"]:
+            return JSONResponse({"status": "success", "message": result.get("message", "Processado")})
+        else:
+            return JSONResponse({"error": result.get("error", "Erro no processamento")}, status_code=400)
         
-    except HTTPException as e:
-        return JSONResponse({"error": e.detail}, status_code=e.status_code)
     except Exception as e:
         logger.error(f"Erro no webhook Stripe: {e}")
-        return JSONResponse({"error": "Erro interno"}, status_code=500)
+        return JSONResponse({"error": "Erro interno"}, status_code=500)onse({"error": "Erro interno"}, status_code=500)
 
 @app.post("/api/webhook/infinite-pay")
 @limiter.limit("100/minute")
