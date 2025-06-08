@@ -3,7 +3,7 @@ run = "rum command"
 
 [nix]
 channel = "stable-24_05"
-packages = ["cargo", "libiconv", "rustc"]
+packages = ["cacert", "cargo", "glibcLocales", "libiconv", "libxcrypt", "rustc"]
 
 [workflows]
 runButton = "Project"
