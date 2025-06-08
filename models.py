@@ -81,6 +81,8 @@ class Product(Base):
     is_active = Column(Boolean, default=True)
     is_featured = Column(Boolean, default=False)
     download_count = Column(Integer, default=0)
+    stripe_product_id = Column(String(255), nullable=True)  # ID do produto no Stripe
+    stripe_price_id = Column(String(255), nullable=True)    # ID do preço no Stripe
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

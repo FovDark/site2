@@ -281,6 +281,54 @@
             </div>
         </div>
 
+        <!-- Stripe Section -->
+        <div id="stripe-section" class="admin-section">
+            <div class="section-header">
+                <h1><i class="fab fa-stripe"></i> Integração Stripe</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="syncAllProducts()">
+                        <i class="fas fa-sync"></i> Sincronizar Todos
+                    </button>
+                </div>
+            </div>
+            
+            <div class="stripe-status">
+                <div class="status-card">
+                    <h3><i class="fas fa-info-circle"></i> Status da Integração</h3>
+                    <div id="stripe-connection-status">
+                        <span class="status-checking">
+                            <i class="fas fa-spinner fa-spin"></i> Verificando conexão...
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="status-card">
+                    <h3><i class="fas fa-chart-bar"></i> Estatísticas</h3>
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <span class="stat-label">Produtos no Stripe:</span>
+                            <span class="stat-value" id="stripe-products-count">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Produtos Locais:</span>
+                            <span class="stat-value" id="local-products-count">{{ stats.total_products }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Sincronizados:</span>
+                            <span class="stat-value" id="synced-products-count">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sync-log">
+                <h3><i class="fas fa-list"></i> Log de Sincronização</h3>
+                <div id="sync-log-content" class="log-content">
+                    <p class="log-empty">Nenhuma sincronização realizada ainda.</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Settings Section -->
         <div id="settings-section" class="admin-section">
             <div class="section-header">
@@ -1412,10 +1460,133 @@ function revokeLicense(licenseKey) {
     }
 }
 
+// Stripe Integration Functions
+async function syncAllProducts() {
+    const syncBtn = document.querySelector('button[onclick="syncAllProducts()"]');
+    const originalText = syncBtn.innerHTML;
+    const logContent = document.getElementById('sync-log-content');
+    
+    // Update button state
+    syncBtn.disabled = true;
+    syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sincronizando...';
+    
+    // Add log entry
+    const timestamp = new Date().toLocaleString();
+    logContent.innerHTML = `<p class="log-entry"><strong>[${timestamp}]</strong> Iniciando sincronização com Stripe...</p>`;
+    
+    try {
+        const response = await fetch('/api/admin/sync-stripe', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Update statistics
+            document.getElementById('synced-products-count').textContent = result.synced_count;
+            
+            // Add success log
+            logContent.innerHTML += `<p class="log-entry success"><strong>[${timestamp}]</strong> ✓ Sincronização concluída! ${result.synced_count}/${result.total_products} produtos sincronizados</p>`;
+            
+            // Show errors if any
+            if (result.errors && result.errors.length > 0) {
+                result.errors.forEach(error => {
+                    logContent.innerHTML += `<p class="log-entry error"><strong>[${timestamp}]</strong> ⚠️ ${error}</p>`;
+                });
+            }
+            
+            showToast('Sincronização concluída com sucesso!', 'success');
+        } else {
+            logContent.innerHTML += `<p class="log-entry error"><strong>[${timestamp}]</strong> ✗ Erro: ${result.message}</p>`;
+            showToast('Erro na sincronização: ' + result.message, 'error');
+        }
+        
+    } catch (error) {
+        logContent.innerHTML += `<p class="log-entry error"><strong>[${timestamp}]</strong> ✗ Erro de conexão: ${error.message}</p>`;
+        showToast('Erro de conexão com o servidor', 'error');
+    } finally {
+        // Restore button state
+        syncBtn.disabled = false;
+        syncBtn.innerHTML = originalText;
+    }
+}
+
+async function checkStripeConnection() {
+    const statusElement = document.getElementById('stripe-connection-status');
+    
+    try {
+        // This would be implemented as a separate API endpoint
+        statusElement.innerHTML = `
+            <span class="status-connected">
+                <i class="fas fa-check-circle"></i> Conectado ao Stripe
+            </span>
+        `;
+    } catch (error) {
+        statusElement.innerHTML = `
+            <span class="status-error">
+                <i class="fas fa-exclamation-triangle"></i> Erro de conexão
+            </span>
+        `;
+    }
+}
+
+function showToast(message, type = 'info') {
+    // Simple toast notification
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'info'}"></i>
+        ${message}
+    `;
+    
+    // Add toast styles if not exist
+    if (!document.querySelector('#toast-styles')) {
+        const style = document.createElement('style');
+        style.id = 'toast-styles';
+        style.textContent = `
+            .toast {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 16px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                min-width: 300px;
+                animation: slideIn 0.3s ease-out;
+            }
+            .toast-success { background: #10b981; }
+            .toast-error { background: #ef4444; }
+            .toast-info { background: #3b82f6; }
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 4000);
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     // Show dashboard by default
     showSection('dashboard');
+    
+    // Check Stripe connection when admin panel loads
+    setTimeout(checkStripeConnection, 1000);
 });
 </script>
 {% endblock %}

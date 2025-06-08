@@ -909,15 +909,164 @@ async def api_create_product(
         
         db.add(new_product)
         db.commit()
+        db.refresh(new_product)
         
-        return JSONResponse(content={
+        # Sincronizar automaticamente com Stripe se for produto pago
+        stripe_result = None
+        if price > 0:
+            try:
+                from stripe_product_sync import auto_sync_product_create
+                stripe_result = auto_sync_product_create(new_product, db)
+                if not stripe_result['success']:
+                    logger.warning(f"Erro na sincronização Stripe: {stripe_result.get('error')}")
+            except Exception as e:
+                logger.warning(f"Erro na sincronização automática com Stripe: {e}")
+        
+        response_data = {
             "success": True,
             "message": "Produto criado com sucesso!",
             "product_id": new_product.id
-        })
+        }
+        
+        # Adicionar informações do Stripe se sincronizado
+        if stripe_result and stripe_result['success']:
+            response_data["stripe_synced"] = True
+            response_data["stripe_product_id"] = stripe_result.get('stripe_product_id')
+        
+        return JSONResponse(content=response_data)
         
     except Exception as e:
         logger.error(f"Erro ao criar produto: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "Erro interno do servidor"}
+        )
+
+@app.post("/api/admin/sync-stripe")
+async def api_sync_stripe_products(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """API para sincronizar todos os produtos com Stripe (admin apenas)"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        if not current_user or not current_user.is_admin:
+            return JSONResponse(
+                status_code=403,
+                content={"success": False, "message": "Acesso negado"}
+            )
+        
+        # Importar função de sincronização
+        from stripe_product_sync import StripeProductManager
+        manager = StripeProductManager()
+        
+        # Sincronizar todos os produtos
+        result = manager.sync_all_products(db)
+        
+        if result['success']:
+            return JSONResponse(content={
+                "success": True,
+                "message": f"Sincronização concluída! {result['synced_count']}/{result['total_products']} produtos sincronizados",
+                "synced_count": result['synced_count'],
+                "total_products": result['total_products'],
+                "errors": result.get('errors', [])
+            })
+        else:
+            return JSONResponse(
+                status_code=500,
+                content={"success": False, "message": f"Erro na sincronização: {result.get('error')}"}
+            )
+        
+    except Exception as e:
+        logger.error(f"Erro na sincronização Stripe: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "Erro interno do servidor"}
+        )
+
+@app.put("/api/admin/products/{product_id}")
+async def api_update_product(
+    request: Request,
+    product_id: int,
+    name: str = Form(...),
+    description: str = Form(...),
+    category_id: int = Form(...),
+    price: float = Form(0),
+    image_url: str = Form(None),
+    download_url: str = Form(None),
+    duration_days: int = Form(30),
+    tags: str = Form(None),
+    requirements: str = Form(None),
+    is_active: bool = Form(True),
+    db: Session = Depends(get_db)
+):
+    """API para atualizar produto (admin apenas)"""
+    try:
+        current_user = get_current_user_simple(request, db)
+        if not current_user or not current_user.is_admin:
+            return JSONResponse(
+                status_code=403,
+                content={"success": False, "message": "Acesso negado"}
+            )
+        
+        # Buscar produto
+        product = db.query(Product).filter(Product.id == product_id).first()
+        if not product:
+            return JSONResponse(
+                status_code=404,
+                content={"success": False, "message": "Produto não encontrado"}
+            )
+        
+        # Verificar se categoria existe
+        category = db.query(Category).filter(Category.id == category_id).first()
+        if not category:
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "Categoria não encontrada"}
+            )
+        
+        # Atualizar dados do produto
+        product.name = name
+        product.description = description
+        product.price = price
+        product.category_id = category_id
+        product.image_url = image_url if image_url else None
+        product.download_url = download_url if download_url else None
+        product.duration_days = duration_days if price > 0 else None
+        product.tags = tags
+        product.requirements = requirements
+        product.is_active = is_active
+        product.updated_at = datetime.utcnow()
+        
+        db.commit()
+        db.refresh(product)
+        
+        # Sincronizar automaticamente com Stripe se for produto pago
+        stripe_result = None
+        if price > 0:
+            try:
+                from stripe_product_sync import auto_sync_product_update
+                stripe_result = auto_sync_product_update(product, db)
+                if not stripe_result['success']:
+                    logger.warning(f"Erro na sincronização Stripe: {stripe_result.get('error')}")
+            except Exception as e:
+                logger.warning(f"Erro na sincronização automática com Stripe: {e}")
+        
+        response_data = {
+            "success": True,
+            "message": "Produto atualizado com sucesso!",
+            "product_id": product.id
+        }
+        
+        # Adicionar informações do Stripe se sincronizado
+        if stripe_result and stripe_result['success']:
+            response_data["stripe_synced"] = True
+            response_data["stripe_product_id"] = stripe_result.get('stripe_product_id')
+        
+        return JSONResponse(content=response_data)
+        
+    except Exception as e:
+        logger.error(f"Erro ao atualizar produto: {e}")
         return JSONResponse(
             status_code=500,
             content={"success": False, "message": "Erro interno do servidor"}
