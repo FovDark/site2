@@ -25,6 +25,9 @@ class Config:
     ALLOWED_HOSTS: list = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
     CORS_ORIGINS: list = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(",")
     
+    # Port Configuration for Production
+    PORT: int = int(os.getenv("PORT", "5000"))
+    
     # Email Configuration
     SMTP_SERVER: Optional[str] = os.getenv("SMTP_SERVER")
     SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
